@@ -1,0 +1,16 @@
+{% load dajaxice_templatetags %}
+
+<html>
+    <head>
+        <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
+        {% dajaxice_js_import %}
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            Dajaxice.core.lookup(function(result) {
+                console.log('success: ' + result.success);
+            }, {});
+        </script>
+    </body>
+</html>
