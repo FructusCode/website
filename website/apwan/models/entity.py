@@ -25,3 +25,4 @@ class Entity(models.Model):
     title = models.CharField(max_length=64)
     image = models.CharField(max_length=64)
     type = models.IntegerField(choices=TYPES)
+    suggested_amount = models.DecimalField(max_digits=8, decimal_places=2)
