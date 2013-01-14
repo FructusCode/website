@@ -3,4 +3,4 @@ django-dajaxice==0.5.4.1
 
 South==0.7.6
 
-musicbrainzngs==0.2
+musicbrainzngs>=0.3
