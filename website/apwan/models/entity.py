@@ -36,3 +36,18 @@ class Entity(models.Model):
     image = models.CharField(max_length=64, null=True)
     type = models.IntegerField(choices=TYPES)
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
+
+    def dict(self):
+        dict = {
+            'id': self.id,
+            'image': self.image,
+            'type': self.type
+        }
+        if self.type == self.TYPE_MUSIC:
+            dict['artist'] = self.artist
+            dict['album'] = self.album
+            dict['track'] = self.track
+        else:
+            dict['title'] = self.title
+
+        return dict

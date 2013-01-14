@@ -24,10 +24,17 @@ def search(request, type=None,
 
         print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
 
-        results = Entity.objects.all().filter(artist=artist, album=album, track=track)
+        if not album and track:
+            results = Entity.objects.all().filter(artist=artist, track=track)
+        else:
+            results = Entity.objects.all().filter(artist=artist, album=album, track=track)
 
-        if len(results) == -1:
-            pass
+        entities = None
+
+        if len(results) > 0:
+            entities = []
+            for entity in results:
+                entities.append(entity.dict())
         else:
             # Lookup Details
             print "looking up"
@@ -35,14 +42,14 @@ def search(request, type=None,
             try:
                 entity = MusicEntityGenerator.create(artist, album, track)
 
-                print entity
+                entity_dict = entity.dict()
             except Exception, e:
                 print traceback.format_exc()
 
+        return simplejson.dumps({'success': True, 'items': entities})
+
     else:
         return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})
-
-    return simplejson.dumps({'success': True})
 
 
 def get(request, id):

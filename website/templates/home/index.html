@@ -74,6 +74,14 @@
 
                     Dajaxice.entity.search(function(result) {
                         console.log('success: ' + result.success);
+
+                        if(result.success)
+                        {
+                            for(var i = 0; i < result.items.length; i++)
+                            {
+                                console.log(result.items[i]);
+                            }
+                        }
                     }, params);
                 }
             }

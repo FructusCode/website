@@ -43,17 +43,14 @@ class MusicEntityGenerator():
     @staticmethod
     def create(artist, album=None, track=None):
         l_artist, l_releases, l_recording = MusicEntityGenerator.lookup(artist, album, track)
-
-        pprint.pprint(l_releases[0])
-
         recipient, recipient_ref, created = MusicEntityGenerator.create_artist_recipient(l_artist)
-
-#        if created:
-#            print "created"
 
         e_artist_ref, e_artist, e_artist_created = MusicEntityGenerator.create_entity(l_artist)
         if e_artist_created:
             print "Artist Created"
+
+        e_album = None
+        e_track = None
 
         if l_releases:
             e_album_ref, e_album, e_album_created = MusicEntityGenerator.create_entity(
@@ -73,13 +70,13 @@ class MusicEntityGenerator():
             )
             if e_track_created:
                 print "Track Created"
-#        else:
-#            print "delete all"
-#            Entity.objects.all().delete()
-#
-#            RecipientReference.objects.all().delete()
-#            Recipient.objects.all().delete()
 
+        if e_track:
+            return e_track
+        elif e_album:
+            return e_album
+        elif e_artist:
+            return e_artist
         return None
 
     @staticmethod
