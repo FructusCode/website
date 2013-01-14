@@ -18,7 +18,7 @@ class Recipient(models.Model):
         (TYPE_M_ARTIST, "Artist"),
     )
 
-    owner = models.ForeignKey(User)
-    payee = models.ForeignKey(Payee)
+    owner = models.ForeignKey(User, null=True)
+    payee = models.ForeignKey(Payee, null=True)
     title = models.CharField(max_length=64)
     type = models.IntegerField(choices=TYPES)

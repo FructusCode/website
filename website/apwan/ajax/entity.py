@@ -3,7 +3,7 @@ import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
 from website.apwan import USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTACT
-from website.apwan.helpers.metadata.music import MusicMeta
+from website.apwan.helpers.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
 
 import musicbrainzngs
@@ -26,25 +26,19 @@ def search(request, type=None,
 
         results = Entity.objects.all().filter(artist=artist, album=album, track=track)
 
-        if len(results) > 0:
+        if len(results) == -1:
             pass
         else:
             # Lookup Details
             print "looking up"
+
             try:
-                artist, albums, track = MusicMeta.lookup(artist, album, track)
+                entity = MusicEntityGenerator.create(artist, album, track)
 
-                print 'artist', artist['name']
-                if track:
-                    print 'track', track['title']
-
-                for release, labels in albums:
-                    print release['title'].encode('ascii', 'replace'), "(" + release['country'] + ")"
-                    for label in labels:
-                        print '\t', label['name'].encode('ascii', 'replace'), "(" + label['country'] + ")"
-
+                print entity
             except Exception, e:
                 print traceback.format_exc()
+
     else:
         return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})
 

@@ -21,7 +21,9 @@ class Entity(models.Model):
         (TYPE_GAME, "Game"),
     )
 
-    recipient = models.ForeignKey(Recipient)
+    recipient = models.ManyToManyField(Recipient)
+
+    parent = models.ForeignKey('self', null=True)
 
     # for TYPE_TVSHOW, TYPE_MOVIE, TYPE_GAME
     title = models.CharField(max_length=64, null=True)
@@ -31,6 +33,6 @@ class Entity(models.Model):
     album = models.CharField(max_length=64, null=True)
     track = models.CharField(max_length=64, null=True)
 
-    image = models.CharField(max_length=64)
+    image = models.CharField(max_length=64, null=True)
     type = models.IntegerField(choices=TYPES)
-    suggested_amount = models.DecimalField(max_digits=8, decimal_places=2)
+    suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
