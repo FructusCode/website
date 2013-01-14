@@ -1,0 +1,3 @@
+USERAGENT_NAME = "APWAN"
+USERAGENT_VERSION = "0.1"
+USERAGENT_CONTACT = "https://github.com/AProjectWithoutAName"

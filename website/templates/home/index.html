@@ -1,16 +1,82 @@
 {% load dajaxice_templatetags %}
 
-<html>
+<html xmlns="http://www.w3.org/1999/html">
     <head>
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/js/lib/jquery-1.8.3.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
     </head>
 
     <body>
+        <center>
+            <h2>entity.search</h2>
+            <input type="text" id="search_title" placeholder="Title" style="width: 300px;" /><br/>
+            <br/>
+            <input type="text" id="search_artist" placeholder="Artist" style="width: 300px;" /><br/>
+            <input type="text" id="search_album" placeholder="Album" style="width: 300px;" /><br/>
+            <input type="text" id="search_track" placeholder="Track" style="width: 300px;" /><br/>
+            <select id="search_type">
+                <option value="">Unknown</option>
+                <option value="0">TV Show</option>
+                <option value="1">Movie</option>
+                <option value="2" selected>Music</option>
+                <option value="3">Game</option>
+            </select>
+            <button id="search_submit">Search</button>
+        </center>
+
         <script type="text/javascript">
-            Dajaxice.entity.search(function(result) {
-                console.log('success: ' + result.success);
-            }, {});
+            var _search_type = $('#search_type');
+            var _search_title = $('#search_title');
+            var _search_artist = $('#search_artist');
+            var _search_album = $('#search_album');
+            var _search_track = $('#search_track');
+
+            $('#search_submit').click(do_search);
+            _search_title.keydown(function(event) {
+                if(event.keyCode == 13)
+                {
+                    do_search();
+                }
+            });
+
+            function get_val(element)
+            {
+                var val = null;
+                if(element.val() != '') {
+                    val = element.val();
+                }
+                return val;
+            }
+
+            function do_search()
+            {
+                var title = get_val(_search_title);
+
+                var type = null;
+                if(_search_type.val() != '') {
+                    type = parseInt(_search_type.val());
+                }
+
+                console.log("Searching '" + title + "' (" + type + ")");
+
+                if(type == 2)
+                {
+                    var artist = get_val(_search_artist);
+                    var album = get_val(_search_album);
+                    var track = get_val(_search_track);
+
+                    console.log("Searching '" + artist + "','" + album + "','" + track + "', (" + type + ")");
+
+                    var params = {'type':type, 'artist': artist};
+                    if(album != null) params['album'] = album;
+                    if(track != null) params['track'] = track;
+
+                    Dajaxice.entity.search(function(result) {
+                        console.log('success: ' + result.success);
+                    }, params);
+                }
+            }
         </script>
     </body>
 </html>

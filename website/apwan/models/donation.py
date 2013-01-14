@@ -42,10 +42,10 @@ class Donation(models.Model):
 
     entity = models.ForeignKey(Entity)
 
-    state = models.CharField(max_length=12, choices=STATES, default=STATE_STARTED)
+    state = models.CharField(max_length=12, choices=STATES, default=STATE_STARTED)  # TODO: Replace with int
 
-    payer_name = models.CharField(max_length=64, default="Anonymous")
+    payer_name = models.CharField(max_length=64, default="Anonymous")  # TODO: This can be replaced with user accounts
 
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     tip = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCY_USD)
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCY_USD)  # TODO: Replace with int

@@ -22,7 +22,15 @@ class Entity(models.Model):
     )
 
     recipient = models.ForeignKey(Recipient)
-    title = models.CharField(max_length=64)
+
+    # for TYPE_TVSHOW, TYPE_MOVIE, TYPE_GAME
+    title = models.CharField(max_length=64, null=True)
+
+    # for TYPE_MUSIC
+    artist = models.CharField(max_length=64, null=True)
+    album = models.CharField(max_length=64, null=True)
+    track = models.CharField(max_length=64, null=True)
+
     image = models.CharField(max_length=64)
     type = models.IntegerField(choices=TYPES)
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2)
