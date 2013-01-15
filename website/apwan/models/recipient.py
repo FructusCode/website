@@ -28,3 +28,6 @@ class Recipient(models.Model):
             'title': self.title,
             'type': self.type
         }
+
+    def __unicode__(self):
+        return self.title

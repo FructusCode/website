@@ -62,3 +62,14 @@ class Entity(models.Model):
                 dict['recipients'].append(re.dict())
 
         return dict
+
+    def __unicode__(self):
+        if self.type == Entity.TYPE_MUSIC:
+            if self.track:
+                return "[%s] [Track] %s - %s - %s" % (Entity.TYPES[self.type][1], self.artist, self.album, self.track)
+            elif self.album:
+                return "[%s] [Album] %s - %s" % (Entity.TYPES[self.type][1], self.artist, self.album)
+            else:
+                return "[%s] [Artist] %s" % (Entity.TYPES[self.type][1], self.artist)
+        else:
+            return self.title
