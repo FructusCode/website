@@ -31,22 +31,24 @@ def search(request, type=None,
 
         entities = None
 
-        if len(results) > 0:
-            entities = []
-            for entity in results:
-                entities.append(entity.dict())
-        else:
-            # Lookup Details
-            print "looking up"
+        try:
+            if len(results) == 1:
+                entities = [results[0].dict(full=True)]
+            elif len(results) > 1:
+                entities = []
+                for entity in results:
+                    entities.append(entity.dict())
+            else:
+                # Lookup Details
+                print "looking up"
 
-            try:
                 entity = MusicEntityGenerator.create(artist, album, track)
 
-                entities = [entity.dict()]
-            except Exception, e:
-                print traceback.format_exc()
+                entities = [entity.dict(full=True)]
 
-        return simplejson.dumps({'success': True, 'items': entities})
+            return simplejson.dumps({'success': True, 'items': entities})
+        except Exception, e:
+            print traceback.format_exc()
 
     else:
         return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})

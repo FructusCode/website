@@ -43,11 +43,12 @@ class MusicEntityGenerator():
     @staticmethod
     def create(artist, album=None, track=None):
         l_artist, l_releases, l_recording = MusicEntityGenerator.lookup(artist, album, track)
-        recipient, recipient_ref, created = MusicEntityGenerator.create_artist_recipient(l_artist)
+        recipient_ref, recipient, created = MusicEntityGenerator.create_artist_recipient(l_artist)
 
         e_artist_ref, e_artist, e_artist_created = MusicEntityGenerator.create_entity(l_artist)
         if e_artist_created:
             print "Artist Created"
+            e_artist.recipient.add(recipient)
 
         e_album = None
         e_track = None
@@ -60,6 +61,7 @@ class MusicEntityGenerator():
             )
             if e_album_created:
                 print "Album Created"
+                e_album.recipient.add(recipient)
 
         if l_recording:
             e_track_ref, e_track, e_track_created = MusicEntityGenerator.create_entity(
@@ -70,6 +72,7 @@ class MusicEntityGenerator():
             )
             if e_track_created:
                 print "Track Created"
+                e_track.recipient.add(recipient)
 
         if e_track:
             return e_track

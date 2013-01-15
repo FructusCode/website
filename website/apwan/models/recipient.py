@@ -22,3 +22,9 @@ class Recipient(models.Model):
     payee = models.ForeignKey(Payee, null=True)
     title = models.CharField(max_length=64)
     type = models.IntegerField(choices=TYPES)
+
+    def dict(self):
+        return {
+            'title': self.title,
+            'type': self.type
+        }

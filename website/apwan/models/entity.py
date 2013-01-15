@@ -37,7 +37,7 @@ class Entity(models.Model):
     type = models.IntegerField(choices=TYPES)
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
-    def dict(self):
+    def dict(self, full=False):
         dict = {
             'id': self.id,
             'image': self.image,
@@ -49,5 +49,10 @@ class Entity(models.Model):
             dict['track'] = self.track
         else:
             dict['title'] = self.title
+
+        if full:
+            dict['recipients'] = []
+            for re in self.recipient.all():
+                dict['recipients'].append(re.dict())
 
         return dict
