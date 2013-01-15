@@ -1,9 +1,15 @@
 import pprint
+import re
 import musicbrainzngs
+from website.apwan.helpers.entitygen import search_strip
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
 from website.apwan.models.recipient_reference import RecipientReference
+from website.apwan import USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTACT
+
+musicbrainzngs.set_useragent(USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTACT)
+musicbrainzngs.set_rate_limit()
 
 __author__ = 'Dean Gardiner'
 
@@ -138,6 +144,9 @@ class MusicEntityGenerator():
             artist=_artist,
             album=_album,
             track=_track,
+            s_artist=search_strip(_artist),
+            s_album=search_strip(_album),
+            s_track=search_strip(_track),
             type=Entity.TYPE_MUSIC
         )
 
@@ -153,17 +162,28 @@ class MusicEntityGenerator():
 
     @staticmethod
     def _build_query(artist, album=None, track=None):
+        artist = MusicEntityGenerator._escape_query_field(artist)
+        album = MusicEntityGenerator._escape_query_field(album)
+        track = MusicEntityGenerator._escape_query_field(track)
+
         query = None
         if track and album:
-            query = '"' + track + '" artist:"' + artist + '" album:"' + album + '"'
+            query = track + ' artist:' + artist + ' album:' + album
         elif track:
-            query = '"' + track + '" artist:"' + artist + '"'
+            query = track + ' artist:' + artist
         elif album:
-            query = '"' + album + '" artist:"' + artist + '"'
+            query = album + ' artist:' + artist
         else:
-            query = 'artist:"' + artist + '"'
+            query = 'artist:' + artist
 
         return query
+
+    @staticmethod
+    def _escape_query_field(text):
+        if text is None:
+            return None
+        return re.sub(r'([+\-&|!(){}\[\]\^"~*?:\\])', r'\\\1', text)
+
 
     @staticmethod
     def _request(query, artist, album=None, track=None):

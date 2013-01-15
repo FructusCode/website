@@ -2,12 +2,9 @@ import pprint
 import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
-from website.apwan import USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTACT
+from website.apwan.helpers.entitygen import search_like
 from website.apwan.helpers.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
-
-import musicbrainzngs
-musicbrainzngs.set_useragent(USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTACT)
 
 __author__ = 'Dean Gardiner'
 
@@ -18,20 +15,22 @@ def search(request, type=None,
            artist=None, album=None, track=None):
     print "entity.search type:", type
 
-    if type == Entity.TYPE_MUSIC:
-        if title is not None or artist is None:
-            return simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False})
+    try:
+        if type == Entity.TYPE_MUSIC:
+            if title is not None or artist is None:
+                return simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False})
 
-        print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
+            print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
 
-        if not album and track:
-            results = Entity.objects.all().filter(artist=artist, track=track)
-        else:
-            results = Entity.objects.all().filter(artist=artist, album=album, track=track)
+            results = _entity_search(artist=artist, album=album, track=track)
 
-        entities = None
+#            if not album and track:
+#                results = Entity.objects.all().filter(artist__iexact=artist, track__iexact=track)
+#            else:
+#                results = Entity.objects.all().filter(artist__iexact=artist, album__iexact=album, track__iexact=track)
 
-        try:
+            entities = None
+
             if len(results) == 1:
                 entities = [results[0].dict(full=True)]
             elif len(results) > 1:
@@ -47,11 +46,45 @@ def search(request, type=None,
                 entities = [entity.dict(full=True)]
 
             return simplejson.dumps({'success': True, 'items': entities})
-        except Exception, e:
-            print traceback.format_exc()
 
+        else:
+            return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})
+
+    except Exception, e:
+        print traceback.format_exc()
+
+
+def _entity_search(**values):
+    query = {}
+
+    if 'artist' in values:
+        if values['artist'] is not None:
+            query['s_artist__ilike'] = search_like(values['artist'])
+        else:
+            raise ValueError()  # not None artist required
     else:
-        return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})
+        raise ValueError()
+
+    if 'album' in values:
+        if values['album'] is not None:
+            query['s_album__ilike'] = search_like(values['album'])
+        else:
+            query['album'] = None
+
+    if 'track' in values:
+        if values['track'] is not None:
+            query['s_track__ilike'] = search_like(values['track'])
+
+            if 'album' in query and query['album'] is None:
+                query.pop('album')
+        else:
+            query['track'] = None
+    else:
+        query['track'] = None
+
+    print query
+
+    return Entity.objects.all().filter(**query)
 
 
 def get(request, id):

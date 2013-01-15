@@ -33,6 +33,12 @@ class Entity(models.Model):
     album = models.CharField(max_length=64, null=True)
     track = models.CharField(max_length=64, null=True)
 
+    # Search fields
+    s_title = models.CharField(max_length=64, null=True)
+    s_artist = models.CharField(max_length=64, null=True)
+    s_album = models.CharField(max_length=64, null=True)
+    s_track = models.CharField(max_length=64, null=True)
+
     image = models.CharField(max_length=64, null=True)
     type = models.IntegerField(choices=TYPES)
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)

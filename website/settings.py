@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'dajax',
     'dajaxice',
+    'django_like',
     'south',
 
     'website.apwan',
