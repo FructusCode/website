@@ -66,14 +66,18 @@ def _entity_search(**values):
         raise ValueError()
 
     if 'album' in values:
-        if values['album'] is not None:
-            query['s_album__ilike'] = search_like(values['album'])
+        values['album'] = search_like(values['album'])
+
+        if values['album'] is not None and values['album'] != '':
+            query['s_album__ilike'] = values['album']
         else:
             query['album'] = None
 
     if 'track' in values:
-        if values['track'] is not None:
-            query['s_track__ilike'] = search_like(values['track'])
+        values['track'] = search_like(values['track'])
+
+        if values['track'] is not None and values['track'] != '':
+            query['s_track__ilike'] = values['track']
 
             if 'album' in query and query['album'] is None:
                 query.pop('album')
