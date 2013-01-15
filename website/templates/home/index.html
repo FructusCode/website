@@ -23,6 +23,10 @@
                 <option value="3">Game</option>
             </select>
             <button id="search_submit">Search</button>
+
+            <div id="results">
+
+            </div>
         </center>
 
         <script type="text/javascript">
@@ -31,6 +35,7 @@
             var _search_artist = $('#search_artist');
             var _search_album = $('#search_album');
             var _search_track = $('#search_track');
+            var _results = $('#results');
 
             $('#search_submit').click(do_search);
             _search_title.keydown(function(event) {
@@ -80,6 +85,26 @@
                             for(var i = 0; i < result.items.length; i++)
                             {
                                 console.log(result.items[i]);
+                                if(result.items[i].type == 2) // if MUSIC
+                                {
+                                    _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
+                                            "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
+                                            "<br/>" +
+                                            "<b>Artist:</b> <span>\"" + result.items[i].artist + "\"</span><br/>" +
+                                            "<b>Album:</b> <span>\"" + result.items[i].album + "\"</span><br/>" +
+                                            "<b>Track:</b> <span>\"" + result.items[i].track + "\"</span><br/>" +
+                                            "<br/>" +
+                                            "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
+                                    "</div>");
+                                } else {
+                                    _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
+                                            "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
+                                            "<br/>" +
+                                            "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
+                                            "<br/>" +
+                                            "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
+                                    "</div>");
+                                }
                             }
                         }
                     }, params);
