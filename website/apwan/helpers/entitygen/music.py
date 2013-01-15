@@ -193,15 +193,17 @@ class MusicEntityGenerator():
             if _recording is None or recording['ext:score'] == _recording['ext:score']:
                 _recording = recording
 
-                if 'release-list' in recording:
-                    for rel in recording['release-list']:
-                        if 'status' in rel and rel['status'] == 'Official':
-                            if 'release-group' in rel and 'primary-type' in rel['release-group']:
-                                if rel['release-group']['primary-type'] == 'Album':
-                                    _labels = MusicEntityGenerator._get_labels_by_release(rel['id'])
+                recordingReleases = musicbrainzngs.browse_releases(recording=recording['id'],
+                                                                   includes=['labels', 'release-groups'])
 
-                                    if _labels:
-                                        _results.append((rel, _labels))
+                for rel in recordingReleases['release-list']:
+                    if 'status' in rel and rel['status'] == 'Official':
+                        if 'release-group' in rel and 'primary-type' in rel['release-group']:
+                            if rel['release-group']['primary-type'] == 'Album':
+                                if 'label-info-list' in rel:
+                                    _results.append((rel, rel['label-info-list']))
+
+                if 'release-list' in recording:
                     recording.pop('release-list')
             else:
                 break
@@ -221,10 +223,8 @@ class MusicEntityGenerator():
                 if 'status' in rel and rel['status'] == 'Official':
                     if 'release-group' in rel and 'primary-type' in rel['release-group']:
                         if rel['release-group']['primary-type'] == 'Album':
-                            _labels = MusicEntityGenerator._get_labels_by_release(rel['id'])
-
-                            if _labels:
-                                _results.append((rel, _labels))
+                            if 'label-info-list' in rel:
+                                _results.append((rel, rel['label-info-list']))
 
         _artist = musicbrainzngs.get_artist_by_id(_topRelease['artist-credit'][0]['artist']['id'])['artist']
         return _artist, _results
