@@ -12,7 +12,7 @@ musicbrainzngs.set_useragent(USERAGENT_NAME, USERAGENT_VERSION, USERAGENT_CONTAC
 __author__ = 'Dean Gardiner'
 
 
-@dajaxice_register(method='POST', name='entity.search')
+@dajaxice_register(method='GET', name='entity.search')
 def search(request, type=None,
            title=None,
            artist=None, album=None, track=None):
