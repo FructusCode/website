@@ -42,7 +42,7 @@ def search(request, type=None,
             try:
                 entity = MusicEntityGenerator.create(artist, album, track)
 
-                entity_dict = entity.dict()
+                entities = [entity.dict()]
             except Exception, e:
                 print traceback.format_exc()
 
