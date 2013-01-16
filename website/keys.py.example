@@ -1,0 +1,4 @@
+__author__ = 'Dean Gardiner'
+
+# API Key for http://www.themoviedb.org
+TMDB_KEY = ''

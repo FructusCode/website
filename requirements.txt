@@ -1,8 +1,9 @@
 Django==1.4.3
 django-dajax==0.9.2
-django-dajaxice==0.5.4.1f
+https://github.com/FructusCode/django-dajaxice/archive/0.5.4.1f.zip
 django-like==0.0.3
 
 South==0.7.6
 
-musicbrainzngs>=0.3
+https://github.com/FructusCode/python-musicbrainz-ngs/archive/0.3dev.zip
+https://github.com/FructusCode/themoviedb/archive/1.0b.zip

@@ -23,6 +23,7 @@
                 <option value="3">Game</option>
             </select>
             <button id="search_submit">Search</button>
+            <button onclick="load_example_data();">Example Data</button>
 
             <div id="results">
 
@@ -30,6 +31,29 @@
         </center>
 
         <script type="text/javascript">
+            var example_data = {
+                0: ['Chuck', 'Eureka', 'Fringe'],
+                1: ['The Hitchhiker\'s Guide to the Galaxy', 'Skyfall', 'Taken', 'Taken 2'],
+                2: [
+                    {
+                        'artist': "M83"
+                    },
+                    {
+                        'artist': "M83",
+                        'track': "Intro"
+                    },
+                    {
+                        'artist': "Everything Everything",
+                        'album': "Arc"
+                    },
+                    {
+                        'artist': "Everything Everything",
+                        'track': "Weights"
+                    }
+                ],
+                3: []
+            };
+
             var _search_type = $('#search_type');
             var _search_title = $('#search_title');
             var _search_artist = $('#search_artist');
@@ -54,16 +78,66 @@
                 return val;
             }
 
+            function load_example_data()
+            {
+                var type = parseInt(_search_type.val());
+                var rand = Math.floor(Math.random() * example_data[type].length);
+
+                if(type == 2) {
+                    _search_title.val('');
+                    _search_artist.val(example_data[type][rand]['artist']);
+                    _search_album.val(example_data[type][rand]['album']);
+                    _search_track.val(example_data[type][rand]['track']);
+                } else {
+                    _search_title.val(example_data[type][rand]);
+                    _search_artist.val('');
+                    _search_album.val('');
+                    _search_track.val('');
+                }
+            }
+            load_example_data();
+
+            function process_result(result)
+            {
+                console.log('success: ' + result.success);
+
+                if(result.success)
+                {
+                    for(var i = 0; i < result.items.length; i++)
+                    {
+                        console.log(result.items[i]);
+                        if(result.items[i].type == 2) // if MUSIC
+                        {
+                            _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
+                                    "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Artist:</b> <span>\"" + result.items[i].artist + "\"</span><br/>" +
+                                    "<b>Album:</b> <span>\"" + result.items[i].album + "\"</span><br/>" +
+                                    "<b>Track:</b> <span>\"" + result.items[i].track + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
+                                    "</div>");
+                        } else {
+                            _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
+                                    "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
+                                    "</div>");
+                        }
+                    }
+                }
+            }
+
             function do_search()
             {
-                var title = get_val(_search_title);
-
                 var type = null;
                 if(_search_type.val() != '') {
                     type = parseInt(_search_type.val());
                 }
 
-                console.log("Searching '" + title + "' (" + type + ")");
+                var params = {}
 
                 if(type == 2)
                 {
@@ -73,40 +147,22 @@
 
                     console.log("Searching '" + artist + "','" + album + "','" + track + "', (" + type + ")");
 
-                    var params = {'type':type, 'artist': artist};
+                    params = {'type':type, 'artist': artist};
                     if(album != null) params['album'] = album;
                     if(track != null) params['track'] = track;
 
                     Dajaxice.entity.search(function(result) {
-                        console.log('success: ' + result.success);
+                        process_result(result);
+                    }, params);
+                } else {
+                    var title = get_val(_search_title);
 
-                        if(result.success)
-                        {
-                            for(var i = 0; i < result.items.length; i++)
-                            {
-                                console.log(result.items[i]);
-                                if(result.items[i].type == 2) // if MUSIC
-                                {
-                                    _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
-                                            "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
-                                            "<br/>" +
-                                            "<b>Artist:</b> <span>\"" + result.items[i].artist + "\"</span><br/>" +
-                                            "<b>Album:</b> <span>\"" + result.items[i].album + "\"</span><br/>" +
-                                            "<b>Track:</b> <span>\"" + result.items[i].track + "\"</span><br/>" +
-                                            "<br/>" +
-                                            "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
-                                    "</div>");
-                                } else {
-                                    _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
-                                            "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
-                                            "<br/>" +
-                                            "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
-                                            "<br/>" +
-                                            "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
-                                    "</div>");
-                                }
-                            }
-                        }
+                    console.log("Searching '" + title + "', (" + type + ")");
+
+                    params = {'type':type, 'title': title};
+
+                    Dajaxice.entity.search(function(result) {
+                        process_result(result);
                     }, params);
                 }
             }
