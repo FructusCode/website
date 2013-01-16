@@ -1,34 +1,44 @@
-HOST: http://www.google.com/
+HOST: 
 
---- Sample API v2 ---
+--- Extension API v0.1 ---
 ---
-Welcome to the our sample API documentation. All comments can be written in (support [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax)
+**API still in development, do not consider this final**
+
+*italic keys indicate optional parameters*
+
+**argv** is dict of the arguments
 ---
 
 --
-Shopping Cart Resources
-The following is a section of resources related to the shopping cart
+Entity
 --
-List products added into your shopping-cart. (comment block again in Markdown)
-GET /shopping-cart
+Search for an entity (artist, album, track, movie, tv show, game)
+
+| Key      | Type   | Value         |
+|----------|--------|---------------|
+| title    | string | Search Title
+| *type*   | *int*  | *Entity Type*
+
+GET /dajaxice/entity.search/{?argv}
+> Accept: application/json
 < 200
 < Content-Type: application/json
-{ "items": [
-  { "url": "/shopping-cart/1", "product":"2ZY48XPZ", "quantity": 1, "name": "New socks", "price": 1.25 }
-] }
-
-Save new products in your shopping cart
-POST /shopping-cart
-> Content-Type: application/json
-{ "product":"1AB23ORM", "quantity": 2 }
-< 201
-< Content-Type: application/json
-{ "status": "created", "url": "/shopping-cart/2" }
-
-
--- Payment Resources --
-This resource allows you to submit payment information to process your *shopping cart* items
-POST /payment
-{ "cc": "12345678900", "cvc": "123", "expiry": "0112" }
-< 200
-{ "receipt": "/payment/receipt/1" }
+{
+    "success": true,
+    "items": [
+        {
+            "id": 5,
+            "type": 1,
+            "title": "The Hitchhiker's Guide to the Galaxy",
+            "image": ""
+        },
+        {
+            "id": 9,
+            "type": 2,
+            "artist": "M83",
+            "album": "Hurry Up, We’re Dreaming",
+            "track": "Intro",
+            "image": ""
+        }
+    ]
+}
