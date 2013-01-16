@@ -1,6 +1,7 @@
 import pprint
 import traceback
 from dajaxice.decorators import dajaxice_register
+from django.http import HttpResponse
 from django.utils import simplejson
 from website.apwan.helpers.entitygen import search_like
 from website.apwan.helpers.entitygen.music import MusicEntityGenerator
@@ -18,16 +19,11 @@ def search(request, type=None,
     try:
         if type == Entity.TYPE_MUSIC:
             if title is not None or artist is None:
-                return simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False})
+                return _search_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
 
             print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
 
             results = _entity_search(artist=artist, album=album, track=track)
-
-#            if not album and track:
-#                results = Entity.objects.all().filter(artist__iexact=artist, track__iexact=track)
-#            else:
-#                results = Entity.objects.all().filter(artist__iexact=artist, album__iexact=album, track__iexact=track)
 
             entities = None
 
@@ -45,13 +41,22 @@ def search(request, type=None,
 
                 entities = [entity.dict(full=True)]
 
-            return simplejson.dumps({'success': True, 'items': entities})
+            return _search_response(simplejson.dumps({'success': True, 'items': entities}))
 
         else:
-            return simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False})
+            return _search_response(simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False}))
 
     except Exception, e:
         print traceback.format_exc()
+
+
+def _search_response(data):
+    response = HttpResponse(data, mimetype="application/x-json")
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'GET'
+    response['Access-Control-Allow-Headers'] = 'X-PINGOTHER'
+    response['Access-Control-Max-Age'] = '1728000'
+    return response
 
 
 def _entity_search(**values):
