@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from website.apwan.ajax.utils import cors_response
 from website.apwan.helpers.entitygen import search_like
+from website.apwan.helpers.entitygen.movie import MovieEntityGenerator
 from website.apwan.helpers.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
 
@@ -13,7 +14,7 @@ __author__ = 'Dean Gardiner'
 
 @dajaxice_register(method='GET', name='entity.search')
 def search(request, type=None,
-           title=None,
+           title=None, year=None,
            artist=None, album=None, track=None):
     print "entity.search type:", type
 
@@ -21,7 +22,7 @@ def search(request, type=None,
 
     try:
         if type == Entity.TYPE_MUSIC:
-            if title is not None or artist is None:
+            if title is not None or year is not None or artist is None:
                 return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
 
             print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
@@ -44,6 +45,9 @@ def search(request, type=None,
 
             return cors_response(simplejson.dumps({'success': True, 'items': entities}))
         elif type == Entity.TYPE_MOVIE:
+            if title is None or year is None:
+                return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
+
             if artist is not None or album is not None or track is not None:
                 return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
 
@@ -60,6 +64,10 @@ def search(request, type=None,
             else:
                 # Lookup Details
                 print "looking up"
+
+                entity = MovieEntityGenerator.create(title, year)
+
+                entities = [entity.dict(full=True)]
 
             return cors_response(simplejson.dumps({'success': True, 'items': entities}))
         else:

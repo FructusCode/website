@@ -9,9 +9,11 @@ class RecipientReference(models.Model):
         app_label = 'apwan'
 
     TYPE_MUSICBRAINZ = 0
+    TYPE_THEMOVIEDB = 1
 
     TYPES = (
         (TYPE_MUSICBRAINZ, "MusicBrainz"),
+        (TYPE_THEMOVIEDB, "The Movie Database"),
     )
 
     recipient = models.ForeignKey(Recipient)

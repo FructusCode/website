@@ -10,7 +10,8 @@
     <body>
         <center>
             <h2>entity.search</h2>
-            <input type="text" id="search_title" placeholder="Title" style="width: 300px;" /><br/>
+            <input type="text" id="search_title" placeholder="Title" style="width: 256px;" />
+            <input type="text" id="search_year" placeholder="Year" style="width:40px;" maxlength="4"/><br/>
             <br/>
             <input type="text" id="search_artist" placeholder="Artist" style="width: 300px;" /><br/>
             <input type="text" id="search_album" placeholder="Album" style="width: 300px;" /><br/>
@@ -33,7 +34,23 @@
         <script type="text/javascript">
             var example_data = {
                 0: ['Chuck', 'Eureka', 'Fringe'],
-                1: ['The Hitchhiker\'s Guide to the Galaxy', 'Skyfall', 'Taken', 'Taken 2'],
+                1: [{
+                        title: 'The Hitchhiker\'s Guide to the Galaxy',
+                        year: 2005
+                    },
+                    {
+                        title: 'Skyfall',
+                        year: 2012
+                    },
+                    {
+                        title: 'Taken',
+                        year: 2008
+                    },
+                    {
+                        title: 'Taken 2',
+                        year: 2012
+                    }
+                ],
                 2: [
                     {
                         'artist': "M83"
@@ -56,6 +73,7 @@
 
             var _search_type = $('#search_type');
             var _search_title = $('#search_title');
+            var _search_year = $('#search_year');
             var _search_artist = $('#search_artist');
             var _search_album = $('#search_album');
             var _search_track = $('#search_track');
@@ -85,11 +103,19 @@
 
                 if(type == 2) {
                     _search_title.val('');
+                    _search_year.val('');
                     _search_artist.val(example_data[type][rand]['artist']);
                     _search_album.val(example_data[type][rand]['album']);
                     _search_track.val(example_data[type][rand]['track']);
+                } else if(type == 1) {
+                    _search_title.val(example_data[type][rand]['title']);
+                    _search_year.val(example_data[type][rand]['year']);
+                    _search_artist.val('');
+                    _search_album.val('');
+                    _search_track.val('');
                 } else {
                     _search_title.val(example_data[type][rand]);
+                    _search_year.val('');
                     _search_artist.val('');
                     _search_album.val('');
                     _search_track.val('');
@@ -137,7 +163,7 @@
                     type = parseInt(_search_type.val());
                 }
 
-                var params = {}
+                var params = {};
 
                 if(type == 2)
                 {
@@ -150,21 +176,23 @@
                     params = {'type':type, 'artist': artist};
                     if(album != null) params['album'] = album;
                     if(track != null) params['track'] = track;
-
-                    Dajaxice.entity.search(function(result) {
-                        process_result(result);
-                    }, params);
                 } else {
                     var title = get_val(_search_title);
 
-                    console.log("Searching '" + title + "', (" + type + ")");
-
                     params = {'type':type, 'title': title};
 
-                    Dajaxice.entity.search(function(result) {
-                        process_result(result);
-                    }, params);
+                    if(type == 1) {
+                        var year = null;
+                        if(_search_year.val() != '') {
+                            year = parseInt(_search_year.val());
+                        }
+                        params['year'] = year;
+                    }
                 }
+
+                Dajaxice.entity.search(function(result) {
+                    process_result(result);
+                }, params);
             }
         </script>
     </body>

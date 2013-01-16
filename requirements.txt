@@ -6,4 +6,4 @@ django-like==0.0.3
 South==0.7.6
 
 https://github.com/FructusCode/python-musicbrainz-ngs/archive/0.3dev.zip
-https://github.com/FructusCode/themoviedb/archive/1.0b.zip
+https://github.com/FructusCode/pythemoviedb/archive/1.0.zip

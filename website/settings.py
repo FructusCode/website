@@ -1,5 +1,6 @@
 # Django settings for website project.
 import os
+import keys
 
 rootPath = os.path.abspath(os.path.dirname(os.path.abspath( __file__ )) + os.sep + ".." + os.sep)
 

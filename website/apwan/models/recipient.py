@@ -10,12 +10,15 @@ class Recipient(models.Model):
         app_label = 'apwan'
 
     # Music
-    TYPE_M_LABEL = 0
-    TYPE_M_ARTIST = 1
+    TYPE_MUSIC_LABEL = 0
+    TYPE_MUSIC_ARTIST = 1
+    # Movie
+    TYPE_MOVIE_PRODUCTION_COMPANY = 2
 
     TYPES = (
-        (TYPE_M_LABEL, "Label"),
-        (TYPE_M_ARTIST, "Artist"),
+        (TYPE_MUSIC_LABEL, "Label"),
+        (TYPE_MUSIC_ARTIST, "Artist"),
+        (TYPE_MOVIE_PRODUCTION_COMPANY, "Production Company"),
     )
 
     owner = models.ForeignKey(User, null=True)

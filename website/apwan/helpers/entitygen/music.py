@@ -100,7 +100,7 @@ class MusicEntityGenerator():
             return reference_filter[0], reference_filter[0].recipient, False
 
         # Create Recipient
-        recipient = Recipient.objects.create(title=artist['name'], type=Recipient.TYPE_M_ARTIST)
+        recipient = Recipient.objects.create(title=artist['name'], type=Recipient.TYPE_MUSIC_ARTIST)
 
         # Create Reference
         reference = RecipientReference.objects.create(

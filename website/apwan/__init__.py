@@ -1,3 +1,3 @@
-USERAGENT_NAME = "APWAN"
+USERAGENT_NAME = "Fruct.us"
 USERAGENT_VERSION = "0.1"
-USERAGENT_CONTACT = "https://github.com/AProjectWithoutAName"
+USERAGENT_CONTACT = "team@fruct.us"
