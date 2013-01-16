@@ -11,10 +11,19 @@ HOST:
 
 --
 Entity
+
+### Types
+| Value  | Description |
+|--------|-------------|
+| 0      | TV Show
+| 1      | Movie
+| 2      | Music
+| 3      | Game
+***
 --
 Search for an entity (artist, album, track, movie, tv show, game)
 
-| Key      | Type   | Value         |
+| Key      | Type   | Description   |
 |----------|--------|---------------|
 | title    | string | Search Title
 | *type*   | *int*  | *Entity Type*
@@ -28,17 +37,98 @@ GET /dajaxice/entity.search/{?argv}
     "items": [
         {
             "id": 5,
-            "type": 1,
+            "type": 1,  // Movie
             "title": "The Hitchhiker's Guide to the Galaxy",
             "image": ""
         },
         {
             "id": 9,
-            "type": 2,
+            "type": 2,  // Music
             "artist": "M83",
             "album": "Hurry Up, We’re Dreaming",
             "track": "Intro",
-            "image": ""
+            "image": "",
+            "recipients": [  // Only returned if entity.search returns 1 result
+                {
+                    "title": "M83",
+                    "type": 1
+                },
+            ],
         }
     ]
+}
+
+**[FUTURE]** Get an Entity by ID
+
+| Key      | Type   | Description   |
+|----------|--------|---------------|
+| id       | int    | Entity ID
+
+GET /dajaxice/entity.get/{?argv}
+> Accept: application/json
+< 200
+< Content-Type: application/json
+{
+    "success": true,
+    "item": {
+        "id": 9,
+        "type": 2,  // Music
+        "artist": "M83",
+        "album": "Hurry Up, We’re Dreaming",
+        "track": "Intro",
+        "image": "",
+        "recipients": [
+            {
+                "title": "M83",
+                "type": 1
+            },
+        ],
+    },
+}
+
+--
+Recipient
+
+### Types
+| Value  | Description |
+|--------|-------------|
+| 0      | Label
+| 1      | Artist
+***
+--
+**[FUTURE]** Get a Recipient by ID
+
+| Key      | Type   | Description   |
+|----------|--------|---------------|
+| id       | int    | Recipient ID
+
+GET /dajaxice/recipient.id/{?argv}
+> Accept: application/json
+< 200
+< Content-Type: application/json
+{
+    "success": true,
+    "item": {
+        "id": 6,
+        "title": "M83",
+        "type": 1
+    },
+}
+
+--
+Donation
+--
+**[FUTURE]** Create a donation checkout
+
+| Key          | Type   | Description   |
+|--------------|--------|---------------|
+| recipient_id | int    | Recipient ID
+
+GET /dajaxice/donation.checkout/{?argv}
+> Accept: application/json
+< 200
+< Content-Type: application/json
+{
+    "success": true,
+    "checkout_url": ""
 }
