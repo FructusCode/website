@@ -3,6 +3,7 @@ import traceback
 from dajaxice.decorators import dajaxice_register
 from django.http import HttpResponse
 from django.utils import simplejson
+from website.apwan.ajax.utils import cors_response
 from website.apwan.helpers.entitygen import search_like
 from website.apwan.helpers.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
@@ -19,7 +20,7 @@ def search(request, type=None,
     try:
         if type == Entity.TYPE_MUSIC:
             if title is not None or artist is None:
-                return _search_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
+                return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
 
             print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
 
@@ -41,22 +42,13 @@ def search(request, type=None,
 
                 entities = [entity.dict(full=True)]
 
-            return _search_response(simplejson.dumps({'success': True, 'items': entities}))
+            return cors_response(simplejson.dumps({'success': True, 'items': entities}))
 
         else:
-            return _search_response(simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False}))
+            return cors_response(simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False}))
 
     except Exception, e:
         print traceback.format_exc()
-
-
-def _search_response(data):
-    response = HttpResponse(data, mimetype="application/x-json")
-    response['Access-Control-Allow-Origin'] = '*'
-    response['Access-Control-Allow-Methods'] = 'GET'
-    response['Access-Control-Allow-Headers'] = 'X-PINGOTHER'
-    response['Access-Control-Max-Age'] = '1728000'
-    return response
 
 
 def _entity_search(**values):
