@@ -27,19 +27,41 @@
     border-bottom: 1px solid #e3e3e3;
 }
 
-.account-menu-span .nav-header .header-link
+.account-menu-span .nav-header .add-link
 {
     float: right;
     display: inline;
-    padding-right: 3px;
+    margin-top: -3px;
+    padding-left: 7px;
+    padding-right: 1px;
+
+       -webkit-border-top-left-radius: 10px;
+    -webkit-border-bottom-left-radius: 10px;
+           -moz-border-radius-topleft: 10px;
+        -moz-border-radius-bottomleft: 10px;
+               border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
 }
 
-.account-menu-span .nav-header .header-link:hover
+.account-menu-span .nav-header .add-link.active,
+.account-menu-span .nav-header .add-link.active:hover
 {
-    background-color: transparent;
+    background: #0088d6;
 }
 
-.account-menu-span .nav-header .header-link i
+.account-menu-span .nav-header .add-link.active i,
+.account-menu-span .nav-header .add-link.active:hover i
 {
-    margin-top: -4px;
+    background: url("/static/apwan/lib/bootstrap/img/glyphicons-halflings-white.png");
+    background-position: -408px -96px;
+}
+
+.account-menu-span .nav-header .add-link:hover
+{
+    background-color: #e6e6e6;
+}
+
+.account-menu-span .nav-header .add-link i
+{
+    margin-top: -1px;
 }
