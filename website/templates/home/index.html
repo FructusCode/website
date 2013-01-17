@@ -143,6 +143,15 @@
                                     "<br/>" +
                                     "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
                                     "</div>");
+                        } else if(result.items[i].type == 1) {
+                            _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
+                                    "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
+                                    "<b>Year:</b> <span>\"" + result.items[i].year + "\"</span><br/>" +
+                                    "<br/>" +
+                                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
+                                    "</div>");
                         } else {
                             _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
                                     "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
@@ -153,6 +162,8 @@
                                     "</div>");
                         }
                     }
+                } else {
+                    console.log(result.error);
                 }
             }
 

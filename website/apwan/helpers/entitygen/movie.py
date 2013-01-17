@@ -23,11 +23,27 @@ class MovieEntityGenerator(EntityGenerator):
         l_movie = MovieEntityGenerator.lookup(title, year)
         if l_movie is None:
             return None
+        if 'release_date' not in l_movie:
+            print "'release'_date not found"
+            return None
+
+        date = l_movie['release_date'].split('-')
+        if len(date) != 3 or len(date[0]) != 4:
+            print "'release_date' unexpected value"
+            return None
+
+        year = None
+        try:
+            year = int(date[0])
+        except ValueError:
+            print "'release_date' unexpected value"
+            return None
 
         e_movie_ref, e_movie, e_movie_created = EntityGenerator.create_entity(
             l_movie['id'],
             EntityReference.TYPE_THEMOVIEDB, Entity.TYPE_MOVIE,
-            title=l_movie['title']
+            title=l_movie['title'],
+            year=year
         )
         if e_movie_created:
             print "Movie Created"

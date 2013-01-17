@@ -45,6 +45,8 @@ def search_music(title, year, artist, album, track):
         # Lookup Details
         print "looking up"
         entity = MusicEntityGenerator.create(artist, album, track)
+        if entity is None:
+            return cors_response(simplejson.dumps({'error': 'NOT_FOUND', 'success': False}))
         entities = [entity.dict(full=True)]
 
     return cors_response(simplejson.dumps({'success': True, 'items': entities}))
@@ -62,21 +64,25 @@ def search_movie(title, year, artist, album, track):
 
     print "TYPE_MOVIE", '"' + str(title) + '"'
 
-    entities = _direct_search(type=Entity.TYPE_MOVIE, title=title)
+    entities = _direct_search(type=Entity.TYPE_MOVIE, title=title, year=year)
     if entities is None:
         # Lookup Details
         print "looking up"
         entity = MovieEntityGenerator.create(title, year)
+        if entity is None:
+            return cors_response(simplejson.dumps({'error': 'NOT_FOUND', 'success': False}))
         entities = [entity.dict(full=True)]
 
     return cors_response(simplejson.dumps({'success': True, 'items': entities}))
 
 
-def _direct_search(type, title=None, artist=None, album=None, track=None):
+def _direct_search(type, title=None, year=None, artist=None, album=None, track=None):
     entities = None
     results = None
     if type == Entity.TYPE_MUSIC:
         results = _direct_search_filter(artist=artist, album=album, track=track)
+    elif type == Entity.TYPE_MOVIE:
+        results = _direct_search_filter(title=title, year=year)
     else:
         results = _direct_search_filter(title=title)
 
@@ -98,6 +104,9 @@ def _direct_search_filter(**values):
             query['s_title__ilike'] = search_like(values['title'])
         else:
             raise ValueError()
+
+        if 'year' in values:
+            query['year'] = values['year']
     elif 'artist' in values:
         if values['artist'] is not None:
             query['s_artist__ilike'] = search_like(values['artist'])

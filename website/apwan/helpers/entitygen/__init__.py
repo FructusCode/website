@@ -64,7 +64,7 @@ class EntityGenerator():
         return reference, recipient, True
 
     @staticmethod
-    def create_entity(id, ref_type, type, title=None,
+    def create_entity(id, ref_type, type, title=None, year=None,
                       artist=None, album=None, track=None, parent=None):
 
         reference_filter = EntityReference.objects.filter(
@@ -85,6 +85,8 @@ class EntityGenerator():
             track=track,
             # TV Show, Movie, Game
             title=title,
+            # Movie
+            year=year,
             # Search Fields
             s_title=search_strip(title),
             s_artist=search_strip(artist),

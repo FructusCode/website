@@ -28,6 +28,9 @@ class Entity(models.Model):
     # for TYPE_TVSHOW, TYPE_MOVIE, TYPE_GAME
     title = models.CharField(max_length=64, null=True)
 
+    # for TYPE_MOVIE
+    year = models.IntegerField(max_length=4, null=True)
+
     # for TYPE_MUSIC
     artist = models.CharField(max_length=64, null=True)
     album = models.CharField(max_length=64, null=True)
@@ -55,6 +58,9 @@ class Entity(models.Model):
             dict['track'] = self.track
         else:
             dict['title'] = self.title
+
+            if self.type == self.TYPE_MOVIE:
+                dict['year'] = self.year
 
         if full:
             dict['recipients'] = []
