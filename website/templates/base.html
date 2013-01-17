@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block base_title %}{% endblock %}Fruct.us</title>
+
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/lib/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/lib/bootstrap/css/bootstrap-responsive.min.css"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/base_menu.css"/>
+        {% block base_css %}{% endblock %}
+    </head>
+    <body>
+        {% block base_body %}{% endblock %}
+
+        <script src="{{ STATIC_URL }}apwan/js/lib/jquery-1.8.3.min.js"></script>
+        <script src="{{ STATIC_URL }}apwan/lib/bootstrap/js/bootstrap.min.js"></script>
+        {% block base_javascript %}{% endblock %}
+    </body>
+</html>

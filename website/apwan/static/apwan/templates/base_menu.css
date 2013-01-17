@@ -1,0 +1,14 @@
+.brand.active
+{
+    color: white !important;
+}
+
+body
+{
+    padding-top: 60px;
+}
+
+.menu-right li:last-child a
+{
+    padding-right: 0;
+}

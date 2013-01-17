@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load helper_tags %}
+
+{% block base_body %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand {% active request '/home' %} navbar-inverse" href="/home">Fruct.us</a>
+
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        {% if user.is_superuser %}
+                            <li class="{% active request '/dev' %}"><a href="/dev">Dev</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="nav-collapse collapse pull-right">
+                    <ul class="nav menu-right">
+                        {% if user.is_authenticated %}
+                            <li class="{% active request '/account' %}"><a href="/account">{{ user.username }}</a></li>
+                        {% else %}
+                            <li class="{% active request '/account/login' %}"><a href="/account/login">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="{% block base_menu_ctype %}container{% endblock %}">
+        {% block base_menu_container %}{% endblock %}
+    </div>
+{% endblock %}

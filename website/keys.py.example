@@ -2,3 +2,9 @@ __author__ = 'Dean Gardiner'
 
 # API Key for http://www.themoviedb.org
 TMDB_KEY = ''
+os.environ['PYTHEMOVIEDB_API_KEY'] = TMDB_KEY
+
+# WePay
+WEPAY_CLIENT_ID = ''
+WEPAY_CLIENT_SECRET = ''
+WEPAY_ACCESS_TOKEN = ''

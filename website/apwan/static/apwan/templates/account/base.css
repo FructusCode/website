@@ -1,0 +1,45 @@
+.username-header
+{
+    float: right;
+    color: #d7d7d7;
+    text-align: right;
+}
+
+.username-header h2
+{
+    margin: 0;
+}
+
+.username-header span
+{
+    color: #d7d7d7;
+    font-weight: bold;
+    padding: 2px 4px;
+}
+
+.account-menu-span
+{
+    padding: 8px 0;
+}
+
+.account-menu-span .nav-header
+{
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.account-menu-span .nav-header .header-link
+{
+    float: right;
+    display: inline;
+    padding-right: 3px;
+}
+
+.account-menu-span .nav-header .header-link:hover
+{
+    background-color: transparent;
+}
+
+.account-menu-span .nav-header .header-link i
+{
+    margin-top: -4px;
+}

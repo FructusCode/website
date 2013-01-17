@@ -110,6 +110,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'website.urls'
 
+LOGIN_URL = '/account/login'
+LOGIN_REDIRECT_URL = '/home'
+
 WSGI_APPLICATION = 'website.wsgi.application'
 
 TEMPLATE_DIRS = (

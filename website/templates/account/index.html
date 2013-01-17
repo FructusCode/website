@@ -1,0 +1,42 @@
+{% extends 'base_menu.html' %}
+
+{% load helper_tags %}
+
+{% block base_menu_ctype %}container{% endblock %}
+
+{% block base_css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/base.css"/>
+{% endblock %}
+
+{% block base_menu_container %}
+    <div class="row-fluid">
+        <div class="span2 well account-menu-span">
+            <ul class="nav nav-list">
+                <li class="nav-header">Account</li>
+                <li class="active"><a href="#">Profile</a></li>
+
+                <li class="nav-header">Payees <a class="header-link" href="/account/payee/add"><i class="icon-plus"></i></a></li>
+                <li class=""><a href="/account/payee/one">One</a></li>
+                <li class=""><a href="/account/payee/two">Two</a></li>
+
+                <li class="nav-header">Recipients <a class="header-link" href="/account/recipient/add"><i class="icon-plus"></i></a></li>
+                <li class=""><a href="/account/recipient/one">One</a></li>
+                <li class=""><a href="/account/recipient/two">Two</a></li>
+
+                <li class="nav-header">Reports <a class="header-link" href=""></a></li>
+                <li class=""><a href="/account/report/donations">Donations</a></li>
+            </ul>
+        </div>
+        <div class="span10 well">
+            <div class="username-header">
+                <h2>{{ user.username }}</h2>
+                {% if user.is_staff %}
+                    <span>Staff</span>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <span>Superuser</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

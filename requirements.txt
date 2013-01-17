@@ -7,3 +7,5 @@ South==0.7.6
 
 https://github.com/FructusCode/python-musicbrainz-ngs/archive/0.3dev.zip
 https://github.com/FructusCode/pythemoviedb/archive/1.0.zip
+
+wepay>=0.1.5

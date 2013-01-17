@@ -1,0 +1,37 @@
+{% extends 'base_menu.html' %}
+
+{% block base_title %}Login - {% endblock %}
+
+{% block base_css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/home/login.css"/>
+{% endblock %}
+
+{% block base_menu_container %}
+    {% if not user.is_authenticated %}
+        <form class="form-login" method="post" action="/account/login/">
+            {% csrf_token %}
+
+            <h2>Please login</h2>
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-error">
+                        {{ error|escape }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <input class="input-block-level" id="id_username" name="{{ form.username.name }}" type="text" placeholder="{{ form.username.label }}"/>
+            <input class="input-block-level" id="id_password" name="{{ form.password.name }}" type="password" placeholder="{{ form.password.label }}"/>
+            <!--<label class="checkbox">
+                <input type="checkbox" value="remember-me"/> Remember me
+            </label>-->
+            <input type="hidden" name="next" value="{{ next }}" />
+            <button class="btn btn-large btn-primary" type="submit">Login</button>
+        </form>
+    {% else %}
+        <div class="form-login">
+            <h2>Already logged in</h2>
+            Already logged in as <strong>{{ user.username }}</strong>, <a href="/account/logout">Logout</a>
+        </div>
+    {% endif %}
+{% endblock %}

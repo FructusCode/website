@@ -1,0 +1,16 @@
+{% extends 'base_menu.html' %}
+
+{% load helper_tags %}
+
+{% block base_menu_container %}
+    <div class="span2 well" style="padding: 8px 0;">
+        <ul class="nav nav-list">
+            <li class="nav-header">Entity</li>
+            <li class="{% active request '/dev/search' %}"><a href="/dev/search"><i class="icon-search"></i> Search</a></li>
+        </ul>
+    </div>
+
+    <div class="span8" style="text-align: center;">
+        {% block dev_index_container %}{% endblock %}
+    </div>
+{% endblock %}
