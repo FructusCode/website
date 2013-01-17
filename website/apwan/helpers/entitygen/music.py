@@ -14,6 +14,9 @@ musicbrainzngs.set_rate_limit()
 __author__ = 'Dean Gardiner'
 
 
+ALLOWED_RELEASE_TYPES = ['Album', 'Single', 'EP']
+
+
 class MusicEntityGenerator(EntityGenerator):
     @staticmethod
     def lookup(artist, album=None, track=None):
@@ -159,29 +162,42 @@ class MusicEntityGenerator(EntityGenerator):
         return None
 
     @staticmethod
+    def _valid_release(rel):
+        if 'status' not in rel or rel['status'] != 'Official':
+            return False
+
+        if 'release-group' not in rel or 'primary-type' not in rel['release-group']:
+            return False
+
+        if rel['release-group']['primary-type'] not in ALLOWED_RELEASE_TYPES:
+            return False
+
+        if 'type' in rel['release-group'] and rel['release-group']['type'] not in ALLOWED_RELEASE_TYPES:
+            return False
+
+        if 'label-info-list' not in rel:
+            return False
+
+        return True
+
+    @staticmethod
     def _parse_recordings(recordings):
         _recording = None
         _results = []
 
         for recording in recordings:
             if _recording is None or recording['ext:score'] == _recording['ext:score']:
-                if _recording is None:
-                    print "top result", recording['title'], recording['ext:score']
                 _recording = recording
 
                 recordingReleases = musicbrainzngs.browse_releases(recording=recording['id'],
                                                                    includes=['labels', 'release-groups'])
 
+                # Find all valid releases (Official releases)
                 for rel in recordingReleases['release-list']:
-                    print '\t', rel['title']
-                    if 'status' in rel and rel['status'] == 'Official':
-                        print '\t\t', rel['status']
-                        if 'release-group' in rel and 'primary-type' in rel['release-group']:
-                            print '\t\t', rel['release-group']
-                            if rel['release-group']['primary-type'] == 'Album':
-                                if 'label-info-list' in rel:
-                                    _results.append((rel, rel['label-info-list']))
+                    if MusicEntityGenerator._valid_release(rel):
+                        _results.append((rel, rel['label-info-list']))
 
+                # Clean up recording data
                 if 'release-list' in recording:
                     recording.pop('release-list')
             else:
@@ -199,11 +215,9 @@ class MusicEntityGenerator(EntityGenerator):
                 if _topRelease is None:
                     _topRelease = rel
 
-                if 'status' in rel and rel['status'] == 'Official':
-                    if 'release-group' in rel and 'primary-type' in rel['release-group']:
-                        if rel['release-group']['primary-type'] == 'Album':
-                            if 'label-info-list' in rel:
-                                _results.append((rel, rel['label-info-list']))
+                # Find all valid releases (Official releases)
+                if MusicEntityGenerator._valid_release(rel):
+                    _results.append((rel, rel['label-info-list']))
 
         _artist = musicbrainzngs.get_artist_by_id(_topRelease['artist-credit'][0]['artist']['id'])['artist']
         return _artist, _results
