@@ -1,3 +1,8 @@
+from website.apwan.models.entity import Entity
+from website.apwan.models.entity_reference import EntityReference
+from website.apwan.models.recipient import Recipient
+from website.apwan.models.recipient_reference import RecipientReference
+
 __author__ = 'Dean Gardiner'
 
 SPECIAL_PHRASES = [
@@ -32,3 +37,68 @@ def search_like(text):
 
     text = text.replace(' ', '%')
     return text.strip('%')
+
+
+class EntityGenerator():
+    @staticmethod
+    def create_recipient(key, title, ref_type, type):
+        # Search for id in recipient references
+        reference_filter = RecipientReference.objects.filter(
+            type=ref_type,
+            key=key
+        )
+        reference_exists = len(reference_filter) == 1
+        if reference_exists:
+            return reference_filter[0], reference_filter[0].recipient, False
+
+        # Create Recipient
+        recipient = Recipient.objects.create(title=title, type=type)
+
+        # Create Reference
+        reference = RecipientReference.objects.create(
+            recipient=recipient,
+            type=ref_type,
+            key=key
+        )
+
+        return reference, recipient, True
+
+    @staticmethod
+    def create_entity(id, ref_type, type, title=None,
+                      artist=None, album=None, track=None, parent=None):
+        print "create_entity"
+
+        reference_filter = EntityReference.objects.filter(
+            type=ref_type,
+            key=id
+        )
+        reference_exists = len(reference_filter) == 1
+        if reference_exists:
+            print "reference exists", id
+            return reference_filter[0], reference_filter[0].entity, False
+
+        # Create Entity
+        entity = Entity.objects.create(
+            parent=parent,
+            # Music
+            artist=artist,
+            album=album,
+            track=track,
+            # TV Show, Movie, Game
+            title=title,
+            # Search Fields
+            s_title=search_strip(title),
+            s_artist=search_strip(artist),
+            s_album=search_strip(album),
+            s_track=search_strip(track),
+            type=type
+        )
+
+        # Create Reference
+        reference = EntityReference.objects.create(
+            entity=entity,
+            type=ref_type,
+            key=id
+        )
+
+        return reference, entity, True

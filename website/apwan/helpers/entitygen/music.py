@@ -1,7 +1,7 @@
 import pprint
 import re
 import musicbrainzngs
-from website.apwan.helpers.entitygen import search_strip
+from website.apwan.helpers.entitygen import search_strip, EntityGenerator
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
@@ -14,14 +14,13 @@ musicbrainzngs.set_rate_limit()
 __author__ = 'Dean Gardiner'
 
 
-class MusicEntityGenerator():
+class MusicEntityGenerator(EntityGenerator):
     @staticmethod
     def lookup(artist, album=None, track=None):
         query = MusicEntityGenerator._build_query(artist, album, track)
-        print query
         results = MusicEntityGenerator._request(query, artist, album, track)
 
-        # Parse result into entity
+        # Parse result into (artist, releases, recording)
         if results:
             if track:
                 results = results['recording-list']
@@ -49,37 +48,64 @@ class MusicEntityGenerator():
     @staticmethod
     def create(artist, album=None, track=None):
         l_artist, l_releases, l_recording = MusicEntityGenerator.lookup(artist, album, track)
-        recipient_ref, recipient, created = MusicEntityGenerator.create_artist_recipient(l_artist)
 
-        e_artist_ref, e_artist, e_artist_created = MusicEntityGenerator.create_entity(l_artist)
+        #
+        # Create Artist Recipient
+        #
+        recipient_ref, recipient, created = EntityGenerator.create_recipient(
+            l_artist['id'], l_artist['name'],
+            RecipientReference.TYPE_MUSICBRAINZ,
+            Recipient.TYPE_MUSIC_ARTIST
+        )
+
+        #
+        # Create Artist Entity
+        #
+        e_artist_ref, e_artist, e_artist_created = EntityGenerator.create_entity(
+            l_artist['id'],
+            EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
+            artist=l_artist['name']
+        )
         if e_artist_created:
             print "Artist Created"
             e_artist.recipient.add(recipient)
 
+        #
+        # Create Album Entity
+        #
         e_album = None
-        e_track = None
-
         if l_releases:
-            e_album_ref, e_album, e_album_created = MusicEntityGenerator.create_entity(
-                l_artist,
-                l_releases[0][0],
+            e_album_ref, e_album, e_album_created = EntityGenerator.create_entity(
+                l_releases[0][0]['id'],
+                EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
+                artist=l_artist['name'],
+                album=l_releases[0][0]['title'],
                 parent=e_artist
             )
             if e_album_created:
                 print "Album Created"
                 e_album.recipient.add(recipient)
 
+        #
+        # Create Track Entity
+        #
+        e_track = None
         if l_recording:
-            e_track_ref, e_track, e_track_created = MusicEntityGenerator.create_entity(
-                l_artist,
-                l_releases[0][0],
-                l_recording,
+            e_track_ref, e_track, e_track_created = EntityGenerator.create_entity(
+                l_recording['id'],
+                EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
+                artist=l_artist['name'],
+                album=l_releases[0][0]['title'],
+                track=l_recording['title'],
                 parent=e_album
             )
             if e_track_created:
                 print "Track Created"
                 e_track.recipient.add(recipient)
 
+        #
+        # Return Entity
+        #
         if e_track:
             return e_track
         elif e_album:
@@ -87,78 +113,6 @@ class MusicEntityGenerator():
         elif e_artist:
             return e_artist
         return None
-
-    @staticmethod
-    def create_artist_recipient(artist):
-        # Search for id in recipient references
-        reference_filter = RecipientReference.objects.filter(
-            type=RecipientReference.TYPE_MUSICBRAINZ,
-            key=artist['id']
-        )
-        reference_exists = len(reference_filter) == 1
-        if reference_exists:
-            return reference_filter[0], reference_filter[0].recipient, False
-
-        # Create Recipient
-        recipient = Recipient.objects.create(title=artist['name'], type=Recipient.TYPE_MUSIC_ARTIST)
-
-        # Create Reference
-        reference = RecipientReference.objects.create(
-            recipient=recipient,
-            type=RecipientReference.TYPE_MUSICBRAINZ,
-            key=artist['id']
-        )
-
-        return reference, recipient, True
-
-    @staticmethod
-    def create_entity(artist, album=None, track=None, parent=None):
-        print "create_entity"
-        # Search for id in reference
-        _key = artist['id']
-        if album:
-            _key = album['id']
-        if track:
-            _key = track['id']
-
-        reference_filter = EntityReference.objects.filter(
-            type=EntityReference.TYPE_MUSICBRAINZ,
-            key=_key
-        )
-        reference_exists = len(reference_filter) == 1
-        if reference_exists:
-            print "reference exists", _key
-            return reference_filter[0], reference_filter[0].entity, False
-
-        # Create Entity
-        _artist = artist['name']
-        _album = None
-        _track = None
-        if album:
-            _album = album['title']
-        if track:
-            _track = track['title']
-
-        entity = Entity.objects.create(
-            parent=parent,
-            artist=_artist,
-            album=_album,
-            track=_track,
-            s_artist=search_strip(_artist),
-            s_album=search_strip(_album),
-            s_track=search_strip(_track),
-            type=Entity.TYPE_MUSIC
-        )
-
-        # Create Reference
-        reference = EntityReference.objects.create(
-            entity=entity,
-            type=EntityReference.TYPE_MUSICBRAINZ,
-            key=_key
-        )
-
-        return reference, entity, True
-
 
     @staticmethod
     def _build_query(artist, album=None, track=None):
@@ -192,7 +146,7 @@ class MusicEntityGenerator():
             results = musicbrainzngs.search_recordings(query=query)
         elif album:
             results = musicbrainzngs.search_releases(query=query)
-        else:
+        elif artist:
             results = musicbrainzngs.search_artists(query=query)
 
         return results
@@ -211,14 +165,19 @@ class MusicEntityGenerator():
 
         for recording in recordings:
             if _recording is None or recording['ext:score'] == _recording['ext:score']:
+                if _recording is None:
+                    print "top result", recording['title'], recording['ext:score']
                 _recording = recording
 
                 recordingReleases = musicbrainzngs.browse_releases(recording=recording['id'],
                                                                    includes=['labels', 'release-groups'])
 
                 for rel in recordingReleases['release-list']:
+                    print '\t', rel['title']
                     if 'status' in rel and rel['status'] == 'Official':
+                        print '\t\t', rel['status']
                         if 'release-group' in rel and 'primary-type' in rel['release-group']:
+                            print '\t\t', rel['release-group']
                             if rel['release-group']['primary-type'] == 'Album':
                                 if 'label-info-list' in rel:
                                     _results.append((rel, rel['label-info-list']))
