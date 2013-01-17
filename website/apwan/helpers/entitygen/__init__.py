@@ -66,7 +66,6 @@ class EntityGenerator():
     @staticmethod
     def create_entity(id, ref_type, type, title=None,
                       artist=None, album=None, track=None, parent=None):
-        print "create_entity"
 
         reference_filter = EntityReference.objects.filter(
             type=ref_type,
