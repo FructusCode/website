@@ -37,7 +37,15 @@ admin.site.register(EntityReference, EntityReferenceAdmin)
 
 
 class PayeeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('owner', 'name', 'type', 'token_exists')
+    list_display_links = ('name',)
+    exclude = ('token',)
+
+    def token_exists(self, obj):
+        if obj.token:
+            return "Yes"
+        return "No"
+    token_exists.short_description = 'Token Exists'
 admin.site.register(Payee, PayeeAdmin)
 
 
