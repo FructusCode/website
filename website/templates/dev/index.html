@@ -3,14 +3,40 @@
 {% load helper_tags %}
 
 {% block base_menu_container %}
-    <div class="span2 well" style="padding: 8px 0;">
-        <ul class="nav nav-list">
-            <li class="nav-header">Entity</li>
-            <li class="{% active request '/dev/search' %}"><a href="/dev/search"><i class="icon-search"></i> Search</a></li>
-        </ul>
+    <div class="span2" style="padding: 0; margin-left: 0;">
+        <div class="well" style="padding: 8px 0;">
+            <ul class="nav nav-list">
+                <li class="nav-header">Entity</li>
+                <li class="{% active request '/dev/search' %}">
+                    <a href="/dev/search"><i class="icon-search"></i> Search</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="well" style="padding: 8px 0;">
+            <ul class="nav nav-list">
+                <li class="nav-header">WePay</li>
+
+                <li><a href="/dev/wepay/account"><i class="icon-book"></i> Account</a></li>
+                <li class="{% active request '/dev/wepay/account/find' %}">
+                    <a href="/dev/wepay/account/find">
+                        <span style="margin-left: 15px;"><i class="icon-search"></i> Find</span>
+                    </a>
+                </li>
+
+                <li><a href="/dev/wepay/checkout"><i class="icon-shopping-cart"></i> Checkout</a></li>
+                <li class="{% active request '/dev/wepay/checkout/create' %}">
+                    <a href="/dev/wepay/checkout/create">
+                        <span style="margin-left: 15px;"><i class="icon-plus"></i> Create</span>
+                    </a>
+                </li>
+
+                <li><a href="/dev/wepay/account"><i class="icon-user"></i> User</a></li>
+            </ul>
+        </div>
     </div>
 
-    <div class="span8" style="text-align: center;">
+    <div class="span8">
         {% block dev_index_container %}{% endblock %}
     </div>
 {% endblock %}

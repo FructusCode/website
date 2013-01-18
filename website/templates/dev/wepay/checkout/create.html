@@ -1,0 +1,15 @@
+{% extends 'dev/index.html' %}
+
+{% load sekizai_tags %}
+{% load helper_tags %}
+{% load crispy_forms_tags %}
+
+{% block dev_index_container %}
+    {% if result %}
+        <b>Checkout URI: </b><a href="{{ result.checkout_uri }}">{{ result.checkout_uri }}</a>
+        <br/>
+        <b>Checkout ID: </b>{{ result.checkout_id }}
+    {% endif %}
+
+    {% crispy form %}
+{% endblock %}

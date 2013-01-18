@@ -25,6 +25,8 @@ urlpatterns = patterns('',
     # Dev
     url('^dev/$', 'website.apwan.views.dev.index'),
     url('^dev/search/$', 'website.apwan.views.dev.search'),
+    url('^dev/wepay/account/find/$', 'website.apwan.views.dev.wepay_account_find'),
+    url('^dev/wepay/checkout/create/$', 'website.apwan.views.dev.wepay_checkout_create'),
 
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     url(r'^admin/', include(admin.site.urls)),

@@ -2,6 +2,9 @@ Django==1.4.3
 django-dajax==0.9.2
 https://github.com/FructusCode/django-dajaxice/archive/0.5.4.1f.zip
 django-like==0.0.3
+django-crispy-forms==1.1.4
+django-classy-tags==0.4
+django-sekizai==0.7
 
 South==0.7.6
 

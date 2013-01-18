@@ -1,12 +1,14 @@
 {% extends 'base_menu.html' %}
 
+{% load sekizai_tags %}
+
 {% block base_title %}Login - {% endblock %}
 
-{% block base_css %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/home/login.css"/>
-{% endblock %}
-
 {% block base_menu_container %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/home/login.css"/>
+    {% endaddtoblock %}
+
     {% if not user.is_authenticated %}
         <form class="form-login" method="post" action="/account/login/">
             {% csrf_token %}

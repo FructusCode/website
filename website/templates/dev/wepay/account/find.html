@@ -1,0 +1,36 @@
+{% extends 'dev/index.html' %}
+
+{% load sekizai_tags %}
+{% load helper_tags %}
+{% load crispy_forms_tags %}
+
+{% block dev_index_container %}
+    {% if results %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Account ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Payment Limit</th>
+                <th>Type</th>
+                <th>Verification State</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.account_id }}</td>
+                    <td>{{ result.name }}</td>
+                    <td>{{ result.description }}</td>
+                    <td>{{ result.payment_limit }}</td>
+                    <td>{{ result.type }}</td>
+                    <td>{{ result.verification_state }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% crispy form %}
+{% endblock %}

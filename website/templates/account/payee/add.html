@@ -1,12 +1,13 @@
 {% extends 'account/index.html' %}
 
+{% load sekizai_tags %}
 {% load helper_tags %}
 
-{% block base_javascript %}
-    <script src="{{ STATIC_URL }}apwan/js/lib/holder.js"></script>
-{% endblock %}
-
 {% block account_body %}
+    {% addtoblock "javascript" %}
+        <script src="{{ STATIC_URL }}apwan/js/lib/holder.js"></script>
+    {% endaddtoblock %}
+
     <ul class="thumbnails">
         <li class="span4" style="background-color: white;">
             <div class="thumbnail">

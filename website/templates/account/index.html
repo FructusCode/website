@@ -1,12 +1,13 @@
 {% extends 'base_menu.html' %}
 
+{% load sekizai_tags %}
 {% load helper_tags %}
 
-{% block base_css %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/base.css"/>
-{% endblock %}
-
 {% block base_menu_container %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/base.css"/>
+    {% endaddtoblock %}
+
     <div class="row-fluid">
         <div class="span2 well account-menu-span">
             <ul class="nav nav-list">

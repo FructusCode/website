@@ -95,7 +95,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages'
+    'django.contrib.messages.context_processors.messages',
+    'sekizai.context_processors.sekizai'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -129,6 +130,8 @@ TEMPLATE_DIRS = (
     'website/templates/'
 )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -140,6 +143,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'dajax',
     'dajaxice',
+    'crispy_forms',
+    'sekizai',
     'django_like',
     'south',
 
