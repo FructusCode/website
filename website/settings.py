@@ -110,6 +110,16 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'website.urls'
 
+
+BASE_URL = None  # Automatically determine our URL
+
+def build_url(request, path):
+    global BASE_URL
+    if not BASE_URL:
+        BASE_URL = "http://" + request.META['HTTP_HOST']
+    return BASE_URL + path
+
+
 LOGIN_URL = '/account/login'
 LOGIN_REDIRECT_URL = '/home'
 
