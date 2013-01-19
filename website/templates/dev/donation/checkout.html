@@ -1,8 +1,23 @@
 {% extends 'dev/index.html' %}
 
 {% load sekizai_tags %}
-{% load helper_tags %}
-{% load crispy_forms_tags %}
+{% load dajaxice_templatetags %}
 
 {% block dev_index_container %}
+    {% addtoblock "javascript" %}
+        <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
+        {% dajaxice_js_import %}
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/dev/donation/checkout.js"></script>
+    {% endaddtoblock %}
+
+    <h2>donation.checkout</h2>
+    <input type="text" id="donation_recipient_id" placeholder="Recipient ID" /><br/>
+    <input type="text" id="donation_entity_id" placeholder="Entity ID" /><br/>
+    <input type="text" id="donation_amount" placeholder="$5.00" /><br/>
+    <br/>
+    <button id="search_submit">Search</button>
+
+    <div id="result">
+
+    </div>
 {% endblock %}
