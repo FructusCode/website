@@ -2,11 +2,19 @@
 
 {% load helper_tags %}
 
-{% block base_javascript %}
-
-{% endblock %}
-
 {% block account_body %}
-    <b>Name:</b> {{ payee.name }}<br/>
-    <b>Type:</b> {{ payee.get_type_display }}
+    <h2>{{ payee.name }}</h2>
+    <a href="/account/payee/{{ payee.slug }}/edit" class="btn btn-mini"><i class="icon-edit"></i> Edit</a>
+    <span class="label label-info">{{ payee.get_type_display }}</span><br/>
+    <br/>
+    {% if payee.type == 0 %}
+        {% if not payee.account_id %}
+            <div class="alert alert-error">
+                <strong>No account selected</strong> - Please choose one in payee options.
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if payee.account_id %}
+        <strong>Account ID:</strong> {{ payee.account_id }}
+    {% endif %}
 {% endblock %}

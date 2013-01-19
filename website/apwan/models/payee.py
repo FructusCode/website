@@ -41,5 +41,6 @@ class Payee(models.Model):
             'name': self.name,
             'slug': self.slug,
             'type': self.type,
-            'get_type_display': self.get_type_display()
+            'get_type_display': self.get_type_display(),
+            'account_id': self.account_id
         }

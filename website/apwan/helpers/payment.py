@@ -34,4 +34,19 @@ class WePayPaymentPlatform(PaymentPlatform):
         )
         return self.create_payee(owner, Payee.TYPE_WEPAY, token_response['access_token'])
 
+    def account_find(self, payee, name=None, reference_id=None):
+        if not payee or not payee.token:
+            return None
+
+        params = {}
+        if name:
+            params['name'] = name
+        if reference_id:
+            params['reference_id'] = reference_id
+
+        return self.wepay.call(
+            '/account/find', params,
+            token=payee.token
+        )
+
 wepay = WePayPaymentPlatform()

@@ -1,0 +1,9 @@
+{% extends 'account/index.html' %}
+
+{% load sekizai_tags %}
+{% load helper_tags %}
+{% load crispy_forms_tags %}
+
+{% block account_body %}
+    {% crispy form %}
+{% endblock %}
