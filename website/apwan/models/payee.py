@@ -22,6 +22,7 @@ class Payee(models.Model):
     name = models.CharField(max_length=32)
     slug = models.SlugField(max_length=32)
 
+    account_id = models.IntegerField(unique=True, null=True)
     token = models.CharField(max_length=70, null=True)  # OAuth account authorization token
 
     def path(self):

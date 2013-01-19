@@ -2,9 +2,11 @@ import pprint
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from website.apwan.forms.dev import WePayCreateCheckoutForm, WePayFindAccountForm
+from website.apwan.forms.dev import WePayCreateCheckoutForm, WePayFindAccountForm, DonationCheckoutForm
 from website.apwan.helpers.payment import wepay
+from website.apwan.models.entity import Entity
 from website.apwan.models.payee import Payee
+from website.apwan.models.recipient import Recipient
 
 __author__ = 'Dean Gardiner'
 
@@ -15,12 +17,33 @@ def index(request):
                               context_instance=RequestContext(request, {}))
 
 
+#
+# Entity
+#
+
+
 @login_required(login_url='/account/login/')
-def search(request):
-    return render_to_response('dev/search.html',
+def entity_search(request):
+    return render_to_response('dev/entity/search.html',
+                              context_instance=RequestContext(request, {}))
+
+#
+# Donation
+#
+
+
+@login_required(login_url='/account/login/')
+def donation_checkout(request):
+    return render_to_response('dev/donation/checkout.html',
                               context_instance=RequestContext(request, {}))
 
 
+#
+# WePay
+#
+
+
+@login_required(login_url='/account/login/')
 def wepay_account_find(request):
     results = None
     if request.method == 'POST':
@@ -44,6 +67,7 @@ def wepay_account_find(request):
                               }))
 
 
+@login_required(login_url='/account/login/')
 def wepay_checkout_create(request):
     result = None
     if request.method == 'POST':

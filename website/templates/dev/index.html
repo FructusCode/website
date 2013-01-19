@@ -7,8 +7,13 @@
         <div class="well" style="padding: 8px 0;">
             <ul class="nav nav-list">
                 <li class="nav-header">Entity</li>
-                <li class="{% active request '/dev/search' %}">
-                    <a href="/dev/search"><i class="icon-search"></i> Search</a>
+                <li class="{% active request '/dev/entity/search' %}">
+                    <a href="/dev/entity/search"><i class="icon-search"></i> Search</a>
+                </li>
+
+                <li class="nav-header">Donation</li>
+                <li class="{% active request '/dev/donation/checkout' %}">
+                    <a href="/dev/donation/checkout"><i class="icon-shopping-cart"></i> Checkout</a>
                 </li>
             </ul>
         </div>

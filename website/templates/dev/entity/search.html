@@ -1,0 +1,35 @@
+{% extends 'dev/index.html' %}
+
+{% load sekizai_tags %}
+{% load dajaxice_templatetags %}
+
+{% block dev_index_container %}
+    {% addtoblock "javascript" %}
+        <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
+        {% dajaxice_js_import %}
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/dev/entity/search.js"></script>
+    {% endaddtoblock %}
+
+    <h2>entity.search</h2>
+    <input type="text" id="search_title" placeholder="Title" style="width: 256px;" />
+    <input type="text" id="search_year" placeholder="Year" style="width:40px;" maxlength="4"/><br/>
+    <br/>
+    <input type="text" id="search_artist" placeholder="Artist" style="width: 300px;" /><br/>
+    <input type="text" id="search_album" placeholder="Album" style="width: 300px;" /><br/>
+    <input type="text" id="search_track" placeholder="Track" style="width: 300px;" /><br/>
+    <br/>
+    <select id="search_type">
+        <option value="">Unknown</option>
+        <option value="0">TV Show</option>
+        <option value="1">Movie</option>
+        <option value="2" selected>Music</option>
+        <option value="3">Game</option>
+    </select>
+    <br/>
+    <button id="search_submit">Search</button>
+    <button onclick="load_example_data();">Example Data</button>
+
+    <div id="results">
+
+    </div>
+{% endblock %}

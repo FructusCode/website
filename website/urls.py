@@ -24,7 +24,8 @@ urlpatterns = patterns('',
 
     # Dev
     url('^dev/$', 'website.apwan.views.dev.index'),
-    url('^dev/search/$', 'website.apwan.views.dev.search'),
+    url('^dev/entity/search/$', 'website.apwan.views.dev.entity_search'),
+    url('^dev/donation/checkout/$', 'website.apwan.views.dev.donation_checkout'),
     url('^dev/wepay/account/find/$', 'website.apwan.views.dev.wepay_account_find'),
     url('^dev/wepay/checkout/create/$', 'website.apwan.views.dev.wepay_checkout_create'),
 
