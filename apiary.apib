@@ -127,9 +127,11 @@ Donation
 --
 **[FUTURE]** Create a donation checkout for recipient
 
-| Key          | Type   | Description   |
-|--------------|--------|---------------|
-| recipient_id | int    | Recipient ID
+| Key          | Type    | Description   |
+|--------------|---------|---------------|
+| recipient_id | int     | Recipient ID
+| entity_id    | int     | Entity ID
+| amount       | dec str | Donation Amount
 
 GET /dajaxice/donation.checkout/{?argv}
 > Accept: application/json
