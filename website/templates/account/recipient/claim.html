@@ -1,7 +1,24 @@
 {% extends 'account/index.html' %}
 
+{% load sekizai_tags %}
 {% load helper_tags %}
+{% load dajaxice_templatetags %}
 
 {% block account_body %}
-    Recipient/Claim
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/recipient/claim.css"/>
+    {% endaddtoblock %}
+
+    {% addtoblock "javascript" %}
+        <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
+        {% dajaxice_js_import %}
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/account/recipient/claim.js"></script>
+    {% endaddtoblock %}
+
+    <input id="search_title" type="text" placeholder="Title"/>
+    <button id="search_submit" class="btn">Search</button>
+    <br/>
+    <br/>
+    <ul id="search_results" class="thumbnails">
+    </ul>
 {% endblock %}

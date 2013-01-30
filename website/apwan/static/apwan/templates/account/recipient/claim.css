@@ -1,0 +1,27 @@
+#search_title
+{
+    margin-bottom: 0;
+    margin-left: 7px;
+}
+
+#search_results li
+{
+    margin: 7px;
+}
+
+#search_results .thumbnail .caption h4
+{
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+#search_results .thumbnail .caption span.label
+{
+    margin-bottom: 10px;
+}
+
+#search_results .thumbnail .caption ul
+{
+    list-style-type: none;
+    margin: 0;
+}

@@ -1,5 +1,4 @@
 from django.db import models
-from website.apwan.models.recipient import Recipient
 
 __author__ = 'Dean Gardiner'
 
@@ -21,7 +20,7 @@ class Entity(models.Model):
         (TYPE_GAME, "Game"),
     )
 
-    recipient = models.ManyToManyField(Recipient)
+    recipient = models.ManyToManyField('Recipient')
 
     parent = models.ForeignKey('self', null=True)
 
@@ -47,27 +46,27 @@ class Entity(models.Model):
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
     def dict(self, full=False):
-        dict = {
+        item = {
             'id': self.id,
             'image': self.image,
             'type': self.type
         }
         if self.type == self.TYPE_MUSIC:
-            dict['artist'] = self.artist
-            dict['album'] = self.album
-            dict['track'] = self.track
+            item['artist'] = self.artist
+            item['album'] = self.album  # TODO: don't set album or track if None, This could require changes
+            item['track'] = self.track  # in extension and website js to check if album or track is included.
         else:
-            dict['title'] = self.title
+            item['title'] = self.title
 
             if self.type == self.TYPE_MOVIE:
-                dict['year'] = self.year
+                item['year'] = self.year
 
         if full:
-            dict['recipients'] = []
+            item['recipients'] = []
             for re in self.recipient.all():
-                dict['recipients'].append(re.dict())
+                item['recipients'].append(re.dict())
 
-        return dict
+        return item
 
     def __unicode__(self):
         if self.type == Entity.TYPE_MUSIC:
