@@ -97,12 +97,45 @@ GET /dajaxice/entity.get/{?argv}
 Recipient
 
 ### Types
-| Value  | Description |
-|--------|-------------|
-| 0      | Label
-| 1      | Artist
+| Value  | Description                |
+|--------|----------------------------|
+| 0      | [Music] Label
+| 1      | [Music] Artist
+| 2      | [Movie] Production Company
 ***
 --
+Search for a recipient.
+
+| Key                | Type   | Description                                  |
+|--------------------|--------|----------------------------------------------|
+| title              | string | Search Title                                 |
+| *limit*            | *int*  | *Max number of recipients to return*         |
+| *entities_include* | *bool* | *Include recipient entities*                 |
+| *entities_limit*   | *int*  | *Max number of recipient entities to return* |
+
+GET /dajaxice/recipient.search/{?argv}
+> Accept: application/json
+< 200
+< Content-Type: application/json
+{
+    "success": true,
+    "items": [
+        {
+            "entities": [
+                {
+                    artist: "M83",
+                    id: 5,
+                    type: 2
+                }
+            ],
+            "id": 15,
+            "title": "M83",
+            "type": 1,
+            "type_label": "Artist"
+        }
+    ],
+}
+
 **[FUTURE]** Get a Recipient by ID
 
 | Key      | Type   | Description   |
