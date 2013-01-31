@@ -21,4 +21,18 @@
     <br/>
     <ul id="search_results" class="thumbnails">
     </ul>
+    <div id="modalAlreadyClaimed" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Already Claimed</h3>
+        </div>
+        <div class="modal-body">
+            <p>This recipient has already been claimed by a user.</p>
+            <p>
+                If you are the correct owner of this recipient please contact us at
+                <a href="mailto:team@fruct.us">team@fruct.us</a> so we can verify you as the correct owner and
+                handover ownership to you.
+            </p>
+        </div>
+    </div>
 {% endblock %}

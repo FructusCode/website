@@ -33,7 +33,8 @@ class Recipient(models.Model):
             'id': self.id,
             'title': self.title,
             'type': self.type,
-            'type_label': self.get_type_display()
+            'type_label': self.get_type_display(),
+            'claimed': self.owner is not None
         }
 
         if entities_include:

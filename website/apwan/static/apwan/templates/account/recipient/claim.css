@@ -25,3 +25,13 @@
     list-style-type: none;
     margin: 0;
 }
+
+#search_results .thumbnail .claim-actions
+{
+    text-align: right;
+}
+
+#search_results .thumbnail .claim-actions .label
+{
+    margin-right: 5px;
+}
