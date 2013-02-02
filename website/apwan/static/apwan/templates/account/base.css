@@ -24,6 +24,12 @@
 }
 
 
+.account-body .form-actions .btn
+{
+    margin-right: 10px;
+}
+
+
 .account-menu-span
 {
     padding: 8px 0;
