@@ -27,20 +27,20 @@ def search(request, title, limit=10, entities_include=False, entities_limit=5):
 def claim(request, recipient_id):
     recipients = Recipient.objects.all().filter(id=recipient_id)
     if len(recipients) == 0:
-        return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
+        return simplejson.dumps({'success': False, 'recipient_id': recipient_id})
     elif len(recipients) == 1:
         if recipients[0].owner is None:
             if not request.user.is_authenticated():
-                return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
+                return simplejson.dumps({'success': False, 'recipient_id': recipient_id})
 
             # TODO: Change to manual claim process
             recipients[0].owner = request.user
             recipients[0].save()
-            return cors_response(simplejson.dumps({'success': True, 'recipient_id': recipient_id}))
+            return simplejson.dumps({'success': True, 'recipient_id': recipient_id})
         else:
-            return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
+            return simplejson.dumps({'success': False, 'recipient_id': recipient_id})
     else:
-        return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
+        return simplejson.dumps({'success': False, 'recipient_id': recipient_id})
 
 
 def get(request, recipient_id):

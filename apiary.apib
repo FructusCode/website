@@ -7,6 +7,8 @@ HOST:
 *italic keys indicate optional parameters*
 
 **argv** is dict of the arguments
+
+**PROTECTED** indicates methods do not allow cross-site requests and could require user authentication
 ---
 
 --
@@ -153,6 +155,21 @@ GET /dajaxice/recipient.id/{?argv}
         "title": "M83",
         "type": 1
     },
+}
+
+**PROTECTED** Claim a recipient
+
+| Key                | Type   | Description               |
+|--------------------|--------|---------------------------|
+| recipient_id       | id     | ID of recipient to claim  |
+
+GET /dajaxice/recipient.claim/{?argv}
+> Accept: application/json
+< 200
+< Content-Type: application/json
+{
+    "success": true,
+    "recipient_id": 14
 }
 
 --
