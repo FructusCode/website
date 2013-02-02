@@ -25,8 +25,6 @@ def search(request, title, limit=10, entities_include=False, entities_limit=5):
 
 @dajaxice_register(name='recipient.claim')
 def claim(request, recipient_id):
-    print "claim", recipient_id
-
     recipients = Recipient.objects.all().filter(id=recipient_id)
     if len(recipients) == 0:
         return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
@@ -35,6 +33,7 @@ def claim(request, recipient_id):
             if not request.user.is_authenticated():
                 return cors_response(simplejson.dumps({'success': False, 'recipient_id': recipient_id}))
 
+            # TODO: Change to manual claim process
             recipients[0].owner = request.user
             recipients[0].save()
             return cors_response(simplejson.dumps({'success': True, 'recipient_id': recipient_id}))

@@ -6,18 +6,28 @@ from wepay.exceptions import WePayError
 from website.apwan.forms.account import EditPayeeForm
 from website.apwan.helpers.payment import wepay
 from website.apwan.models.payee import Payee
+from website.apwan.models.recipient import Recipient
 from website.keys import WEPAY_CLIENT_ID
 from website.settings import build_url
 
 __author__ = 'Dean Gardiner'
 
 
+def render_with_account_menu(template_name, request, dictionary=None):
+    if dictionary is None:
+        dictionary = {}
+
+    dictionary['menu'] = {
+        'payees': Payee.objects.all().filter(owner=request.user).order_by('name'),
+        'recipients': Recipient.objects.all().filter(owner=request.user).order_by('title')
+    }
+
+    return render_to_response(template_name, context_instance=RequestContext(request, dictionary))
+
+
 @login_required(login_url='/account/login/')
 def index(request):
-    return render_to_response('account/index.html',
-                              context_instance=RequestContext(request, {
-                                  'payees': Payee.objects.all().filter(owner=request.user)
-                              }))
+    return render_with_account_menu('account/index.html', request)
 
 
 @login_required(login_url='/account/login/')
@@ -27,12 +37,9 @@ def payee_view(request, slug):
         return redirect('/account/profile')  # TODO: Maybe we should redirect to an error page?
     payee = payee[0]
 
-    return render_to_response('account/payee/view.html',
-                              context_instance=RequestContext(request, {
-                                  'payee': payee.dict(),
-
-                                  'payees': Payee.objects.all().filter(owner=request.user)
-                              }))
+    return render_with_account_menu('account/payee/view.html', request, {
+        'payee': payee.dict(),
+    })
 
 
 @login_required(login_url='/account/login/')
@@ -52,25 +59,20 @@ def payee_edit(request, slug):
     else:
         form = EditPayeeForm(payee=payee)
 
-    return render_to_response('account/payee/edit.html',
-                              context_instance=RequestContext(request, {
-                                  'form': form,
-
-                                  'payees': Payee.objects.all().filter(owner=request.user)
-                              }))
+    return render_with_account_menu('account/payee/edit.html', request, {
+        'form': form
+    })
 
 
 @login_required(login_url='/account/login/')
 def payee_add(request):
-    return render_to_response('account/payee/add.html',
-                              context_instance=RequestContext(request, {
-                                  'payees': Payee.objects.all().filter(owner=request.user),
-                                  'wepay': {
-                                      'authorization_url': wepay.get_authorization_url(
-                                          build_url(request, '/account/payee/add/wepay/')
-                                      )
-                                  }
-                              }))
+    return render_with_account_menu('account/payee/add.html', request, {
+        'wepay': {
+            'authorization_url': wepay.get_authorization_url(
+                build_url(request, '/account/payee/add/wepay/')
+            )
+        }
+    })
 
 
 @login_required(login_url='/account/login/')
@@ -100,15 +102,9 @@ def payee_add_wepay(request):
 
 @login_required(login_url='/account/login/')
 def recipient_claim(request):
-    return render_to_response('account/recipient/claim.html',
-                              context_instance=RequestContext(request, {
-                                  'payees': Payee.objects.all().filter(owner=request.user),
-                              }))
+    return render_with_account_menu('account/recipient/claim.html', request)
 
 
 @login_required(login_url='/account/login/')
 def report_donations(request):
-    return render_to_response('account/report/donations.html',
-                              context_instance=RequestContext(request, {
-                                  'payees': Payee.objects.all().filter(owner=request.user),
-                              }))
+    return render_with_account_menu('account/report/donations.html', request)

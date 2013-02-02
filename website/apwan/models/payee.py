@@ -19,7 +19,7 @@ class Payee(models.Model):
     owner = models.ForeignKey(User)
     type = models.IntegerField(choices=TYPES)
 
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)  # TODO: Change to 'title' to match up with Recipient and Entity models
     slug = models.SlugField(max_length=32)
 
     account_id = models.IntegerField(unique=True, null=True)

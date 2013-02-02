@@ -9,25 +9,26 @@
     {% endaddtoblock %}
 
     <div class="row-fluid">
-        <div class="span2 well account-menu-span">
+        <div class="span3 well account-menu-span">
             <ul class="nav nav-list">
                 <li class="nav-header">Account</li>
                 <li class="{% active request '/account/profile' %}"><a href="/account/profile">Profile</a></li>
 
                 <li class="nav-header">Payees <a class="add-link {% active request '/account/payee/add' %}" href="/account/payee/add"><i class="icon-plus"></i></a></li>
-                {% for payee in payees %}
+                {% for payee in menu.payees %}
                     <li class="{% active request payee.path %}"><a href="/account/payee/{{ payee.slug }}">{{ payee.name }}</a></li>
                 {% endfor %}
 
                 <li class="nav-header">Recipients <a class="add-link {% active request '/account/recipient/claim' %}" href="/account/recipient/claim"><i class="icon-plus"></i></a></li>
-                <li class=""><a href="/account/recipient/one">One</a></li>
-                <li class=""><a href="/account/recipient/two">Two</a></li>
+                {% for recipient in menu.recipients %}
+                    <li class=""><a href="/account/recipient/one">{{ recipient.title }}</a></li>
+                {% endfor %}
 
                 <li class="nav-header">Reports</li>
                 <li class=""><a href="/account/report/donations">Donations</a></li>
             </ul>
         </div>
-        <div class="span10 well">
+        <div class="span9 well">
             {% block account_body %}
                 <div class="username-header">
                     <h2>{{ user.username }}</h2>
