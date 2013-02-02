@@ -37,7 +37,7 @@ admin.site.register(EntityReference, EntityReferenceAdmin)
 
 
 class PayeeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'name', 'type', 'token_exists', 'account_id')
+    list_display = ('owner', 'name', 'slug', 'type', 'token_exists', 'account_id')
     list_display_links = ('name',)
     exclude = ('token',)
 
@@ -50,7 +50,7 @@ admin.site.register(Payee, PayeeAdmin)
 
 
 class RecipientAdmin(admin.ModelAdmin):
-    list_display = ('type', 'title')
+    list_display = ('type', 'title', 'slug',)
     list_display_links = ('title',)
 admin.site.register(Recipient, RecipientAdmin)
 

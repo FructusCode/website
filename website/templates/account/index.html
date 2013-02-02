@@ -12,23 +12,33 @@
         <div class="span3 well account-menu-span">
             <ul class="nav nav-list">
                 <li class="nav-header">Account</li>
-                <li class="{% active request '/account/profile' %}"><a href="/account/profile">Profile</a></li>
+                <li class="{% active request 'account-profile' %}"><a href="{% url account-profile %}">Profile</a></li>
 
-                <li class="nav-header">Payees <a class="add-link {% active request '/account/payee/add' %}" href="/account/payee/add"><i class="icon-plus"></i></a></li>
+                <li class="nav-header">
+                    Payees
+                    <a class="add-link {% active request 'account-payee-add' %}" href="{% url account-payee-add %}">
+                        <i class="icon-plus"></i>
+                    </a>
+                </li>
                 {% for payee in menu.payees %}
-                    <li class="{% active request payee.path %}"><a href="/account/payee/{{ payee.slug }}">{{ payee.name }}</a></li>
+                    <li class="{% active request payee.path %}"><a href="{{ payee.path }}">{{ payee.name }}</a></li>
                 {% endfor %}
 
-                <li class="nav-header">Recipients <a class="add-link {% active request '/account/recipient/claim' %}" href="/account/recipient/claim"><i class="icon-plus"></i></a></li>
+                <li class="nav-header">
+                    Recipients
+                    <a class="add-link {% active request 'account-recipient-claim' %}" href="{% url account-recipient-claim %}">
+                        <i class="icon-plus"></i>
+                    </a>
+                </li>
                 {% for recipient in menu.recipients %}
-                    <li class=""><a href="/account/recipient/one">{{ recipient.title }}</a></li>
+                    <li class="{% active request recipient.path %}"><a href="{{ recipient.path }}">{{ recipient.title }}</a></li>
                 {% endfor %}
 
                 <li class="nav-header">Reports</li>
-                <li class=""><a href="/account/report/donations">Donations</a></li>
+                <li class=""><a href="{% url account-report-donations %}">Donations</a></li>
             </ul>
         </div>
-        <div class="span9 well">
+        <div class="account-body span9 well">
             {% block account_body %}
                 <div class="username-header">
                     <h2>{{ user.username }}</h2>

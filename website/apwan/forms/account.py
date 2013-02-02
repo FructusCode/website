@@ -7,7 +7,7 @@ from website.apwan.helpers.payment import wepay
 __author__ = 'Dean Gardiner'
 
 
-class EditPayeeForm(forms.Form):
+class PayeeSettingsForm(forms.Form):
     name = forms.CharField(label="Name")
     account_id = forms.ChoiceField(label="Account")
 
@@ -16,7 +16,7 @@ class EditPayeeForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(
-            Fieldset('Edit Payee',
+            Fieldset('Payee Settings',
                      'name',
                      'account_id'
             ),
@@ -25,7 +25,7 @@ class EditPayeeForm(forms.Form):
                 HTML('<a class="btn" href="/account/payee/%s">Cancel</a>' % payee.slug)
             )
         )
-        super(EditPayeeForm, self).__init__(data=data, initial={
+        super(PayeeSettingsForm, self).__init__(data=data, initial={
             'name': payee.name,
             'account_id': payee.account_id
         })
@@ -33,8 +33,37 @@ class EditPayeeForm(forms.Form):
         if payee:
             if not data or data['account_id'] != payee.account_id:
                 account_choices = []
-                self.account_map = {}
                 for account in wepay.account_find(payee):
                     account_choices.append((account['account_id'], account['name']))
-                    self.account_map[account['account_id']] = account['name']
                 self.fields['account_id'].choices = tuple(account_choices)
+
+
+class RecipientSettingsForm(forms.Form):
+    payee_id = forms.ChoiceField(label="Payee")
+
+    def __init__(self, data=None, recipient=None, payee_choices=None, *args, **kwargs):
+        # Crispy Forms Layout
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            Fieldset('Recipient Settings',
+                     'payee_id'
+            ),
+            FormActions(
+                Submit('submit', 'Save Changes', css_class='btn-primary'),
+                HTML('<a class="btn" href="/account/recipient/%s">Cancel</a>' % recipient.slug)
+            )
+        )
+        recipient_payee_id = None
+        if recipient.payee:
+            recipient_payee_id = recipient.payee.id
+        super(RecipientSettingsForm, self).__init__(data=data, initial={
+            'payee_id': recipient_payee_id
+        })
+
+        if payee_choices:
+            if not data or data['payee_id'] != recipient_payee_id:
+                payee_field_choices = []
+                for payee in payee_choices:
+                    payee_field_choices.append((payee.id, payee.name))
+                self.fields['payee_id'].choices = tuple(payee_field_choices)

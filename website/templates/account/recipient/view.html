@@ -1,0 +1,16 @@
+{% extends 'account/index.html' %}
+
+{% load helper_tags %}
+
+{% block account_body %}
+    <h2 class="title">{{ recipient.title }}</h2>
+    <a href="{% url account-recipient-edit recipient.slug %}" class="btn btn-mini"><i class="icon-edit"></i> Settings</a>
+    <span class="label label-info">{{ recipient.type_label }}</span><br/>
+    <br/>
+    {% if not recipient.payee %}
+        <div class="alert alert-error">
+            <strong>No payee selected</strong> - Please choose one in recipient settings.
+        </div>
+    {% endif %}
+    <strong>Payee: </strong>{% if recipient.payee %}{{ recipient.payee.name }}{% else %}None{% endif %}
+{% endblock %}

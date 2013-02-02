@@ -17,6 +17,13 @@
     padding: 2px 4px;
 }
 
+
+.account-body .title
+{
+    margin-top: 0;
+}
+
+
 .account-menu-span
 {
     padding: 8px 0;
