@@ -3,6 +3,7 @@
 {% load sekizai_tags %}
 {% load helper_tags %}
 {% load dajaxice_templatetags %}
+{% load jstemplate %}
 
 {% block account_body %}
     {% addtoblock "css" %}
@@ -12,6 +13,9 @@
     {% addtoblock "javascript" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
+        <script src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
+        <script src="{{ STATIC_URL }}libs/django.mustache.js"></script>
+        {% mustachejs "account/recipient/claim_item" %}
         <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/account/recipient/claim.js"></script>
     {% endaddtoblock %}
 
@@ -21,10 +25,10 @@
     <br/>
     <ul id="search_results" class="thumbnails">
     </ul>
-    <div id="modalAlreadyClaimed" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="claimedDialog" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="claimedDialogLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="myModalLabel">Already Claimed</h3>
+            <h3 id="claimedDialogLabel">Already Claimed</h3>
         </div>
         <div class="modal-body">
             <p>This recipient has already been claimed by a user.</p>

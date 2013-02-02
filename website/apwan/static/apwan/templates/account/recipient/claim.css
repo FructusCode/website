@@ -9,29 +9,35 @@
     margin: 7px;
 }
 
-#search_results .thumbnail .caption h4
+#search_results .claim_item
+{
+    background-color: white;
+}
+
+#search_results .claim_item .thumbnail .caption h4
 {
     margin: 0;
     margin-bottom: 5px;
 }
 
-#search_results .thumbnail .caption span.label
+#search_results .claim_item .thumbnail .caption span.label
 {
     margin-bottom: 10px;
 }
 
-#search_results .thumbnail .caption ul
+#search_results .claim_item .thumbnail .caption ul
 {
     list-style-type: none;
     margin: 0;
 }
 
-#search_results .thumbnail .claim-actions
+#search_results .claim_item .thumbnail .claim-actions
 {
     text-align: right;
 }
 
-#search_results .thumbnail .claim-actions .label
+#search_results .claim_item .thumbnail .claim-actions span.label
 {
+    margin-bottom: 0;
     margin-right: 5px;
 }

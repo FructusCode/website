@@ -130,6 +130,10 @@ TEMPLATE_DIRS = (
     'website/templates/'
 )
 
+JSTEMPLATE_DIRS = [
+    os.path.abspath(rootPath + '/website/jstemplates/')
+]
+
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 INSTALLED_APPS = (
@@ -139,12 +143,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.admin',
+
     'dajax',
     'dajaxice',
     'crispy_forms',
     'sekizai',
+    'jstemplate',
+
     'django_like',
     'south',
 

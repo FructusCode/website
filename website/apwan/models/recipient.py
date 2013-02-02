@@ -22,13 +22,22 @@ class Recipient(models.Model):
         (TYPE_MOVIE_PRODUCTION_COMPANY, "Production Company"),
     )
 
-    owner = models.ForeignKey(User, null=True)
-    payee = models.ForeignKey(Payee, null=True)
+    owner = models.ForeignKey(User, null=True, blank=True)
+    payee = models.ForeignKey(Payee, null=True, blank=True)
     title = models.CharField(max_length=64)
     s_title = models.CharField(max_length=64)  # Search Field
     type = models.IntegerField(choices=TYPES)
 
-    def dict(self, entities_include=False, entities_filter=None, entities_limit=None):
+    def dict(self, entities_include=False, entities_filter=None, entities_limit=None, check_owner=None):
+        """Return a safe dict of the modal data
+
+        entities_include -- include recipient entities (adds 'entities' key [list])
+        entities_filter  -- entity query filter
+        entities_limit   -- max number of entities to return (adds 'entities_more' [int] when applicable)
+
+        check_owner      -- checks if the check_owner [User] instance is the owner of this recipient
+                            (adds 'owned' key [bool])
+        """
         item = {
             'id': self.id,
             'title': self.title,
@@ -37,6 +46,7 @@ class Recipient(models.Model):
             'claimed': self.owner is not None
         }
 
+        # Include Entities
         if entities_include:
             if entities_filter is None:
                 entities_filter = {}
@@ -50,6 +60,10 @@ class Recipient(models.Model):
                 entities = Entity.objects.all().filter(recipient=self, **entities_filter)
             for entity in entities:
                 item['entities'].append(entity.dict())
+
+        # Check Owner
+        if check_owner is not None:
+            item['owned'] = self.owner == check_owner
 
         return item
 

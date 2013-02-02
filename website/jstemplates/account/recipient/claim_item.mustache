@@ -1,0 +1,39 @@
+<li class="claim_item span4" recipient_id={{ recipient.id }}>
+    <div class="thumbnail">
+        <div class="caption">
+            <h4>{{ recipient.title }}</h4>
+            <span class="label">{{ recipient.type_label }}</span>
+            <ul>
+                {{#recipient.entities}}
+                    {{#is_music}}
+                        <li>{{ artist }}</li>
+                    {{/is_music}}
+
+                    {{^is_music}}
+                        <li>{{ title }}</li>
+                    {{/is_music}}
+                {{/recipient.entities}}
+
+                {{#recipient.entities_more}}
+                    <li><em>and {{ recipient.entities_more }} more {{ recipient.entities_more_tag }}</em></li>
+                {{/recipient.entities_more}}
+            </ul>
+            <div class="claim-actions">
+                {{#recipient.claimed}}
+                    {{#recipient.owned}}
+                        <a href="/account/recipient/{{ recipient.id }}" class="btn btn-mini btn-success">View</a>
+                    {{/recipient.owned}}
+
+                    {{^recipient.owned}}
+                        <a href="#claimedDialog" class="btn btn-mini btn-info" data-toggle="modal">Info</a>
+                    {{/recipient.owned}}
+                {{/recipient.claimed}}
+
+                {{^recipient.claimed}}
+                    <span class="claim-error label label-important"></span>
+                    <button class="btn btn-mini" onclick="claim({{ recipient.id }});">Claim</button>
+                {{/recipient.claimed}}
+            </div>
+        </div>
+    </div>
+</li>
