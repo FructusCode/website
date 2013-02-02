@@ -8,7 +8,6 @@ from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
 from website.apwan.helpers.payment import wepay
 from website.apwan.models.payee import Payee
 from website.apwan.models.recipient import Recipient
-from website.keys import WEPAY_CLIENT_ID
 from website.settings import build_url
 
 __author__ = 'Dean Gardiner'

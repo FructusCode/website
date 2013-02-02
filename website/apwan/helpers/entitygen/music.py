@@ -1,7 +1,6 @@
-import pprint
 import re
 import musicbrainzngs
-from website.apwan.helpers.entitygen import search_strip, EntityGenerator
+from website.apwan.helpers.entitygen import EntityGenerator
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient

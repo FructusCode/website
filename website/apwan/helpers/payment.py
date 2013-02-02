@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from wepay import WePay
 from website.apwan.models.payee import Payee
-from website.keys import WEPAY_PRODUCTION, WEPAY_ACCESS_TOKEN, WEPAY_CLIENT_ID, WEPAY_CLIENT_SECRET
+from website.keys import WEPAY_PRODUCTION, WEPAY_CLIENT_ID, WEPAY_CLIENT_SECRET
 
 __author__ = 'Dean Gardiner'
 

@@ -59,8 +59,7 @@
 .account-menu-span .nav-header .add-link.active i,
 .account-menu-span .nav-header .add-link.active:hover i
 {
-    background: url("/static/apwan/lib/bootstrap/img/glyphicons-halflings-white.png");
-    background-position: -408px -96px;
+    background: url("/static/apwan/lib/bootstrap/img/glyphicons-halflings-white.png") -408px -96px;
 }
 
 .account-menu-span .nav-header .add-link:hover

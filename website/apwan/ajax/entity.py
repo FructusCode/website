@@ -1,7 +1,5 @@
-import pprint
 import traceback
 from dajaxice.decorators import dajaxice_register
-from django.http import HttpResponse
 from django.utils import simplejson
 from website.apwan.ajax.utils import cors_response
 from website.apwan.helpers.entitygen import search_like
