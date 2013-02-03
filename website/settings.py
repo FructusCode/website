@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'sekizai',
     'jstemplate',
+    'json_field',
 
     'django_like',
     'south',

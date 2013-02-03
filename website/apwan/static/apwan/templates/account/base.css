@@ -23,6 +23,18 @@
     margin-top: 0;
 }
 
+.account-body .page-header
+{
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.account-body .page-header h1,
+.account-body .page-header h2
+{
+    margin-top: 0;
+}
+
 
 .account-body .form-actions .btn
 {

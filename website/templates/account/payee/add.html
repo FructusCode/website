@@ -7,7 +7,45 @@
     {% addtoblock "javascript" %}
         <script src="{{ STATIC_URL }}apwan/js/lib/holder.js"></script>
     {% endaddtoblock %}
-
+    <div class="page-header">
+        <h2>Add Payee</h2>
+    </div>
+    {% if error %}
+        <div class="alert alert-error">
+            {{ error }}
+        </div>
+    {% endif %}
+    <h3>Linked Accounts</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width: 30px;"></th>
+                <th style="width: 80px;">Service</th>
+                <th style="width: 120px;">Account ID</th>
+                <th style="width: 180px;">Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts %}
+                <tr>
+                    <td style="padding: 8px 0;">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="account_id" value="{{ account.id }}"/>
+                            <button type="submit" class="btn btn-mini">Use</button>
+                        </form>
+                    </td>
+                    <td><span class="label label-info">{{ account.get_service_display }}</span></td>
+                    <td>{{ account.service_id }}</td>
+                    <td>{{ account.username }}</td>
+                    <td>{{ account.email }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br/>
+    <h3>Link Account</h3>
     <ul class="thumbnails">
         <li class="span4" style="background-color: white;">
             <div class="thumbnail">
@@ -21,7 +59,7 @@
                         Vivamus placerat venenatis libero vel pellentesque.
                     </p>
                     <p>
-                        <a href="{{ wepay.authorization_url }}" class="btn btn-primary">Add Payee</a>
+                        <a href="{{ wepay.authorization_url }}" class="btn">Link</a>
                     </p>
                 </div>
             </div>
@@ -34,7 +72,11 @@
                     <span class="label">International</span>
                     <h2>Lorem</h2>
                     <p>
-                        <a href="/account/payee/add/wepay/" class="btn">Add Payee</a>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Vivamus placerat venenatis libero vel pellentesque.
+                    </p>
+                    <p>
+                        <a href="/account/payee/add/wepay/" class="btn">Link</a>
                     </p>
                 </div>
             </div>

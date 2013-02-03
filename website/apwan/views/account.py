@@ -5,9 +5,10 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from wepay.exceptions import WePayError
 from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
-from website.apwan.helpers.payment import wepay
+from website.apwan.helpers.payment import wepay, PaymentPlatform
 from website.apwan.models.payee import Payee
 from website.apwan.models.recipient import Recipient
+from website.apwan.models.service import Service
 from website.settings import build_url
 
 __author__ = 'Dean Gardiner'
@@ -58,6 +59,7 @@ def payee_settings(request, slug):
         if form.is_valid():
             payee.name = form.cleaned_data['name']
             payee.account_id = form.cleaned_data['account_id']
+            payee.account_name = form.cleaned_data['account_name']
             payee.save()
             return redirect(reverse('account-payee-view', args=[payee.slug]))
     else:
@@ -70,7 +72,26 @@ def payee_settings(request, slug):
 
 @login_required
 def payee_add(request):
+    error = None
+    if request.method == 'POST':
+        try:
+            account_id = int(request.POST['account_id'])
+
+            account = Service.objects.filter(owner=request.user, id=account_id)
+            if len(account) == 1:
+                account = account[0]
+
+                PaymentPlatform.db_payee_create(account)
+                return redirect(reverse('account-profile'))
+            else:
+                error = "Invalid Account ID"
+
+        except ValueError:
+            error = "Invalid Value"
+
     return render_with_account_menu('account/payee/add.html', request, {
+        'error': error,
+        'accounts': Service.objects.filter(owner=request.user, service_type=Service.TYPE_PAYEE_USER),
         'wepay': {
             'authorization_url': wepay.get_authorization_url(
                 build_url(request, reverse('account-payee-add-wepay'))
@@ -82,10 +103,10 @@ def payee_add(request):
 @login_required
 def payee_add_wepay(request):
     if not 'code' in request.GET:
-        return redirect('/account/payee/add')
+        return redirect(reverse('account-payee-add'))
 
     try:
-        result = wepay.store_token(
+        result = wepay.service_create(
             request.user,
             build_url(request, reverse('account-payee-add-wepay')),
             request.GET['code']

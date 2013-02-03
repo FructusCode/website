@@ -37,6 +37,16 @@ class PayeeSettingsForm(forms.Form):
                     account_choices.append((account['account_id'], account['name']))
                 self.fields['account_id'].choices = tuple(account_choices)
 
+    def clean(self):
+        cleaned_data = super(PayeeSettingsForm, self).clean()
+
+        cleaned_data['account_name'] = None
+        for account_id, account_name in self.fields['account_id'].choices:
+            if str(account_id) == str(cleaned_data['account_id']):
+                cleaned_data['account_name'] = account_name
+
+        return cleaned_data
+
 
 class RecipientSettingsForm(forms.Form):
     payee_id = forms.ChoiceField(label="Payee")

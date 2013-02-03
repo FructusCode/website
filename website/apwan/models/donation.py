@@ -41,6 +41,8 @@ class Donation(models.Model):
     )
 
     entity = models.ForeignKey(Entity)
+    recipient = models.ForeignKey('Recipient', null=True)
+    payee = models.ForeignKey('Payee', null=True)
 
     state = models.CharField(max_length=12, choices=STATES, default=STATE_STARTED)  # TODO: Replace with int
 
@@ -49,3 +51,6 @@ class Donation(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     tip = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCY_USD)  # TODO: Replace with int
+
+    # Following fields use dependant on payee payment platform
+    checkout_id = models.CharField(max_length=18, null=True, blank=True)

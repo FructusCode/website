@@ -1,4 +1,5 @@
 from django.db import models
+from website.apwan.helpers import string_length_limit
 
 __author__ = 'Dean Gardiner'
 
@@ -45,6 +46,33 @@ class Entity(models.Model):
     type = models.IntegerField(choices=TYPES)
     suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
+    def description(self, max_length=-1):
+        desc = ""
+        if self.type == Entity.TYPE_MUSIC:
+            if self.track:
+                desc = self._join_limit(" - ", [self.track, self.album, self.artist], max_length)
+            elif self.album:
+                desc = self._join_limit(" - ", [self.album, self.artist], max_length)
+            else:
+                desc = string_length_limit(self.artist, max_length)
+        else:
+            desc = string_length_limit(self.title, max_length)
+
+        return desc
+
+    @staticmethod
+    def _join_limit(sep, iterable, max_length):
+        text = sep.join(iterable)
+        total_sep_length = len(iterable) * len(sep)
+        if max_length == -1 or len(text) < max_length - total_sep_length:
+            return text
+
+        each_limit = (max_length - total_sep_length) / len(iterable)
+        trimmed_items = []
+        for item in iterable:
+            trimmed_items.append(string_length_limit(item, each_limit))
+        return sep.join(trimmed_items)
+
     def dict(self, full=False):
         item = {
             'id': self.id,
@@ -69,12 +97,13 @@ class Entity(models.Model):
         return item
 
     def __unicode__(self):
+        prefix = "[%s] " % Entity.TYPES[self.type][1]
         if self.type == Entity.TYPE_MUSIC:
             if self.track:
-                return "[%s] [Track] %s - %s - %s" % (Entity.TYPES[self.type][1], self.artist, self.album, self.track)
+                prefix += "[Track] "
             elif self.album:
-                return "[%s] [Album] %s - %s" % (Entity.TYPES[self.type][1], self.artist, self.album)
+                prefix += "[Album] "
             else:
-                return "[%s] [Artist] %s" % (Entity.TYPES[self.type][1], self.artist)
-        else:
-            return self.title
+                prefix += "[Artist] "
+
+        return prefix + self.description()

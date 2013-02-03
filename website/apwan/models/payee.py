@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from website.apwan.helpers.database import unique_slugify
+from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
 
@@ -8,22 +9,16 @@ __author__ = 'Dean Gardiner'
 class Payee(models.Model):
     class Meta:
         app_label = 'apwan'
-        unique_together = ('type', 'token')
-
-    TYPE_WEPAY = 0
-
-    TYPES = (
-        (TYPE_WEPAY, "WePay"),
-    )
 
     owner = models.ForeignKey(User)
-    type = models.IntegerField(choices=TYPES)
+
+    user = models.ForeignKey(Service, null=True)
+
+    account_name = models.CharField(max_length=64, null=True, blank=True)
+    account_id = models.IntegerField(null=True, blank=True)
 
     name = models.CharField(max_length=32)  # TODO: Change to 'title' to match up with Recipient and Entity models
     slug = models.SlugField(max_length=32)
-
-    account_id = models.IntegerField(unique=True, null=True)
-    token = models.CharField(max_length=70, null=True)  # OAuth account authorization token
 
     def path(self):
         return '/account/payee/' + self.slug
@@ -35,12 +30,17 @@ class Payee(models.Model):
         )
         super(Payee, self).save(kwargs)
 
-    # returns a safe dict of the object (excluding the token)
     def dict(self):
-        return {
+        item = {
             'name': self.name,
             'slug': self.slug,
-            'type': self.type,
-            'type_label': self.get_type_display(),
-            'account_id': self.account_id
+            'account_id': self.account_id,
+            'account_name': self.account_name
         }
+
+        if self.user:
+            item['user'] = self.user.dict()
+        else:
+            item['user'] = None
+
+        return item
