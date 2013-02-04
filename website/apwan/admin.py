@@ -15,7 +15,7 @@ __author__ = 'Dean Gardiner'
 
 
 class DonationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'recipient', 'state', 'payer_name', 'amount', 'tip', 'currency')
 admin.site.register(Donation, DonationAdmin)
 
 

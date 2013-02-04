@@ -15,15 +15,19 @@ function get_val(element)
     return val;
 }
 
-$('#checkout_submit').click(do_checkout);
+$('#checkout_submit').click(do_donation);
 
-function do_checkout()
+var checkout_result = $('#checkout_result');
+
+function do_donation()
 {
     var _recipient_id = parseInt(get_val($('#donation_recipient_id')));
     var _entity_id = parseInt(get_val($('#donation_entity_id')));
     var _amount = get_val($('#donation_amount'));
 
-    Dajaxice.donation.checkout(function(result) {
+    checkout_result.text('');
+
+    Dajaxice.donation.create(function(result) {
         process_result(result);
     }, {
         'recipient_id': _recipient_id,
@@ -34,5 +38,26 @@ function do_checkout()
 
 function process_result(result)
 {
-    console.log(result);
+    if(result.success)
+    {
+        checkout_result.html(
+            '<b>success: </b>' + result.success + '<br/>' +
+            '<b>checkout_uri: </b><a href="' + result.checkout_uri + '">' + result.checkout_uri + '</a>'
+        );
+    } else {
+        if('error_parameter' in result)
+        {
+            checkout_result.html(
+                '<b>success: </b>' + result.success + '<br/>' +
+                '<b>error: </b>' + result.error + '<br/>' +
+                '<b>error_parameter: </b>' + result.error_parameter
+            );
+        } else {
+            checkout_result.html(
+                '<b>success: </b>' + result.success + '<br/>' +
+                '<b>error: </b>' + result.error
+            );
+        }
+
+    }
 }

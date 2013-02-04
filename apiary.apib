@@ -177,7 +177,7 @@ GET /dajaxice/recipient.claim/{?argv}
 --
 Donation
 --
-**[FUTURE]** Create a donation checkout for recipient
+Create a donation checkout for recipient
 
 | Key          | Type    | Description   |
 |--------------|---------|---------------|
@@ -185,7 +185,7 @@ Donation
 | entity_id    | int     | Entity ID
 | amount       | dec str | Donation Amount
 
-GET /dajaxice/donation.checkout/{?argv}
+GET /dajaxice/donation.create/{?argv}
 > Accept: application/json
 < 200
 < Content-Type: application/json

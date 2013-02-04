@@ -10,9 +10,9 @@ class Service(models.Model):
         app_label = 'apwan'
         unique_together = ('service', 'service_id')
 
-    SERVICE_WEPAY = 1
+    SERVICE_WEPAY = 'wepay'
     SERVICES = (
-        (0, "Invalid"),
+        ('', "Invalid"),
         (SERVICE_WEPAY, "WePay"),
     )
 
@@ -30,7 +30,7 @@ class Service(models.Model):
 
     owner = models.ForeignKey(User, null=True)
 
-    service = models.IntegerField(choices=SERVICES, default=0)
+    service = models.CharField(choices=SERVICES, default='', max_length=10)
     service_type = models.IntegerField(choices=TYPES, default=0)
     service_id = models.CharField(max_length=64, default="")
 

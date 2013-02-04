@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from wepay import WePay
 from website.apwan.helpers import string_length_limit
@@ -47,15 +48,15 @@ class WePayPaymentPlatform(PaymentPlatform):
             store_token=False
         )
 
-    def get_authorization_url(self, callback_url, scope="manage_accounts,collect_payments,view_user"):
+    def get_authorization_url(self, redirect_uri, scope="manage_accounts,collect_payments,view_user"):
         return self.wepay.get_authorization_url(
-            callback_url, WEPAY_CLIENT_ID, scope=scope
+            redirect_uri, WEPAY_CLIENT_ID, scope=scope
         )
 
-    def service_create(self, owner, callback_url, code):
+    def service_create(self, owner, redirect_uri, code):
         # Get the OAuth token
         token_result = self.wepay.get_token(
-            callback_url, WEPAY_CLIENT_ID,
+            redirect_uri, WEPAY_CLIENT_ID,
             WEPAY_CLIENT_SECRET, code
         )
         if 'error' in token_result:
@@ -72,15 +73,17 @@ class WePayPaymentPlatform(PaymentPlatform):
             return None
 
         # Store details in database
-        return self.db_service_create(owner, Service.SERVICE_WEPAY, token_result['user_id'],
-                                    link_type=Service.LINK_TYPE_OAUTH, data={
+        return self.db_service_create(
+            owner, Service.SERVICE_WEPAY, token_result['user_id'],
+            link_type=Service.LINK_TYPE_OAUTH, data={
                 'access_token': token_result['access_token'],
                 'token_type': token_result['token_type'],
                 'email': user_result['email'],
                 'user_name': user_result['user_name'],
                 'first_name': user_result['first_name'],
                 'last_name': user_result['last_name']
-            })
+            }
+        )
 
     def account_find(self, payee, name=None, reference_id=None):
         if not payee or not payee.user or not payee.user.valid():
@@ -97,7 +100,8 @@ class WePayPaymentPlatform(PaymentPlatform):
             token=payee.user.data['access_token']
         )
 
-    def transaction_create(self, entity, recipient, payee, amount, tip=0):  # TODO: Rename to 'donation_create'
+    def transaction_create(self, entity, recipient, payee, amount, tip=0,
+                           redirect_uri=None, callback_uri=None):  # TODO: Rename to 'donation_create'
         amount = float(amount)
         tip = float(tip)
         if payee is None or payee.user is None:
@@ -137,6 +141,12 @@ class WePayPaymentPlatform(PaymentPlatform):
             'fee_payer': 'Payee'
         }
 
+        if redirect_uri:
+            params['redirect_uri'] = redirect_uri
+
+        if callback_uri:
+            params['callback_uri'] = callback_uri
+
         create_result = self.wepay.call(
             '/checkout/create', params,
             token=payee.user.data['access_token']
@@ -150,5 +160,20 @@ class WePayPaymentPlatform(PaymentPlatform):
             return donation, create_result['checkout_uri']
         else:
             return donation, None
+
+    def donation_update(self, donation):
+        result = self.wepay.call(
+            '/checkout', {
+                'checkout_id': donation.checkout_id
+            },
+            token=donation.payee.user.data['access_token']
+        )
+
+        if 'error' in result:
+            return False
+
+        donation.state = result['state']
+
+        return True
 
 wepay = WePayPaymentPlatform()

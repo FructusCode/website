@@ -8,7 +8,6 @@ class Donation(models.Model):
     class Meta:
         app_label = 'apwan'
 
-    STATE_STARTED = ''
     STATE_NEW = 'new'
     STATE_AUTHORIZED = 'authorized'
     STATE_RESERVED = 'reserved'
@@ -21,7 +20,6 @@ class Donation(models.Model):
     STATE_EXPIRED = 'expired'
 
     STATES = (
-        (STATE_STARTED, "Started"),
         (STATE_NEW, "New"),
         (STATE_AUTHORIZED, "Authorized"),
         (STATE_RESERVED, "Reserved"),
@@ -44,7 +42,7 @@ class Donation(models.Model):
     recipient = models.ForeignKey('Recipient', null=True)
     payee = models.ForeignKey('Payee', null=True)
 
-    state = models.CharField(max_length=12, choices=STATES, default=STATE_STARTED)  # TODO: Replace with int
+    state = models.CharField(max_length=12, choices=STATES, default=STATE_NEW)  # TODO: Replace with int
 
     payer_name = models.CharField(max_length=64, default="Anonymous")  # TODO: This can be replaced with user accounts
 

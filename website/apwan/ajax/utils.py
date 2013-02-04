@@ -10,3 +10,21 @@ def cors_response(data):
     response['Access-Control-Allow-Headers'] = 'X-PINGOTHER'
     response['Access-Control-Max-Age'] = '1728000'
     return response
+
+
+def validate_int(value):
+    try:
+        return int(value), True
+    except ValueError, e:
+        return None, False
+    except TypeError, e:
+        return None, False
+
+
+def validate_float(value):
+    try:
+        return float(value), True
+    except ValueError, e:
+        return None, False
+    except TypeError, e:
+        return None, False
