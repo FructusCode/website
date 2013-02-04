@@ -42,7 +42,7 @@ function process_result(result)
     {
         checkout_result.html(
             '<b>success: </b>' + result.success + '<br/>' +
-            '<b>checkout_uri: </b><a href="' + result.checkout_uri + '">' + result.checkout_uri + '</a>'
+            '<b>checkout_url: </b><a href="' + result.checkout_url + '">' + result.checkout_url + '</a>'
         );
     } else {
         if('error_parameter' in result)
