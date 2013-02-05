@@ -11,6 +11,18 @@ HOST:
 **[FUTURE]** - indicates the method is planned but is not currently implemented
 
 **[PROTECTED]** - indicates the method does not allow cross-site requests and could require user authentication
+
+## Errors
+| Key                          | Description                                    |
+|------------------------------|------------------------------------------------|
+| INVALID_PARAMETER            | Given parameter is invalid
+| NOT_IMPLEMENTED              | Functionality not implemented yet
+| UNKNOWN                      | Unknown error occurred
+| AUTHENTICATION.NOT_LOGGED_IN | You aren't logged in
+| DONATION.NO_PAYEE            | No Payee available for this recipient
+| DONATION.SERVICE_FAILED      | Payment platform failed to process our request
+| ENTITY.NOT_FOUND             | Entity not found
+| RECIPIENT.ALREADY_CLAIMED    | Recipient has already been claimed
 ---
 
 --
@@ -37,6 +49,8 @@ Search for an entity (artist, album, track, movie, tv show, game)
 | *track*  | *string* | *Search Track (optional for Music)*
 |          |          |
 | *type*   | *int*    | *Entity Type*  **(Optional, but Recommended to put less load on server)**
+
+**THROWABLE ERRORS:** NOT_IMPLEMENTED, UNKNOWN, INVALID_PARAMETER, ENTITY.NOT_FOUND
 
 GET /dajaxice/entity.search/{?argv}
 > Accept: application/json
@@ -117,6 +131,8 @@ Search for a recipient.
 | *entities_include* | *bool* | *Include recipient entities*                 |
 | *entities_limit*   | *int*  | *Max number of recipient entities to return* |
 
+**THROWABLE ERRORS:** None
+
 GET /dajaxice/recipient.search/{?argv}
 > Accept: application/json
 < 200
@@ -165,6 +181,8 @@ GET /dajaxice/recipient.id/{?argv}
 |--------------------|--------|---------------------------|
 | recipient_id       | int    | ID of recipient to claim  |
 
+**THROWABLE ERRORS:** INVALID_PARAMETER, AUTHENTICATION.NOT_LOGGED_IN, RECIPIENT.ALREADY_CLAIMED, INVALID_PARAMETER
+
 GET /dajaxice/recipient.claim/{?argv}
 > Accept: application/json
 < 200
@@ -184,6 +202,8 @@ Create a donation checkout for recipient
 | recipient_id | int     | Recipient ID
 | entity_id    | int     | Entity ID
 | amount       | dec str | Donation Amount
+
+**THROWABLE ERRORS:** INVALID_PARAMETER, DONATION.NO_PAYEE, DONATION.SERVICE_FAILED, DONATION.NOT_IMPLEMENTED
 
 GET /dajaxice/donation.create/{?argv}
 > Accept: application/json
