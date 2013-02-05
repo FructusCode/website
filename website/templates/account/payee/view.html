@@ -3,7 +3,7 @@
 {% load helper_tags %}
 
 {% block account_body %}
-    <h2 class="title">{{ payee.name }}</h2>
+    <h2 class="title">{{ payee.title }}</h2>
     <a href="{% url account-payee-edit payee.slug %}" class="btn btn-mini"><i class="icon-edit"></i> Settings</a>
     <span class="label label-info">{{ payee.user.service_label }}</span><br/>
     <br/>

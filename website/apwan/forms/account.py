@@ -8,7 +8,7 @@ __author__ = 'Dean Gardiner'
 
 
 class PayeeSettingsForm(forms.Form):
-    name = forms.CharField(label="Name")
+    title = forms.CharField(label="Title")
     account_id = forms.ChoiceField(label="Account")
 
     def __init__(self, data=None, payee=None, *args, **kwargs):
@@ -17,7 +17,7 @@ class PayeeSettingsForm(forms.Form):
         self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(
             Fieldset('Payee Settings',
-                     'name',
+                     'title',
                      'account_id'
             ),
             FormActions(
@@ -26,7 +26,7 @@ class PayeeSettingsForm(forms.Form):
             )
         )
         super(PayeeSettingsForm, self).__init__(data=data, initial={
-            'name': payee.name,
+            'title': payee.title,
             'account_id': payee.account_id
         })
 
@@ -75,5 +75,5 @@ class RecipientSettingsForm(forms.Form):
             if not data or data['payee_id'] != recipient_payee_id:
                 payee_field_choices = []
                 for payee in payee_choices:
-                    payee_field_choices.append((payee.id, payee.name))
+                    payee_field_choices.append((payee.id, payee.title))
                 self.fields['payee_id'].choices = tuple(payee_field_choices)

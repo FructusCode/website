@@ -81,8 +81,12 @@ class Entity(models.Model):
         }
         if self.type == self.TYPE_MUSIC:
             item['artist'] = self.artist
-            item['album'] = self.album  # TODO: don't set album or track if None, This could require changes
-            item['track'] = self.track  # in extension and website js to check if album or track is included.
+
+            if self.album is not None:
+                item['album'] = self.album
+
+            if self.track is not None:
+                item['track'] = self.track
         else:
             item['title'] = self.title
 

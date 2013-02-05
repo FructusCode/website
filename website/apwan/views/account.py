@@ -14,12 +14,22 @@ from website.settings import build_url
 __author__ = 'Dean Gardiner'
 
 
+ERRORS = {
+    'INVALID_PAYEE': "<strong>Payee</strong> does not exist or access was denied",
+    'INVALID_RECIPIENT': "<strong>Recipient</strong> does not exist or access was denied",
+}
+
+
+def error_redirect(error_key):
+    return redirect(reverse('account-profile') + '?error=' + error_key)
+
+
 def render_with_account_menu(template_name, request, dictionary=None):
     if dictionary is None:
         dictionary = {}
 
     dictionary['menu'] = {
-        'payees': Payee.objects.all().filter(owner=request.user).order_by('name'),
+        'payees': Payee.objects.all().filter(owner=request.user).order_by('title'),
         'recipients': Recipient.objects.all().filter(owner=request.user).order_by('title')
     }
 
@@ -28,6 +38,12 @@ def render_with_account_menu(template_name, request, dictionary=None):
 
 @login_required
 def index(request):
+    if 'error' in request.GET:
+        if request.GET['error'] in ERRORS:
+            return render_with_account_menu('account/index.html', request, {
+                'error_key': request.GET['error'],
+                'error_message': ERRORS[request.GET['error']]
+            })
     return render_with_account_menu('account/index.html', request)
 
 #
@@ -39,7 +55,7 @@ def index(request):
 def payee_view(request, slug):
     payee = Payee.objects.filter(owner=request.user, slug=slug)
     if len(payee) != 1:
-        return redirect(reverse('account-profile'))  # TODO: Maybe we should redirect to an error page?
+        return error_redirect('INVALID_PAYEE')
     payee = payee[0]
 
     return render_with_account_menu('account/payee/view.html', request, {
@@ -51,13 +67,13 @@ def payee_view(request, slug):
 def payee_settings(request, slug):
     payee = Payee.objects.filter(owner=request.user, slug=slug)
     if len(payee) != 1:
-        return redirect(reverse('account-profile'))  # TODO: Maybe we should redirect to an error page?
+        return error_redirect('INVALID_PAYEE')
     payee = payee[0]
 
     if request.method == 'POST':
         form = PayeeSettingsForm(data=request.POST, payee=payee)
         if form.is_valid():
-            payee.name = form.cleaned_data['name']
+            payee.title = form.cleaned_data['title']
             payee.account_id = form.cleaned_data['account_id']
             payee.account_name = form.cleaned_data['account_name']
             payee.save()
@@ -138,7 +154,7 @@ def recipient_claim(request):
 def recipient_view(request, slug):
     recipient = Recipient.objects.filter(owner=request.user, slug=slug)
     if len(recipient) != 1:
-        return redirect(reverse('account-profile'))  # TODO: Maybe we should redirect to an error page?
+        return error_redirect('INVALID_RECIPIENT')
     recipient = recipient[0]
 
     return render_with_account_menu('account/recipient/view.html', request, {
@@ -150,7 +166,7 @@ def recipient_view(request, slug):
 def recipient_settings(request, slug):
     recipient = Recipient.objects.filter(owner=request.user, slug=slug)
     if len(recipient) != 1:
-        return redirect(reverse('account-profile'))  # TODO: Maybe we should redirect to an error page?
+        return error_redirect('INVALID_RECIPIENT')
     recipient = recipient[0]
 
     payee_choices = Payee.objects.filter(owner=request.user)

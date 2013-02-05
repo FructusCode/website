@@ -17,7 +17,7 @@ class Payee(models.Model):
     account_name = models.CharField(max_length=64, null=True, blank=True)
     account_id = models.IntegerField(null=True, blank=True)
 
-    name = models.CharField(max_length=32)  # TODO: Change to 'title' to match up with Recipient and Entity models
+    title = models.CharField(max_length=32)
     slug = models.SlugField(max_length=32)
 
     def path(self):
@@ -25,14 +25,14 @@ class Payee(models.Model):
 
     def save(self, **kwargs):
         unique_slugify(
-            self, self.name,
+            self, self.title,
             queryset=Payee.objects.all().filter(owner=self.owner)
         )
         super(Payee, self).save(kwargs)
 
     def dict(self):
         item = {
-            'name': self.name,
+            'title': self.title,
             'slug': self.slug,
             'account_id': self.account_id,
             'account_name': self.account_name

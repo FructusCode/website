@@ -22,8 +22,8 @@ class PaymentPlatform():
         return True
 
     @staticmethod
-    def db_transaction_create(entity, recipient, payee, amount,
-                            currency=Donation.CURRENCY_USD, tip=0.0, payer_name="Anonymous"):  # TODO: Rename to db_donation_create
+    def db_donation_create(entity, recipient, payee, amount, currency=Donation.CURRENCY_USD,
+                           tip=0.0, payer_name="Anonymous"):
         try:
             return Donation.objects.create(entity=entity, recipient=recipient, payee=payee,
                                            amount=amount, currency=currency, tip=tip,
@@ -100,14 +100,13 @@ class WePayPaymentPlatform(PaymentPlatform):
             token=payee.user.data['access_token']
         )
 
-    def transaction_create(self, entity, recipient, payee, amount, tip=0,
-                           redirect_uri=None, callback_uri=None):  # TODO: Rename to 'donation_create'
+    def donation_create(self, entity, recipient, payee, amount, tip=0, redirect_uri=None, callback_uri=None):
         amount = float(amount)
         tip = float(tip)
         if payee is None or payee.user is None:
             return None, None
 
-        donation = self.db_transaction_create(entity, recipient, payee, amount, tip=tip)
+        donation = self.db_donation_create(entity, recipient, payee, amount, tip=tip)
 
         # Create Transaction Short Description
         short_description = ""

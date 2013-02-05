@@ -44,7 +44,7 @@ def create(request, recipient_id, entity_id, amount):
         return cors_response(simplejson.dumps({'error': 'NO_PAYEE', 'success': False}))
 
     if payee.user.service == Service.SERVICE_WEPAY:
-        donation, checkout_url = wepay.transaction_create(
+        donation, checkout_url = wepay.donation_create(
             entity, recipient, payee, amount,
             redirect_uri=build_url(request, reverse('donate-complete', args=[payee.user.service])),
             callback_uri=build_url(request, reverse('callback-wepay-checkout'))

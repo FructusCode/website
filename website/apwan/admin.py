@@ -45,8 +45,8 @@ admin.site.register(EntityReference, EntityReferenceAdmin)
 
 
 class PayeeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'name', 'slug', 'user_link')
-    list_display_links = ('name',)
+    list_display = ('owner', 'title', 'slug', 'user_link')
+    list_display_links = ('title',)
 
     def user_link(self, obj):
         if obj.user is None:

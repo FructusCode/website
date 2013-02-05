@@ -8,6 +8,15 @@
         <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/base.css"/>
     {% endaddtoblock %}
 
+    {% if error_message %}
+        <div class="row-fluid">
+            <div class="alert alert-error">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                {{ error_message|safe }}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row-fluid">
         <div class="span3 well account-menu-span">
             <ul class="nav nav-list">
@@ -21,7 +30,7 @@
                     </a>
                 </li>
                 {% for payee in menu.payees %}
-                    <li class="{% active request payee.path %}"><a href="{{ payee.path }}">{{ payee.name }}</a></li>
+                    <li class="{% active request payee.path %}"><a href="{{ payee.path }}">{{ payee.title }}</a></li>
                 {% endfor %}
 
                 <li class="nav-header">

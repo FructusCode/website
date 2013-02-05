@@ -12,5 +12,5 @@
             <strong>No payee selected</strong> - Please choose one in recipient settings.
         </div>
     {% endif %}
-    <strong>Payee: </strong>{% if recipient.payee %}{{ recipient.payee.name }}{% else %}None{% endif %}
+    <strong>Payee: </strong>{% if recipient.payee %}{{ recipient.payee.title }}{% else %}None{% endif %}
 {% endblock %}
