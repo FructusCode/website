@@ -45,17 +45,26 @@ function process_result(result)
             '<b>checkout_url: </b><a href="' + result.checkout_url + '">' + result.checkout_url + '</a>'
         );
     } else {
-        if('error_parameter' in result)
+        if('error' in result)
         {
-            checkout_result.html(
-                '<b>success: </b>' + result.success + '<br/>' +
-                '<b>error: </b>' + result.error + '<br/>' +
-                '<b>error_parameter: </b>' + result.error_parameter
-            );
+            if(result.error.key == 'invalid_parameter')
+            {
+                checkout_result.html(
+                    '<b>success: </b>' + result.success + '<br/>' +
+                    '<b>error.key: </b>' + result.error.key + '<br/>' +
+                    '<b>error.message: </b>' + result.error.message + '<br/>' +
+                    '<b>error.parameter: </b>' + result.error.parameter
+                );
+            } else {
+                checkout_result.html(
+                    '<b>success: </b>' + result.success + '<br/>' +
+                    '<b>error.key: </b>' + result.error.key + '<br/>' +
+                    '<b>error.message: </b>' + result.error.message + '<br/>'
+                );
+            }
         } else {
             checkout_result.html(
-                '<b>success: </b>' + result.success + '<br/>' +
-                '<b>error: </b>' + result.error
+                '<b>success: </b>' + result.success + '<br/>'
             );
         }
 

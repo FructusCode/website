@@ -1,7 +1,7 @@
 import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
-from website.apwan.ajax.utils import cors_response
+from website.apwan.ajax.utils import cors_response, build_error, ERROR
 from website.apwan.helpers.entitygen import search_like
 from website.apwan.helpers.entitygen.movie import MovieEntityGenerator
 from website.apwan.helpers.entitygen.music import MusicEntityGenerator
@@ -23,10 +23,10 @@ def search(request, type=None,
         elif type == Entity.TYPE_MOVIE:
             return search_movie(title, year, artist, album, track)
         else:
-            return cors_response(simplejson.dumps({'error': 'TYPE_NOT_IMPLEMENTED', 'success': False}))
+            return cors_response(build_error(ERROR.NOT_IMPLEMENTED))
     except Exception, e:
         print traceback.format_exc()
-        return cors_response(simplejson.dumps({'error': 'EXCEPTION', 'success': False}))
+        return cors_response(build_error(ERROR.UNKNOWN))
 
 
 #
@@ -34,7 +34,7 @@ def search(request, type=None,
 #
 def search_music(title, year, artist, album, track):
     if title is not None or year is not None or artist is None:
-        return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
+        return cors_response(build_error(ERROR.INVALID_PARAMETER))
 
     print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
 
@@ -44,7 +44,7 @@ def search_music(title, year, artist, album, track):
         print "looking up"
         entity = MusicEntityGenerator.create(artist, album, track)
         if entity is None:
-            return cors_response(simplejson.dumps({'error': 'NOT_FOUND', 'success': False}))
+            return cors_response(build_error(ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
 
     return cors_response(simplejson.dumps({'success': True, 'items': entities}))
@@ -55,10 +55,10 @@ def search_music(title, year, artist, album, track):
 #
 def search_movie(title, year, artist, album, track):
     if title is None or year is None:
-        return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
+        return cors_response(build_error(ERROR.INVALID_PARAMETER))
 
     if artist is not None or album is not None or track is not None:
-        return cors_response(simplejson.dumps({'error': 'INVALID_PARAMETER', 'success': False}))
+        return cors_response(build_error(ERROR.INVALID_PARAMETER))
 
     print "TYPE_MOVIE", '"' + str(title) + '"'
 
@@ -68,7 +68,7 @@ def search_movie(title, year, artist, album, track):
         print "looking up"
         entity = MovieEntityGenerator.create(title, year)
         if entity is None:
-            return cors_response(simplejson.dumps({'error': 'NOT_FOUND', 'success': False}))
+            return cors_response(build_error(ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
 
     return cors_response(simplejson.dumps({'success': True, 'items': entities}))
