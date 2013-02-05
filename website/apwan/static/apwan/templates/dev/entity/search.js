@@ -50,7 +50,9 @@ var _search_year = $('#search_year');
 var _search_artist = $('#search_artist');
 var _search_album = $('#search_album');
 var _search_track = $('#search_track');
-var _results = $('#results');
+var _search_results = $('#search_results');
+
+var item_template = Mustache.template('dev/entity/search_result_item');
 
 $('#search_submit').click(do_search);
 _search_title.keydown(function(event) {
@@ -59,6 +61,8 @@ _search_title.keydown(function(event) {
         do_search();
     }
 });
+
+_search_type.change(load_example_data);
 
 function get_val(element)
 {
@@ -104,48 +108,12 @@ function process_result(result)
     {
         for(var i = 0; i < result.items.length; i++)
         {
-            console.log(result.items[i]);
-            if(result.items[i].type == 2) // if MUSIC
-            {
-                _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
-                    "<b>ID:</b> <span>" + result.items[i].id + "</span><br/>" +
-                    "<br/>" +
-                    "<b>Artist:</b> <span>\"" + result.items[i].artist + "\"</span><br/>" +
-                    "<b>Album:</b> <span>\"" + result.items[i].album + "\"</span><br/>" +
-                    "<b>Track:</b> <span>\"" + result.items[i].track + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Recipients[0] ID:</b> <span>" + result.items[i].recipients[0].id + "</span><br/>" +
-                    "<b>Recipients[0] title:</b> <span>\"" + result.items[i].recipients[0].title + "\"</span><br/>" +
-                    "<b>Recipients[0] type:</b> <span>" + result.items[i].recipients[0].type + "</span><br/>" +
-                    "</div>");
-            } else if(result.items[i].type == 1) {
-                _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
-                    "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
-                    "<b>Year:</b> <span>\"" + result.items[i].year + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Recipients[0] ID:</b> <span>" + result.items[i].recipients[0].id + "</span><br/>" +
-                    "<b>Recipients[0] title:</b> <span>\"" + result.items[i].recipients[0].title + "\"</span><br/>" +
-                    "<b>Recipients[0] type:</b> <span>" + result.items[i].recipients[0].type + "</span><br/>" +
-                    "</div>");
-            } else {
-                _results.prepend("<div style=\"width: 300px; border: 1px solid black; margin: 3px; padding: 3px; text-align: left;\">" +
-                    "<b>ID:</b> <span>\"" + result.items[i].id + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Title:</b> <span>\"" + result.items[i].title + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Image:</b> <span>\"" + result.items[i].image + "\"</span><br/>" +
-                    "<br/>" +
-                    "<b>Recipients[0] ID:</b> <span>" + result.items[i].recipients[0].id + "</span><br/>" +
-                    "<b>Recipients[0] title:</b> <span>\"" + result.items[i].recipients[0].title + "\"</span><br/>" +
-                    "<b>Recipients[0] type:</b> <span>" + result.items[i].recipients[0].type + "</span><br/>" +
-                    "</div>");
-            }
+            var entity = result.items[i];
+
+            entity.is_music = entity.type == 2;
+            entity.is_movie = entity.type == 1;
+
+            _search_results.prepend(item_template.render({'entity': entity}));
         }
     } else {
         console.log(result.error);

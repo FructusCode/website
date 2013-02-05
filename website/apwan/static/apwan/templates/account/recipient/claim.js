@@ -2,7 +2,7 @@ var search_results = $('#search_results');
 var search_submit = $('#search_submit');
 var search_title = $('#search_title');
 
-var item_template = Mustache.template('account/recipient/claim_item');
+var item_template = Mustache.template('account/recipient/claim_result_item');
 
 search_submit.click(search);
 

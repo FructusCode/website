@@ -2,11 +2,19 @@
 
 {% load sekizai_tags %}
 {% load dajaxice_templatetags %}
+{% load jstemplate %}
 
 {% block dev_index_container %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/dev/entity/search.css"/>
+    {% endaddtoblock %}
+
     {% addtoblock "javascript" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
+        <script src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
+        <script src="{{ STATIC_URL }}libs/django.mustache.js"></script>
+        {% mustachejs "dev/entity/search_result_item" %}
         <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/dev/entity/search.js"></script>
     {% endaddtoblock %}
 
@@ -29,7 +37,6 @@
     <button id="search_submit">Search</button>
     <button onclick="load_example_data();">Example Data</button>
 
-    <div id="results">
-
+    <div id="search_results">
     </div>
 {% endblock %}

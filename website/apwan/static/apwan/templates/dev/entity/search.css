@@ -1,0 +1,32 @@
+#search_results
+{
+    margin-top: 10px;
+}
+
+#search_results .search_result_item
+{
+    padding: 5px 9px;
+
+    background-color: white;
+}
+
+#search_results .info-labels
+{
+
+}
+
+#search_results .search_result_item span.label
+{
+    margin-top: 5px;
+}
+
+#search_results .search_result_item h3
+{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#search_results .search_result_item h5
+{
+    margin-top: 0;
+}
