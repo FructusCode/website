@@ -52,7 +52,7 @@ urlpatterns = patterns('',
     # Dev
     url(r'^dev/$', 'website.apwan.views.dev.index'),
     url(r'^dev/entity/search/$', 'website.apwan.views.dev.entity_search'),
-    url(r'^dev/donation/checkout/$', 'website.apwan.views.dev.donation_checkout'),
+    url(r'^dev/donation/create/$', 'website.apwan.views.dev.donation_create'),
     url(r'^dev/wepay/account/find/$', 'website.apwan.views.dev.wepay_account_find'),
     url(r'^dev/wepay/checkout/create/$', 'website.apwan.views.dev.wepay_checkout_create'),
 

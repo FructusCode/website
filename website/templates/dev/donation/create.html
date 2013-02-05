@@ -2,12 +2,16 @@
 
 {% load sekizai_tags %}
 {% load dajaxice_templatetags %}
+{% load jstemplate %}
 
 {% block dev_index_container %}
     {% addtoblock "javascript" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
-        <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/dev/donation/checkout.js"></script>
+        <script src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
+        <script src="{{ STATIC_URL }}libs/django.mustache.js"></script>
+        {% mustachejs "dev/donation/create_result" %}
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/dev/donation/create.js"></script>
     {% endaddtoblock %}
 
     <h2>donation.checkout</h2>

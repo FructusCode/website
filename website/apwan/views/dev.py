@@ -30,8 +30,8 @@ def entity_search(request):
 
 
 @login_required(login_url='/account/login/')
-def donation_checkout(request):
-    return render_to_response('dev/donation/checkout.html',
+def donation_create(request):
+    return render_to_response('dev/donation/create.html',
                               context_instance=RequestContext(request, {}))
 
 
