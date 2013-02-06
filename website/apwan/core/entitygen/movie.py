@@ -1,5 +1,5 @@
 import pythemoviedb.api.methods
-from website.apwan.helpers.entitygen import EntityGenerator
+from website.apwan.core.entitygen import EntityGenerator
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient

@@ -2,7 +2,7 @@ from dajaxice.decorators import dajaxice_register
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from website.apwan.ajax.utils import cors_response, validate_int, validate_float, build_error, ERROR
-from website.apwan.helpers.payment import wepay
+from website.apwan.core.payment import wepay
 from website.apwan.models.entity import Entity
 from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service

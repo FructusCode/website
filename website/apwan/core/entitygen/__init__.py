@@ -1,3 +1,4 @@
+import unicodedata
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
@@ -22,6 +23,9 @@ def search_strip(text):
     if text is None:
         return None
 
+    if type(text) is unicode:
+        text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
+
     for ch in SPECIAL_PHRASES:
         text = text.replace(ch, '')
 
@@ -31,6 +35,9 @@ def search_strip(text):
 def search_like(text):
     if text is None:
         return None
+
+    if type(text) is unicode:
+        text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
 
     for ch in SPECIAL_PHRASES:
         text = text.replace(ch, '%')
@@ -52,7 +59,11 @@ class EntityGenerator():
             return reference_filter[0], reference_filter[0].recipient, False
 
         # Create Recipient
-        recipient = Recipient.objects.create(title=title, type=type)
+        recipient = Recipient.objects.create(
+            title=title,
+            s_title=search_strip(title),
+            type=type
+        )
 
         # Create Reference
         reference = RecipientReference.objects.create(

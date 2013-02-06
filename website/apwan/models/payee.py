@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from website.apwan.helpers.database import unique_slugify
+from website.apwan.core.database import unique_slugify
 from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'

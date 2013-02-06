@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from website.apwan.forms.dev import WePayCreateCheckoutForm, WePayFindAccountForm
-from website.apwan.helpers.payment import wepay
+from website.apwan.core.payment import wepay
 from website.apwan.models.payee import Payee
 
 __author__ = 'Dean Gardiner'

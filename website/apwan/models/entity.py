@@ -1,5 +1,5 @@
 from django.db import models
-from website.apwan.helpers import string_length_limit
+from website.apwan.core import string_length_limit
 
 __author__ = 'Dean Gardiner'
 

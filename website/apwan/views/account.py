@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from wepay.exceptions import WePayError
 from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
-from website.apwan.helpers.payment import wepay, PaymentPlatform
+from website.apwan.core.payment import wepay, PaymentPlatform
 from website.apwan.models.payee import Payee
 from website.apwan.models.recipient import Recipient
 from website.apwan.models.service import Service

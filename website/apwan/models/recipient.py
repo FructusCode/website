@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from website.apwan.helpers.database import unique_slugify
+from website.apwan.core.database import unique_slugify
 from website.apwan.models.entity import Entity
 from website.apwan.models.payee import Payee
 

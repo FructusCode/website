@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from website import settings
-from website.apwan.helpers.payment import wepay
+from website.apwan.core.payment import wepay
 from website.apwan.models.donation import Donation
 from website.apwan.models.service import Service
 

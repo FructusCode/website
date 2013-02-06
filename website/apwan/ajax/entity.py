@@ -2,9 +2,9 @@ import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
 from website.apwan.ajax.utils import cors_response, build_error, ERROR
-from website.apwan.helpers.entitygen import search_like
-from website.apwan.helpers.entitygen.movie import MovieEntityGenerator
-from website.apwan.helpers.entitygen.music import MusicEntityGenerator
+from website.apwan.core.entitygen import search_like
+from website.apwan.core.entitygen.movie import MovieEntityGenerator
+from website.apwan.core.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
 
 __author__ = 'Dean Gardiner'
