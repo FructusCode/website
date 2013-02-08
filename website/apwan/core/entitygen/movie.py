@@ -14,7 +14,9 @@ class MovieEntityGenerator(EntityGenerator):
         results = pythemoviedb.api.methods.search_movie(title, year=year)
 
         if len(results['results']) > 0:
-            return pythemoviedb.api.methods.get_movie(results['results'][0]['id'])
+            return pythemoviedb.api.methods.get_movie(
+                results['results'][0]['id']
+            )
         return None
 
     @staticmethod
@@ -48,10 +50,11 @@ class MovieEntityGenerator(EntityGenerator):
             print "Movie Created"
 
             for company in l_movie['production_companies']:
-                e_company_ref, e_company, e_company_created = MovieEntityGenerator.create_recipient(
-                    company['id'], company['name'],
-                    RecipientReference.TYPE_THEMOVIEDB,
-                    Recipient.TYPE_MOVIE_PRODUCTION_COMPANY
+                (e_company_ref, e_company, e_company_created) =\
+                    MovieEntityGenerator.create_recipient(
+                        company['id'], company['name'],
+                        RecipientReference.TYPE_THEMOVIEDB,
+                        Recipient.TYPE_MOVIE_PRODUCTION_COMPANY
                 )
                 e_movie.recipient.add(e_company)
 

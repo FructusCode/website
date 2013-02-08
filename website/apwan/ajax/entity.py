@@ -36,9 +36,13 @@ def search_music(title, year, artist, album, track):
     if title is not None or year is not None or artist is None:
         return cors_response(build_error(ERROR.INVALID_PARAMETER))
 
-    print "TYPE_MUSIC", '"' + str(artist) + '"', '"' + str(album) + '"', '"' + str(track) + '"'
+    print "TYPE_MUSIC",\
+        '"' + str(artist) + '"',\
+        '"' + str(album) + '"',\
+        '"' + str(track) + '"'
 
-    entities = _direct_search(type=Entity.TYPE_MUSIC, artist=artist, album=album, track=track)
+    entities = _direct_search(type=Entity.TYPE_MUSIC,
+                              artist=artist, album=album, track=track)
     if entities is None:
         # Lookup Details
         print "looking up"
@@ -47,7 +51,10 @@ def search_music(title, year, artist, album, track):
             return cors_response(build_error(ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
 
-    return cors_response(simplejson.dumps({'success': True, 'items': entities}))
+    return cors_response(simplejson.dumps({
+        'success': True,
+        'items': entities
+    }))
 
 
 #
@@ -71,14 +78,19 @@ def search_movie(title, year, artist, album, track):
             return cors_response(build_error(ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
 
-    return cors_response(simplejson.dumps({'success': True, 'items': entities}))
+    return cors_response(simplejson.dumps({
+        'success': True,
+        'items': entities
+    }))
 
 
-def _direct_search(type, title=None, year=None, artist=None, album=None, track=None):
+def _direct_search(type, title=None, year=None,
+                   artist=None, album=None, track=None):
     entities = None
     results = None
     if type == Entity.TYPE_MUSIC:
-        results = _direct_search_filter(artist=artist, album=album, track=track)
+        results = _direct_search_filter(artist=artist, album=album,
+                                        track=track)
     elif type == Entity.TYPE_MOVIE:
         results = _direct_search_filter(title=title, year=year)
     else:

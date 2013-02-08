@@ -9,7 +9,9 @@ __author__ = 'Dean Gardiner'
 
 @dajaxice_register(method='GET', name='recipient.search')
 def search(request, title, limit=10, entities_include=False, entities_limit=5):
-    results = Recipient.objects.all().filter(s_title__ilike='%' + search_like(title) + '%')[:limit]
+    results = Recipient.objects.all().filter(
+        s_title__ilike='%' + search_like(title) + '%'
+    )[:limit]
 
     items = []
     for recipient in results:
@@ -20,7 +22,10 @@ def search(request, title, limit=10, entities_include=False, entities_limit=5):
             check_owner=request.user
         ))
 
-    return cors_response(simplejson.dumps({'success': True, 'items': items}))
+    return cors_response(simplejson.dumps({
+        'success': True,
+        'items': items
+    }))
 
 
 @dajaxice_register(name='recipient.claim')
@@ -36,7 +41,10 @@ def claim(request, recipient_id):
             # TODO: Change to manual claim process
             recipients[0].owner = request.user
             recipients[0].save()
-            return simplejson.dumps({'success': True, 'recipient_id': recipient_id})
+            return simplejson.dumps({
+                'success': True,
+                'recipient_id': recipient_id
+            })
         else:
             return build_error(ERROR.RECIPIENT.ALREADY_CLAIMED)
     else:

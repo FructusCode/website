@@ -7,7 +7,8 @@ from website.apwan.models.recipient_reference import RecipientReference
 __author__ = 'Dean Gardiner'
 
 SPECIAL_PHRASES = [
-    '~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-', '+', '=',
+    '~', '`', '!', '@', '#', '$', '%', '^',
+    '&', '*', '(', ')', '_', '-', '+', '=',
     ',', '.', '/', '?',
     ':', ';', '"', "'",
     '[', ']', '{', '}',

@@ -30,7 +30,7 @@ def render_with_account_menu(template_name, request, dictionary=None):
 
     dictionary['menu'] = {
         'payees': Payee.objects.all().filter(owner=request.user).order_by('title'),
-        'recipients': Recipient.objects.all().filter(owner=request.user).order_by('title')
+        'recipients': Recipient.objects.all().filter(owner=request.user).order_by('s_title')
     }
 
     return render_to_response(template_name, context_instance=RequestContext(request, dictionary))

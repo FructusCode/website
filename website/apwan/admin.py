@@ -15,12 +15,18 @@ __author__ = 'Dean Gardiner'
 
 
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'recipient', 'state', 'payer_name', 'amount', 'tip', 'currency')
+    list_display = (
+        'id', 'recipient', 'state', 'payer_name',
+        'amount', 'tip', 'currency'
+    )
 admin.site.register(Donation, DonationAdmin)
 
 
 class EntityAdmin(admin.ModelAdmin):
-    list_display = ('entity_title', 'image', 'suggested_amount', 'entity_description')
+    list_display = (
+        'entity_title', 'image', 'suggested_amount',
+        'entity_description'
+    )
 
     def entity_title(self, obj):
         return obj.__unicode__()
@@ -70,13 +76,19 @@ class RecipientReferenceAdmin(admin.ModelAdmin):
 
     def recipient_link(self, obj):
         url = reverse('admin:apwan_recipient_changelist')
-        return '<a href="%s?id=%s">%s</a>' % (url, obj.recipient_id, obj.recipient)
+        return '<a href="%s?id=%s">%s</a>' % (
+            url, obj.recipient_id, obj.recipient
+        )
     recipient_link.allow_tags = True
 admin.site.register(RecipientReference, RecipientReferenceAdmin)
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'service', 'service_type', 'service_id', 'link_type', 'email')
+    list_display = (
+        'owner',
+        'service', 'service_type', 'service_id',
+        'link_type', 'email'
+    )
     list_display_links = ('service_id',)
     exclude = ('data',)
 
