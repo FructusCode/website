@@ -47,12 +47,16 @@ class Recipient(models.Model):
              payee_include=False):
         """Return a safe dict of the modal data
 
-        entities_include -- include recipient entities in result (adds 'entities' key [list])
-        entities_filter  -- entity query filter
-        entities_limit   -- max number of entities to return (adds 'entities_more' [int] when applicable)
+        entities_include -- include recipient entities in result
+                            (adds 'entities' key [list])
 
-        check_owner      -- checks if the check_owner [User] instance is the owner of this recipient
-                            (adds 'owned' key [bool])
+        entities_filter  -- entity query filter
+
+        entities_limit   -- max number of entities to return
+                            (adds 'entities_more' [int] when applicable)
+
+        check_owner      -- checks if the check_owner [User] owns this
+                            recipient. (adds 'owned' key [bool])
 
         payee_include    -- include payee in result
         """
@@ -71,12 +75,18 @@ class Recipient(models.Model):
                 entities_filter = {}
             item['entities'] = []
             if entities_limit is not None:
-                entities = Entity.objects.all().filter(recipient=self, **entities_filter)[:entities_limit]
-                entity_count = Entity.objects.all().filter(recipient=self, **entities_filter).count()
+                entities = Entity.objects.all().filter(
+                    recipient=self, **entities_filter
+                )[:entities_limit]
+                entity_count = Entity.objects.all().filter(
+                    recipient=self, **entities_filter
+                ).count()
                 if entity_count > entities_limit:
                     item['entities_more'] = entity_count - entities_limit
             else:
-                entities = Entity.objects.all().filter(recipient=self, **entities_filter)
+                entities = Entity.objects.all().filter(
+                    recipient=self, **entities_filter
+                )
             for entity in entities:
                 item['entities'].append(entity.dict())
 

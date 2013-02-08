@@ -7,7 +7,8 @@ admin.autodiscover()
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 dajaxice_autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', 'django.views.generic.simple.redirect_to', {'url': '/home'}),
     url(r'^home/$', 'website.apwan.views.home.index'),
 

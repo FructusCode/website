@@ -75,7 +75,7 @@ class MusicEntityGenerator(EntityGenerator):
                 l_artist['id'],
                 EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
                 artist=l_artist['name']
-        )
+            )
         if e_artist_created:
             print "Artist Created"
             e_artist.recipient.add(recipient)
@@ -92,7 +92,7 @@ class MusicEntityGenerator(EntityGenerator):
                     artist=l_artist['name'],
                     album=l_releases[0][0]['title'],
                     parent=e_artist
-            )
+                )
             if e_album_created:
                 print "Album Created"
                 e_album.recipient.add(recipient)
@@ -110,7 +110,7 @@ class MusicEntityGenerator(EntityGenerator):
                     album=l_releases[0][0]['title'],
                     track=l_recording['title'],
                     parent=e_album
-            )
+                )
             if e_track_created:
                 print "Track Created"
                 e_track.recipient.add(recipient)
@@ -149,7 +149,6 @@ class MusicEntityGenerator(EntityGenerator):
         if text is None:
             return None
         return re.sub(r'([+\-&|!(){}\[\]\^"~*?:\\])', r'\\\1', text)
-
 
     @staticmethod
     def _request(query, artist, album=None, track=None):

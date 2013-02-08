@@ -44,7 +44,8 @@ class Donation(models.Model):
 
     state = models.CharField(max_length=12, choices=STATES, default=STATE_NEW)
 
-    payer_name = models.CharField(max_length=64, default="Anonymous")  # TODO: This can be replaced with user accounts
+    # TODO: "payer_name" can be replaced with user accounts
+    payer_name = models.CharField(max_length=64, default="Anonymous")
 
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     tip = models.DecimalField(max_digits=8, decimal_places=2, default=0)

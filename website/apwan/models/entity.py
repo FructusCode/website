@@ -44,15 +44,20 @@ class Entity(models.Model):
 
     image = models.CharField(max_length=64, null=True)
     type = models.IntegerField(choices=TYPES)
-    suggested_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
+    suggested_amount = models.DecimalField(max_digits=8, decimal_places=2,
+                                           null=True)
 
     def description(self, max_length=-1):
         desc = ""
         if self.type == Entity.TYPE_MUSIC:
             if self.track:
-                desc = self._join_limit(" - ", [self.track, self.album, self.artist], max_length)
+                desc = self._join_limit(" - ", [
+                    self.track, self.album, self.artist
+                ], max_length)
             elif self.album:
-                desc = self._join_limit(" - ", [self.album, self.artist], max_length)
+                desc = self._join_limit(" - ", [
+                    self.album, self.artist
+                ], max_length)
             else:
                 desc = string_length_limit(self.artist, max_length)
         else:

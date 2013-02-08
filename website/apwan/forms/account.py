@@ -16,9 +16,10 @@ class PayeeSettingsForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(
-            Fieldset('Payee Settings',
-                     'title',
-                     'account_id'
+            Fieldset(
+                'Payee Settings',
+                'title',
+                'account_id'
             ),
             FormActions(
                 Submit('submit', 'Save Changes', css_class='btn-primary'),
@@ -59,8 +60,9 @@ class RecipientSettingsForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(
-            Fieldset('Recipient Settings',
-                     'payee_id'
+            Fieldset(
+                'Recipient Settings',
+                'payee_id'
             ),
             FormActions(
                 Submit('submit', 'Save Changes', css_class='btn-primary'),

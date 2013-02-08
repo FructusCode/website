@@ -1,7 +1,8 @@
 # Django settings for website project.
 import os
 
-rootPath = os.path.abspath(os.path.dirname(os.path.abspath( __file__ )) + os.sep + ".." + os.sep)
+rootPath = os.path.abspath(
+    os.path.dirname(os.path.abspath(__file__)) + os.sep + ".." + os.sep)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,12 +15,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'database.db',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'database.db',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -75,7 +76,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'dajaxice.finders.DajaxiceFinder',
 )
 
@@ -112,6 +113,7 @@ ROOT_URLCONF = 'website.urls'
 
 
 BASE_URL = None  # Automatically determine our URL
+
 
 def build_url(request, path):
     global BASE_URL

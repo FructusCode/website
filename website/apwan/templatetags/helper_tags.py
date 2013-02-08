@@ -5,6 +5,7 @@ register = template.Library()
 
 __author__ = 'Dean Gardiner'
 
+
 @register.simple_tag
 def active(request, pattern):
     if not pattern.startswith('/'):

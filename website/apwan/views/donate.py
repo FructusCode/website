@@ -18,7 +18,8 @@ def complete(request, service):
     if settings.DEBUG and 'force' in request.GET:
         force = True
 
-    donation = Donation.objects.filter(checkout_id=request.GET['checkout_id'], payee__user__service=service)
+    donation = Donation.objects.filter(checkout_id=request.GET['checkout_id'],
+                                       payee__user__service=service)
     if len(donation) == 1:
         donation = donation[0]
     elif len(donation) > 1:
@@ -41,4 +42,5 @@ def complete(request, service):
                               Donation.STATE_CAPTURED, Donation.STATE_SETTLED]:
             return HttpResponse("Donation Complete")
         else:
-            return HttpResponse("Donation Service Failure: " + donation.get_state_display())
+            return HttpResponse("Donation Service Failure: " +
+                                donation.get_state_display())

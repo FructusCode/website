@@ -17,4 +17,5 @@ class UserProfile(models.Model):
 
     user = models.ForeignKey(User)
 
-    preferred_contact_method = models.IntegerField(choices=CONTACT_METHODS, default=CONTACT_METHOD_EMAIL)
+    preferred_contact_method = models.IntegerField(
+        choices=CONTACT_METHODS, default=CONTACT_METHOD_EMAIL)

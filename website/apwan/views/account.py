@@ -29,11 +29,17 @@ def render_with_account_menu(template_name, request, dictionary=None):
         dictionary = {}
 
     dictionary['menu'] = {
-        'payees': Payee.objects.all().filter(owner=request.user).order_by('title'),
-        'recipients': Recipient.objects.all().filter(owner=request.user).order_by('s_title')
+        'payees': Payee.objects.all().filter(
+            owner=request.user
+        ).order_by('title'),
+
+        'recipients': Recipient.objects.all().filter(
+            owner=request.user
+        ).order_by('s_title')
     }
 
-    return render_to_response(template_name, context_instance=RequestContext(request, dictionary))
+    return render_to_response(
+        template_name, context_instance=RequestContext(request, dictionary))
 
 
 @login_required
@@ -107,7 +113,9 @@ def payee_add(request):
 
     return render_with_account_menu('account/payee/add.html', request, {
         'error': error,
-        'accounts': Service.objects.filter(owner=request.user, service_type=Service.TYPE_PAYEE_USER),
+        'accounts': Service.objects.filter(
+            owner=request.user, service_type=Service.TYPE_PAYEE_USER
+        ),
         'wepay': {
             'authorization_url': wepay.get_authorization_url(
                 build_url(request, reverse('account-payee-add-wepay'))
@@ -172,7 +180,8 @@ def recipient_settings(request, slug):
     payee_choices = Payee.objects.filter(owner=request.user)
 
     if request.method == 'POST':
-        form = RecipientSettingsForm(data=request.POST, recipient=recipient, payee_choices=payee_choices)
+        form = RecipientSettingsForm(data=request.POST, recipient=recipient,
+                                     payee_choices=payee_choices)
         if form.is_valid():
             recipient.payee = payee_choices.filter(id=form.cleaned_data['payee_id'])[0]
             recipient.save()

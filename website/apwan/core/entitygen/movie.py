@@ -55,7 +55,7 @@ class MovieEntityGenerator(EntityGenerator):
                         company['id'], company['name'],
                         RecipientReference.TYPE_THEMOVIEDB,
                         Recipient.TYPE_MOVIE_PRODUCTION_COMPANY
-                )
+                    )
                 e_movie.recipient.add(e_company)
 
         return e_movie

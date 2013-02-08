@@ -15,10 +15,11 @@ class WePayFindAccountForm(forms.Form):
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
-        Fieldset('Find Account',
-                 'payee_id',
-                 'name',
-                 'reference_id',
+        Fieldset(
+            'Find Account',
+            'payee_id',
+            'name',
+            'reference_id',
         ),
         FormActions(
             Submit('submit', 'Find', css_class='btn-primary')
@@ -67,14 +68,16 @@ class WePayCreateCheckoutForm(forms.Form):
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
-        Fieldset('Create Checkout',
-                 'payee_id',
-                 'account_id',
-                 'short_description',
-                 'type',
-                 PrependedText('amount', '$'),
+        Fieldset(
+            'Create Checkout',
+            'payee_id',
+            'account_id',
+            'short_description',
+            'type',
+            PrependedText('amount', '$'),
         ),
-        Fieldset('Extra Fields',
+        Fieldset(
+            'Extra Fields',
             'long_description',
             'payer_email_message',
             'payee_email_message',
