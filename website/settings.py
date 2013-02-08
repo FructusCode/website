@@ -137,6 +137,10 @@ JSTEMPLATE_DIRS = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
+JENKINS_TASKS = [
+    'website.tests.tasks.run_pep8',
+]
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,6 +149,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+
+    'django_jenkins',
 
     'dajax',
     'dajaxice',
