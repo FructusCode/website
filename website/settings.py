@@ -137,9 +137,13 @@ JSTEMPLATE_DIRS = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
-JENKINS_TASKS = [
+JENKINS_TASKS = (
     'website.tests.tasks.run_pep8',
-]
+)
+
+PROJECT_APPS = (
+    'website.apwan',
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
