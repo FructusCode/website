@@ -25,14 +25,21 @@ class Task(BaseTask):
 
         class JenkinsReport(pep8.BaseReport):
             def error(instance, line_number, offset, text, check):
-                code = super(JenkinsReport, instance).error(line_number, offset, text, check)
+                code = super(JenkinsReport, instance).error(
+                    line_number, offset, text, check
+                )
 
                 if not code:
                     return
                 sourceline = instance.line_offset + line_number
-                self.output.write('%s:%s:%s: %s\n' % (instance.filename, sourceline, offset+1, text))
+                self.output.write('%s:%s:%s: %s\n' % (
+                    instance.filename, sourceline, offset+1, text)
+                )
     
-        pep8style = pep8.StyleGuide(parse_argv=False, config_file='.pep8', reporter=JenkinsReport)
+        pep8style = pep8.StyleGuide(
+            parse_argv=False, config_file='.pep8',
+            reporter=JenkinsReport
+        )
 
         for location in locations:
             pep8style.input_dir(relpath(location))
