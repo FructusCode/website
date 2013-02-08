@@ -42,9 +42,18 @@ class WePayCreateCheckoutForm(forms.Form):
     amount = forms.DecimalField(decimal_places=2)
 
     # Extra Fields
-    long_description = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
-    payer_email_message = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
-    payee_email_message = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
+    long_description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3})
+    )
+    payer_email_message = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3})
+    )
+    payee_email_message = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3})
+    )
     reference_id = forms.CharField(required=False)
     app_fee = forms.DecimalField(required=False, decimal_places=2)
     fee_payer = forms.ChoiceField(

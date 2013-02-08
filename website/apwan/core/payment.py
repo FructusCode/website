@@ -5,7 +5,11 @@ from website.apwan.core import string_length_limit
 from website.apwan.models.donation import Donation
 from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service
-from website.keys import WEPAY_PRODUCTION, WEPAY_CLIENT_ID, WEPAY_CLIENT_SECRET
+from website.keys import (
+    WEPAY_PRODUCTION,
+    WEPAY_CLIENT_ID,
+    WEPAY_CLIENT_SECRET
+)
 
 __author__ = 'Dean Gardiner'
 
@@ -16,39 +20,62 @@ class PaymentPlatform():
     @staticmethod
     def db_payee_create(account, name="My Payee"):
         try:
-            Payee.objects.create(owner=account.owner, account=account, name=name)
+            Payee.objects.create(
+                owner=account.owner,
+                account=account,
+                name=name
+            )
         except IntegrityError, e:
             return False
         return True
 
     @staticmethod
-    def db_donation_create(entity, recipient, payee, amount, currency=Donation.CURRENCY_USD,
-                           tip=0.0, payer_name="Anonymous"):
+    def db_donation_create(entity, recipient, payee,
+                           amount, currency=Donation.CURRENCY_USD, tip=0.0,
+                           payer_name="Anonymous"):
         try:
-            return Donation.objects.create(entity=entity, recipient=recipient, payee=payee,
-                                           amount=amount, currency=currency, tip=tip,
-                                           payer_name=payer_name, state=Donation.STATE_NEW)
+            return Donation.objects.create(
+                entity=entity,
+                recipient=recipient,
+                payee=payee,
+
+                amount=amount,
+                currency=currency,
+                tip=tip,
+
+                payer_name=payer_name,
+                state=Donation.STATE_NEW
+            )
         except IntegrityError, e:
             return None
 
     @staticmethod
     def db_service_create(owner, service, service_id, link_type, data):
         try:
-            return Service.objects.create(owner=owner, service=service, service_id=service_id,
-                                          service_type=Service.TYPE_PAYEE_USER,
-                                          link_type=link_type, data=data)
+            return Service.objects.create(
+                owner=owner,
+
+                service=service,
+                service_id=service_id,
+                service_type=Service.TYPE_PAYEE_USER,
+
+                link_type=link_type,
+                data=data
+            )
         except IntegrityError, e:
             return None
 
 
 class WePayPaymentPlatform(PaymentPlatform):
+    DEFAULT_AUTH_SCOPE = "manage_accounts,collect_payments,view_user"
+
     def __init__(self):
         self.wepay = WePay(
             production=WEPAY_PRODUCTION,
             store_token=False
         )
 
-    def get_authorization_url(self, redirect_uri, scope="manage_accounts,collect_payments,view_user"):
+    def get_authorization_url(self, redirect_uri, scope=DEFAULT_AUTH_SCOPE):
         return self.wepay.get_authorization_url(
             redirect_uri, WEPAY_CLIENT_ID, scope=scope
         )
@@ -100,19 +127,23 @@ class WePayPaymentPlatform(PaymentPlatform):
             token=payee.user.data['access_token']
         )
 
-    def donation_create(self, entity, recipient, payee, amount, tip=0, redirect_uri=None, callback_uri=None):
+    def donation_create(self, entity, recipient, payee,
+                        amount, tip=0,
+                        redirect_uri=None, callback_uri=None):
         amount = float(amount)
         tip = float(tip)
         if payee is None or payee.user is None:
             return None, None
 
-        donation = self.db_donation_create(entity, recipient, payee, amount, tip=tip)
+        donation = self.db_donation_create(entity, recipient, payee,
+                                           amount, tip=tip)
 
         # Create Transaction Short Description
         short_description = ""
         if tip > 0:
             short_description = string_length_limit(
-                recipient.title, 127 - len(PaymentPlatform.DESC_FRUCTUS_TIP)) + PaymentPlatform.DESC_FRUCTUS_TIP
+                recipient.title, 127 - len(PaymentPlatform.DESC_FRUCTUS_TIP)
+            ) + PaymentPlatform.DESC_FRUCTUS_TIP
         else:
             short_description = string_length_limit(recipient.title, 127)
 
@@ -133,7 +164,8 @@ class WePayPaymentPlatform(PaymentPlatform):
         params = {
             'account_id': payee.account_id,
             'short_description': short_description,
-            'long_description': string_length_limit(long_description, max_length=2047),
+            'long_description': string_length_limit(long_description,
+                                                    max_length=2047),
             'type': 'DONATION',
             'amount': amount + tip,
             'app_fee': tip,

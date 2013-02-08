@@ -22,7 +22,8 @@ class PayeeSettingsForm(forms.Form):
             ),
             FormActions(
                 Submit('submit', 'Save Changes', css_class='btn-primary'),
-                HTML('<a class="btn" href="/account/payee/%s">Cancel</a>' % payee.slug)
+                HTML('<a class="btn" href="/account/payee/%s">Cancel</a>'
+                     % payee.slug)
             )
         )
         super(PayeeSettingsForm, self).__init__(data=data, initial={
@@ -34,7 +35,8 @@ class PayeeSettingsForm(forms.Form):
             if not data or data['account_id'] != payee.account_id:
                 account_choices = []
                 for account in wepay.account_find(payee):
-                    account_choices.append((account['account_id'], account['name']))
+                    account_choices.append(
+                        (account['account_id'], account['name']))
                 self.fields['account_id'].choices = tuple(account_choices)
 
     def clean(self):
@@ -51,7 +53,8 @@ class PayeeSettingsForm(forms.Form):
 class RecipientSettingsForm(forms.Form):
     payee_id = forms.ChoiceField(label="Payee")
 
-    def __init__(self, data=None, recipient=None, payee_choices=None, *args, **kwargs):
+    def __init__(self, data=None, recipient=None, payee_choices=None,
+                 *args, **kwargs):
         # Crispy Forms Layout
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
@@ -61,7 +64,8 @@ class RecipientSettingsForm(forms.Form):
             ),
             FormActions(
                 Submit('submit', 'Save Changes', css_class='btn-primary'),
-                HTML('<a class="btn" href="/account/recipient/%s">Cancel</a>' % recipient.slug)
+                HTML('<a class="btn" href="/account/recipient/%s">Cancel</a>'
+                     % recipient.slug)
             )
         )
         recipient_payee_id = None
