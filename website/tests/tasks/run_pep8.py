@@ -33,9 +33,9 @@ class Task(BaseTask):
                     return
                 sourceline = instance.line_offset + line_number
                 self.output.write('%s:%s:%s: %s\n' % (
-                    instance.filename, sourceline, offset+1, text)
+                    instance.filename, sourceline, offset + 1, text)
                 )
-    
+
         pep8style = pep8.StyleGuide(
             parse_argv=False, config_file='.pep8',
             reporter=JenkinsReport
@@ -43,5 +43,5 @@ class Task(BaseTask):
 
         for location in locations:
             pep8style.input_dir(relpath(location))
-        
+
         self.output.close()
