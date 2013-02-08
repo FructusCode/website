@@ -138,6 +138,7 @@ JSTEMPLATE_DIRS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pylint',
     'website.tests.tasks.run_pep8',
 )
 
