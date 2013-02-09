@@ -2,12 +2,9 @@
 # pylint: disable=C0111
 
 import donation
-assert donation
-
 import entity
-assert entity
-
 import recipient
-assert recipient
+
+assert (donation, entity, recipient)
 
 __author__ = 'Dean Gardiner'

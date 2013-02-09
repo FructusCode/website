@@ -2,18 +2,11 @@
 # pylint: disable=C0111
 
 import account
-assert account
-
 import callback
-assert callback
-
 import dev
-assert dev
-
 import donate
-assert donate
-
 import home
-assert home
+
+assert (account, callback, dev, donate, home)
 
 __author__ = 'Dean Gardiner'
