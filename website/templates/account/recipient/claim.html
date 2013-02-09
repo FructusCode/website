@@ -7,14 +7,14 @@
 
 {% block account_body %}
     {% addtoblock "css" %}
-        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/account/recipient/claim.css"/>
+        <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}apwan/templates/account/recipient/claim.css"/>
     {% endaddtoblock %}
 
-    {% addtoblock "javascript" %}
+    {% addtoblock "js" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
-        <script src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
-        <script src="{{ STATIC_URL }}libs/django.mustache.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}libs/django.mustache.js"></script>
         {% mustachejs "account/recipient/claim_result_item" %}
         <script type="text/javascript" src="{{ STATIC_URL }}apwan/templates/account/recipient/claim.js"></script>
     {% endaddtoblock %}

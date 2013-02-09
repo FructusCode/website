@@ -5,7 +5,7 @@
 {% load jstemplate %}
 
 {% block dev_index_container %}
-    {% addtoblock "javascript" %}
+    {% addtoblock "js" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
         {% dajaxice_js_import %}
         <script src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>

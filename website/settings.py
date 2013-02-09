@@ -47,6 +47,12 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+COMPRESS_ENABLED = False
+
+COMPRESS_PRECOMPILERS = (
+    ('text/less', 'lessc {infile} {outfile}'),
+)
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = ''
@@ -78,6 +84,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'dajaxice.finders.DajaxiceFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 SECRET_KEY = 'dmwawhazvr_7b01q7v92k&amp;bo9w%+$wqqgyszk##a_5^reykd2_'
@@ -166,6 +173,7 @@ INSTALLED_APPS = (
     'sekizai',
     'jstemplate',
     'json_field',
+    'compressor',
 
     'django_like',
     'south',

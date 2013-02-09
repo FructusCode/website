@@ -1,4 +1,5 @@
 {% load sekizai_tags %}
+{% load compress %}
 
 {% addtoblock "css" %}
     <link rel="stylesheet" href="{{ STATIC_URL }}apwan/lib/bootstrap/css/bootstrap.min.css"/>
@@ -6,7 +7,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/base_menu.css"/>
 {% endaddtoblock %}
 
-{% addtoblock "javascript" %}
+{% addtoblock "js" %}
     <script src="{{ STATIC_URL }}apwan/js/lib/jquery-1.8.3.min.js"></script>
     <script src="{{ STATIC_URL }}apwan/lib/bootstrap/js/bootstrap.min.js"></script>
 {% endaddtoblock %}
@@ -16,11 +17,11 @@
     <head>
         <title>{% block base_title %}{% endblock %}Fruct.us</title>
 
-        {% render_block "css" %}
+        {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
     </head>
     <body>
         {% block base_body %}{% endblock %}
 
-        {% render_block "javascript" %}
+        {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
     </body>
 </html>

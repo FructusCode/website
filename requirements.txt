@@ -9,6 +9,7 @@ django-classy-tags==0.4
 django-sekizai==0.7
 django-jstemplate==1.1.1
 django-json-field==0.4.2
+django_compressor==dev
 
 django-like==0.0.3
 South==0.7.6
