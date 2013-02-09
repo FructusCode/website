@@ -70,6 +70,9 @@ class DictObject(object):
         return root
 
 
+# NOTE: the following error message strings are turned into paths
+# and the messages are placed into a 'messages' dictionary
+# in each class on import.
 class API_ERROR:
     INVALID_PARAMETER = "Given parameter is invalid"
     NOT_IMPLEMENTED = "Functionality not implemented yet"
@@ -90,6 +93,7 @@ class API_ERROR:
 
 
 # Initialize API_ERROR messages
+# (Turns error class vars into paths and creates 'messages' dict)
 def init_errors(error, parent=None):
     if error == API_ERROR and parent is None:
         error.__path__ = ""
