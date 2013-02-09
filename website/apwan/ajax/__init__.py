@@ -5,6 +5,6 @@ import donation
 import entity
 import recipient
 
-assert (donation, entity, recipient)
+assert (donation, entity, recipient) != ()
 
 __author__ = 'Dean Gardiner'

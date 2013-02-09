@@ -7,6 +7,6 @@ import dev
 import donate
 import home
 
-assert (account, callback, dev, donate, home)
+assert (account, callback, dev, donate, home) != ()
 
 __author__ = 'Dean Gardiner'
