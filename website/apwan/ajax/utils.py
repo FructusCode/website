@@ -1,3 +1,4 @@
+import inspect
 from django.http import HttpResponse
 from django.utils import simplejson
 
@@ -91,6 +92,80 @@ ERROR = DictObject.build({
         'ALREADY_CLAIMED': "Recipient has already been claimed"
     }
 })
+
+
+class API_ERROR:
+    INVALID_PARAMETER = "Given parameter is invalid"
+    NOT_IMPLEMENTED = "Functionality not implemented yet"
+    UNKNOWN = "An unknown error occurred"
+
+    class AUTHENTICATION:
+        NOT_LOGGED_IN = "You aren't logged in"
+
+    class DONATION:
+        NO_PAYEE = "No Payee available for this recipient"
+        SERVICE_FAILED = "Payment platform failed to process our request"
+
+    class ENTITY:
+        NOT_FOUND = "Entity not found"
+
+    class RECIPIENT:
+        ALREADY_CLAIMED = "Recipient has already been claimed"
+
+
+# Initialize API_ERROR messages
+def init_errors(error=API_ERROR, parent=None):
+    if error == API_ERROR and parent is None:
+        error.__path__ = ""
+
+    for k, v in error.__dict__.items():
+        if not k.startswith('__') and not k.endswith('__'):
+            if type(v) is str or inspect.isclass(v):
+                k_path = k
+                if error.__path__ != '':
+                    k_path = error.__path__ + '.' + k_path
+
+                if inspect.isclass(v):
+                    v.__path__ = k_path
+                    init_errors(v, error)
+                else:
+                    if not hasattr(error, 'messages'):
+                        error.messages = {}
+                    error.messages[k] = error.__dict__[k]
+                    error.__dict__[k] = k_path
+init_errors()
+
+
+def find_error(key):
+    key = key.split('.')
+    parent = None
+    cur = API_ERROR
+    name = None
+
+    for part in key:
+        if hasattr(cur, part):
+            parent = cur
+            cur = getattr(cur, part)
+            name = part
+        elif hasattr(cur, part.upper()):
+            parent = cur
+            cur = getattr(cur, part.upper())
+            name = part.upper()
+        elif hasattr(cur, part.lower()):
+            parent = cur
+            cur = getattr(cur, part.lower())
+            name = part.lower()
+        else:
+            return None, None, None
+
+    return name, cur, parent
+
+
+def find_message(key):
+    name, path, parent = find_error(key)
+    if name is None:
+        return None
+    return parent.messages[name]
 
 
 def build_error(key, **kwargs):
