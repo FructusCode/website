@@ -75,23 +75,23 @@ function get_val(element)
 
 function load_example_data()
 {
-    var type = parseInt(_search_type.val());
-    var rand = Math.floor(Math.random() * example_data[type].length);
+    var content_type = parseInt(_search_type.val());
+    var rand = Math.floor(Math.random() * example_data[content_type].length);
 
-    if(type == 2) {
+    if(content_type == 2) {
         _search_title.val('');
         _search_year.val('');
-        _search_artist.val(example_data[type][rand]['artist']);
-        _search_album.val(example_data[type][rand]['album']);
-        _search_track.val(example_data[type][rand]['track']);
-    } else if(type == 1) {
-        _search_title.val(example_data[type][rand]['title']);
-        _search_year.val(example_data[type][rand]['year']);
+        _search_artist.val(example_data[content_type][rand]['artist']);
+        _search_album.val(example_data[content_type][rand]['album']);
+        _search_track.val(example_data[content_type][rand]['track']);
+    } else if(content_type == 1) {
+        _search_title.val(example_data[content_type][rand]['title']);
+        _search_year.val(example_data[content_type][rand]['year']);
         _search_artist.val('');
         _search_album.val('');
         _search_track.val('');
     } else {
-        _search_title.val(example_data[type][rand]);
+        _search_title.val(example_data[content_type][rand]);
         _search_year.val('');
         _search_artist.val('');
         _search_album.val('');
@@ -122,30 +122,30 @@ function process_result(result)
 
 function do_search()
 {
-    var type = null;
+    var content_type = null;
     if(_search_type.val() != '') {
-        type = parseInt(_search_type.val());
+        content_type = parseInt(_search_type.val());
     }
 
     var params = {};
 
-    if(type == 2)
+    if(content_type == 2)
     {
         var artist = get_val(_search_artist);
         var album = get_val(_search_album);
         var track = get_val(_search_track);
 
-        console.log("Searching '" + artist + "','" + album + "','" + track + "', (" + type + ")");
+        console.log("Searching '" + artist + "','" + album + "','" + track + "', (" + content_type + ")");
 
-        params = {'type':type, 'artist': artist};
+        params = {'content_type':content_type, 'artist': artist};
         if(album != null) params['album'] = album;
         if(track != null) params['track'] = track;
     } else {
         var title = get_val(_search_title);
 
-        params = {'type':type, 'title': title};
+        params = {'content_type':content_type, 'title': title};
 
-        if(type == 1) {
+        if(content_type == 1) {
             var year = null;
             if(_search_year.val() != '') {
                 year = parseInt(_search_year.val());

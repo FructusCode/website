@@ -55,16 +55,16 @@ Entity
 --
 Search for an entity (artist, album, track, movie, tv show, game)
 
-| Key      | Type     | Description   |
-|----------|----------|---------------|
-| title    | string   | Search Title (required for TV Show, Movie, Game)
-| year     | int      | Search Year (required for Movie)
-|          |          |
-| artist   | string   | Search Artist (required for Music)
-| *album*  | *string* | *Search Album (optional for Music)*
-| *track*  | *string* | *Search Track (optional for Music)*
-|          |          |
-| *type*   | *int*    | *Entity Type*  **(Optional, but Recommended to put less load on server)**
+| Key              | Type     | Description   |
+|------------------|----------|---------------|
+| title            | string   | Search Title (required for TV Show, Movie, Game)
+| year             | int      | Search Year (required for Movie)
+|                  |          |
+| artist           | string   | Search Artist (required for Music)
+| *album*          | *string* | *Search Album (optional for Music)*
+| *track*          | *string* | *Search Track (optional for Music)*
+|                  |          |
+| *content_type*   | *int*    | *Entity Content Type*  **(Optional, but Recommended to put less load on server)**
 
 **THROWABLE ERRORS:** NOT_IMPLEMENTED, UNKNOWN, INVALID_PARAMETER, ENTITY.NOT_FOUND
 

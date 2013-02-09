@@ -14,13 +14,13 @@ __author__ = 'Dean Gardiner'
 # Search
 #
 @dajaxice_register(method='GET', name='entity.search')
-def search(request, type=None,
+def search(request, content_type=None,
            title=None, year=None,
            artist=None, album=None, track=None):
     try:
-        if type == Entity.TYPE_MUSIC:
+        if content_type == Entity.TYPE_MUSIC:
             return search_music(title, year, artist, album, track)
-        elif type == Entity.TYPE_MOVIE:
+        elif content_type == Entity.TYPE_MOVIE:
             return search_movie(title, year, artist, album, track)
         else:
             return cors_response(build_error(ERROR.NOT_IMPLEMENTED))
