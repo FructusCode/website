@@ -40,7 +40,7 @@ class MovieEntityGenerator(EntityGenerator):
             print "'release_date' unexpected value"
             return None
 
-        e_movie_ref, e_movie, e_movie_created = EntityGenerator.create_entity(
+        _, e_movie, e_movie_created = EntityGenerator.create_entity(
             l_movie['id'],
             EntityReference.TYPE_THEMOVIEDB, Entity.TYPE_MOVIE,
             title=l_movie['title'],
@@ -50,7 +50,7 @@ class MovieEntityGenerator(EntityGenerator):
             print "Movie Created"
 
             for company in l_movie['production_companies']:
-                (e_company_ref, e_company, e_company_created) =\
+                (_, e_company, _) =\
                     MovieEntityGenerator.create_recipient(
                         company['id'], company['name'],
                         RecipientReference.TYPE_THEMOVIEDB,

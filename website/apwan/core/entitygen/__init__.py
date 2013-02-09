@@ -48,6 +48,9 @@ def search_like(text):
 
 
 class EntityGenerator():
+    def __init__(self):
+        pass
+
     @staticmethod
     def create_recipient(key, title, ref_type, type):
         # Search for id in recipient references
