@@ -1,4 +1,5 @@
-from django.core.urlresolvers import reverse
+# pylint: disable=E0611
+# pylint: disable=F0401
 from django.db import IntegrityError
 from wepay import WePay
 from website.apwan.core import string_length_limit
@@ -10,12 +11,17 @@ from website.keys import (
     WEPAY_CLIENT_ID,
     WEPAY_CLIENT_SECRET
 )
+# pylint: enable=E0611
+# pylint: enable=F0401
 
 __author__ = 'Dean Gardiner'
 
 
-class PaymentPlatform():
+class PaymentPlatform(object):
     DESC_FRUCTUS_TIP = " + Fruct.us Tip"
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def db_payee_create(account, name="My Payee"):
@@ -25,7 +31,7 @@ class PaymentPlatform():
                 account=account,
                 name=name
             )
-        except IntegrityError, e:
+        except IntegrityError:
             return False
         return True
 
@@ -46,7 +52,7 @@ class PaymentPlatform():
                 payer_name=payer_name,
                 state=Donation.STATE_NEW
             )
-        except IntegrityError, e:
+        except IntegrityError:
             return None
 
     @staticmethod
@@ -62,7 +68,7 @@ class PaymentPlatform():
                 link_type=link_type,
                 data=data
             )
-        except IntegrityError, e:
+        except IntegrityError:
             return None
 
 
@@ -70,6 +76,7 @@ class WePayPaymentPlatform(PaymentPlatform):
     DEFAULT_AUTH_SCOPE = "manage_accounts,collect_payments,view_user"
 
     def __init__(self):
+        super(WePayPaymentPlatform, self).__init__()
         self.wepay = WePay(
             production=WEPAY_PRODUCTION,
             store_token=False
