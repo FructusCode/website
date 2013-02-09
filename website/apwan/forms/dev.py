@@ -1,3 +1,5 @@
+# pylint: disable=R0924
+
 from crispy_forms.bootstrap import FormActions, PrependedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
