@@ -53,6 +53,7 @@ class Service(models.Model):
         raise NotImplementedError()
 
     def dict(self):
+        # pylint: disable=E1101
         return {
             'service': self.service,
             'service_label': self.get_service_display(),
@@ -68,3 +69,4 @@ class Service(models.Model):
             'username': self.username(),
             'email': self.email(),
         }
+        # pylint: enable=E1101

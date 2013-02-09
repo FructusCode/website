@@ -8,7 +8,6 @@ from website.apwan.ajax.utils import (
 )
 from website.apwan.core.payment import wepay
 from website.apwan.models.entity import Entity
-from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service
 from website.settings import build_url
 
@@ -57,7 +56,7 @@ def create(request, recipient_id, entity_id, amount):
             build_error(API_ERROR.DONATION.NO_PAYEE))
 
     if payee.user.service == Service.SERVICE_WEPAY:
-        donation, checkout_url = wepay.donation_create(
+        _, checkout_url = wepay.donation_create(
             entity, recipient, payee, amount,
             redirect_uri=build_url(request,
                                    reverse('donate-complete',

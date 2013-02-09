@@ -100,8 +100,10 @@ class Entity(models.Model):
 
         if full:
             item['recipients'] = []
+            # pylint: disable=E1101
             for re in self.recipient.all():
                 item['recipients'].append(re.dict())
+            # pylint: enable=E1101
 
         return item
 

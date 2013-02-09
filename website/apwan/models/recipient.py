@@ -60,6 +60,7 @@ class Recipient(models.Model):
 
         payee_include    -- include payee in result
         """
+        # pylint: disable=E1101
         item = {
             'id': self.id,
             'title': self.title,
@@ -68,6 +69,7 @@ class Recipient(models.Model):
             'type_label': self.get_type_display(),
             'claimed': self.owner is not None
         }
+        # pylint: enable=E1101
 
         # Include Entities
         if entities_include:
@@ -97,7 +99,9 @@ class Recipient(models.Model):
         # Include Payee
         if payee_include:
             if self.payee:
+                # pylint: disable=E1101
                 item['payee'] = self.payee.dict()
+                # pylint: enable=E1101
             else:
                 item['payee'] = None
 

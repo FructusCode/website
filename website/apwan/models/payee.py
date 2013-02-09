@@ -39,7 +39,9 @@ class Payee(models.Model):
         }
 
         if self.user:
+            # pylint: disable=E1101
             item['user'] = self.user.dict()
+            # pylint: enable=E1101
         else:
             item['user'] = None
 
