@@ -1,6 +1,6 @@
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
-from website.apwan.ajax.utils import cors_response, build_error, ERROR
+from website.apwan.ajax.utils import cors_response, build_error, API_ERROR
 from website.apwan.core.entitygen import search_like
 from website.apwan.models.recipient import Recipient
 
@@ -32,11 +32,11 @@ def search(request, title, limit=10, entities_include=False, entities_limit=5):
 def claim(request, recipient_id):
     recipients = Recipient.objects.all().filter(id=recipient_id)
     if len(recipients) == 0:
-        return build_error(ERROR.INVALID_PARAMETER, recipient_id=recipient_id)
+        return build_error(API_ERROR.INVALID_PARAMETER, recipient_id=recipient_id)
     elif len(recipients) == 1:
         if recipients[0].owner is None:
             if not request.user.is_authenticated():
-                return build_error(ERROR.AUTHENTICATION.NOT_LOGGED_IN)
+                return build_error(API_ERROR.AUTHENTICATION.NOT_LOGGED_IN)
 
             # TODO: Change to manual claim process
             recipients[0].owner = request.user
@@ -46,9 +46,9 @@ def claim(request, recipient_id):
                 'recipient_id': recipient_id
             })
         else:
-            return build_error(ERROR.RECIPIENT.ALREADY_CLAIMED)
+            return build_error(API_ERROR.RECIPIENT.ALREADY_CLAIMED)
     else:
-        return build_error(ERROR.INVALID_PARAMETER, recipient_id=recipient_id)
+        return build_error(API_ERROR.INVALID_PARAMETER, recipient_id=recipient_id)
 
 
 def get(request, recipient_id):

@@ -70,30 +70,6 @@ class DictObject(object):
         return root
 
 
-ERROR = DictObject.build({
-    'INVALID_PARAMETER': "Given parameter is invalid",
-    'NOT_IMPLEMENTED': "Functionality not implemented yet",
-    'UNKNOWN': "Unknown error occurred",
-
-    'AUTHENTICATION': {
-        'NOT_LOGGED_IN': "You aren't logged in"
-    },
-
-    'DONATION': {
-        'NO_PAYEE': "No Payee available for this recipient",
-        'SERVICE_FAILED': "Payment platform failed to process our request"
-    },
-
-    'ENTITY': {
-        'NOT_FOUND': "Entity not found"
-    },
-
-    'RECIPIENT': {
-        'ALREADY_CLAIMED': "Recipient has already been claimed"
-    }
-})
-
-
 class API_ERROR:
     INVALID_PARAMETER = "Given parameter is invalid"
     NOT_IMPLEMENTED = "Functionality not implemented yet"
@@ -114,7 +90,7 @@ class API_ERROR:
 
 
 # Initialize API_ERROR messages
-def init_errors(error=API_ERROR, parent=None):
+def init_errors(error, parent=None):
     if error == API_ERROR and parent is None:
         error.__path__ = ""
 
@@ -133,7 +109,7 @@ def init_errors(error=API_ERROR, parent=None):
                         error.messages = {}
                     error.messages[k] = error.__dict__[k]
                     error.__dict__[k] = k_path
-init_errors()
+init_errors(API_ERROR)
 
 
 def find_error(key):
@@ -169,24 +145,15 @@ def find_message(key):
 
 
 def build_error(key, **kwargs):
-    error = key
-    if type(error) is not DictObject:
-        error = ERROR.find(key)
-
-    if error is None:
-        error = ERROR.find(key.upper())
-
-    if error is None:
-        error = ERROR.find(key.lower())
-
-    if error is None:
-        raise KeyError()
+    name, path, parent = find_error(key)
+    if name is None:
+        raise ValueError()
 
     result = {
         'success': False,
         'error': {
-            'key': error.path.lower(),
-            'message': error.value
+            'key': path,
+            'message': parent.messages[name]
         }
     }
 
