@@ -24,7 +24,7 @@ def search(request, content_type=None,
             return search_movie(title, year, artist, album, track)
         else:
             return cors_response(build_error(API_ERROR.NOT_IMPLEMENTED))
-    except Exception, e:
+    except Exception:
         print traceback.format_exc()
         return cors_response(build_error(API_ERROR.UNKNOWN))
 
@@ -36,7 +36,7 @@ def search_music(title, year, artist, album, track):
     if title is not None or year is not None or artist is None:
         return cors_response(build_error(API_ERROR.INVALID_PARAMETER))
 
-    print "TYPE_MUSIC",\
+    print "TYPE_MUSIC", \
         '"' + str(artist) + '"',\
         '"' + str(album) + '"',\
         '"' + str(track) + '"'
