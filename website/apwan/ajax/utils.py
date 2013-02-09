@@ -17,78 +17,46 @@ def cors_response(data):
 def validate_int(value):
     try:
         return int(value), True
-    except ValueError, e:
+    except ValueError:
         return None, False
-    except TypeError, e:
+    except TypeError:
         return None, False
 
 
 def validate_float(value):
     try:
         return float(value), True
-    except ValueError, e:
+    except ValueError:
         return None, False
-    except TypeError, e:
+    except TypeError:
         return None, False
 
 
-class DictObject(object):
-    def __init__(self, path="", value=None):
-        self.path = path
-        self.value = value
-
-    def find(self, key):
-        if type(key) is str:
-            key = key.split('.')
-
-        if len(key) == 0:
-            return self
-
-        cur_key = key.pop(0)
-        if hasattr(self, cur_key):
-            return getattr(self, cur_key).find(key)
-        else:
-            return None
-
-    def __str__(self):
-        return self.path
-
-    @staticmethod
-    def build(dictionary, root=None):
-        if root is None:
-            root = DictObject()
-
-        for k, v in dictionary.items():
-            value = None
-            if type(v) is not dict:
-                value = v
-            item = DictObject((root.path + "." + k).strip('.'), value)
-            if type(v) is dict:
-                DictObject.build(v, item)
-            setattr(root, k, item)
-
-        return root
+# Base class used for error object classes
+class ErrorObject:
+    messages = {}
+    __path__ = ""
 
 
 # NOTE: the following error message strings are turned into paths
 # and the messages are placed into a 'messages' dictionary
 # in each class on import.
-class API_ERROR:
+class API_ERROR(ErrorObject):
     INVALID_PARAMETER = "Given parameter is invalid"
     NOT_IMPLEMENTED = "Functionality not implemented yet"
     UNKNOWN = "An unknown error occurred"
 
-    class AUTHENTICATION:
+    class AUTHENTICATION(ErrorObject):
         NOT_LOGGED_IN = "You aren't logged in"
 
-    class DONATION:
+    class DONATION(ErrorObject):
         NO_PAYEE = "No Payee available for this recipient"
         SERVICE_FAILED = "Payment platform failed to process our request"
 
-    class ENTITY:
+    class ENTITY(ErrorObject):
         NOT_FOUND = "Entity not found"
 
-    class RECIPIENT:
+    class RECIPIENT(ErrorObject):
         ALREADY_CLAIMED = "Recipient has already been claimed"
 
 
@@ -98,21 +66,21 @@ def init_errors(error, parent=None):
     if error == API_ERROR and parent is None:
         error.__path__ = ""
 
-    for k, v in error.__dict__.items():
-        if not k.startswith('__') and not k.endswith('__'):
-            if type(v) is str or inspect.isclass(v):
-                k_path = k
+    for attr_key, attr_value in error.__dict__.items():
+        if not attr_key.startswith('__') and not attr_key.endswith('__'):
+            if type(attr_value) is str or inspect.isclass(attr_value):
+                k_path = attr_key
                 if error.__path__ != '':
                     k_path = error.__path__ + '.' + k_path
 
-                if inspect.isclass(v):
-                    v.__path__ = k_path
-                    init_errors(v, error)
+                if inspect.isclass(attr_value):
+                    attr_value.__path__ = k_path
+                    init_errors(attr_value, error)
                 else:
                     if not hasattr(error, 'messages'):
                         error.messages = {}
-                    error.messages[k] = error.__dict__[k]
-                    error.__dict__[k] = k_path
+                    error.messages[attr_key] = error.__dict__[attr_key]
+                    error.__dict__[attr_key] = k_path
 init_errors(API_ERROR)
 
 
@@ -142,7 +110,7 @@ def find_error(key):
 
 
 def find_message(key):
-    name, path, parent = find_error(key)
+    name, _, parent = find_error(key)
     if name is None:
         return None
     return parent.messages[name]
@@ -161,7 +129,7 @@ def build_error(key, **kwargs):
         }
     }
 
-    for k, v in kwargs.items():
-        result['error'][k] = v
+    for arg_key, arg_value in kwargs.items():
+        result['error'][arg_key] = arg_value
 
     return simplejson.dumps(result)
