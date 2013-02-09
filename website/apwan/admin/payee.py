@@ -1,3 +1,5 @@
+# pylint: disable=R0904
+
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from website.apwan.models.payee import Payee

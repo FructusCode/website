@@ -1,3 +1,5 @@
+# pylint: disable=R0904
+
 from django.contrib import admin
 from website.apwan.models.service import Service
 
