@@ -47,39 +47,29 @@
     <br/>
     <h3>Link Account</h3>
     <ul class="thumbnails">
-        <li class="span4" style="background-color: white;">
-            <div class="thumbnail">
-                <img src="{{ STATIC_URL }}apwan/img/media/wepay.png" alt="">
+        {% for pk, pv in platforms.items %}
+            <li class="span4" style="background-color: white;">
+                <div class="thumbnail">
+                    <img src="{{ STATIC_URL }}apwan{{ pv.thumbnail }}" alt="">
 
-                <div class="caption">
-                    <span class="label label-info">United States</span>
-                    <h2>WePay</h2>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Vivamus placerat venenatis libero vel pellentesque.
-                    </p>
-                    <p>
-                        <a href="{{ wepay.authorization_url }}" class="btn">Link</a>
-                    </p>
+                    <div class="caption">
+                        <span class="label{% if pv.country_class %} {{ pv.country_class }}{% endif %}">
+                            {% if pv.country %}
+                                {{ pv.country }}
+                            {% else %}
+                                International
+                            {% endif %}
+                        </span>
+                        <h2>{{ pv.title }}</h2>
+                        <p>{{ pv.description }}</p>
+                        <p>
+                            {% if pv.type == 'oauth' %}
+                                <a href="{{ pv.oauth_url }}" class="btn">Link</a>
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </li>
-        <li class="span4" style="background-color: white;">
-            <div class="thumbnail">
-                <img src="holder.js/300x200/auto" alt="">
-
-                <div class="caption">
-                    <span class="label">International</span>
-                    <h2>Lorem</h2>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Vivamus placerat venenatis libero vel pellentesque.
-                    </p>
-                    <p>
-                        <a href="/account/payee/add/wepay/" class="btn">Link</a>
-                    </p>
-                </div>
-            </div>
-        </li>
+            </li>
+        {% endfor %}
     </ul>
 {% endblock %}

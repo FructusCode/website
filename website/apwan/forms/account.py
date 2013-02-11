@@ -4,6 +4,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Fieldset, Layout, HTML
 from django import forms
+from website.apwan.core import payment
 from website.apwan.core.payment import wepay
 
 __author__ = 'Dean Gardiner'
@@ -37,7 +38,7 @@ class PayeeSettingsForm(forms.Form):
         if payee:
             if not data or data['account_id'] != payee.account_id:
                 account_choices = []
-                for account in wepay.account_find(payee):
+                for account in payment.registry[payee.userservice.service].account_find(payee):
                     account_choices.append(
                         (account['account_id'], account['name']))
                 self.fields['account_id'].choices = tuple(account_choices)

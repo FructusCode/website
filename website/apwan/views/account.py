@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from wepay.exceptions import WePayError
+from website.apwan.core import payment
 from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
 from website.apwan.core.payment import wepay, PaymentPlatform
 from website.apwan.models.payee import Payee
@@ -17,6 +18,8 @@ __author__ = 'Dean Gardiner'
 ERRORS = {
     'INVALID_PAYEE': "<strong>Payee</strong> does not exist or access was denied",
     'INVALID_RECIPIENT': "<strong>Recipient</strong> does not exist or access was denied",
+    'ALREADY_AUTHORIZED': "<strong>Account</strong> already authorized",
+    'UNKNOWN_AUTHORIZATION_ERROR': "Unknown authorization error",
 }
 
 
@@ -99,14 +102,14 @@ def payee_add(request):
         try:
             account_id = int(request.POST['account_id'])
 
-            account = Service.objects.filter(owner=request.user, id=account_id)
-            if len(account) == 1:
-                account = account[0]
+            userservice = Service.objects.filter(owner=request.user, id=account_id)
+            if len(userservice) == 1:
+                userservice = userservice[0]
 
-                PaymentPlatform.db_payee_create(account)
+                PaymentPlatform.db_payee_create(userservice)
                 return redirect(reverse('account-profile'))
             else:
-                error = "Invalid Account ID"
+                error = "Invalid User Service ID"
 
         except ValueError:
             error = "Invalid Value"
@@ -116,11 +119,7 @@ def payee_add(request):
         'accounts': Service.objects.filter(
             owner=request.user, service_type=Service.TYPE_PAYEE_USER
         ),
-        'wepay': {
-            'authorization_url': wepay.get_authorization_url(
-                build_url(request, reverse('account-payee-add-wepay'))
-            )
-        }
+        'platforms': payment.registry.build_info_dict(request)
     })
 
 
@@ -130,19 +129,22 @@ def payee_add_wepay(request):
         return redirect(reverse('account-payee-add'))
 
     try:
-        result = wepay.service_create(
+        created, service = payment.registry[Service.SERVICE_WEPAY].service_create(
             request.user,
-            build_url(request, reverse('account-payee-add-wepay')),
-            request.GET['code']
+            redirect_uri=build_url(request, reverse('account-payee-add-wepay')),
+            code=request.GET['code']
         )
-        if result:
-            return redirect(reverse('account-profile'))
+        if service:
+            if created:
+                return redirect(reverse('account-profile'))
+            else:
+                return error_redirect('ALREADY_AUTHORIZED')
         else:
-            print 'error storing token (already exists?)'
+            return error_redirect('UNKNOWN_AUTHORIZATION_ERROR')
     except WePayError, e:
         print e
         if e.type == 'access_denied':
-            return redirect(wepay.get_authorization_url(
+            return redirect(payment.registry[Service.SERVICE_WEPAY].get_oauth_url(
                 build_url(request, reverse('account-payee-add-wepay'))
             ))
 

@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from website import settings
-from website.apwan.core.payment import wepay
+from website.apwan.core import payment
 from website.apwan.models.donation import Donation
 from website.apwan.models.service import Service
 
@@ -18,7 +18,7 @@ def complete(request, service):
     return_message = None
 
     donation = Donation.objects.filter(checkout_id=request.GET['checkout_id'],
-                                       payee__user__service=service)
+                                       payee__userservice__service=service)
     if len(donation) == 1:
         donation = donation[0]
     elif len(donation) > 1:
@@ -30,15 +30,12 @@ def complete(request, service):
         return HttpResponse(return_message)
 
     if donation.state == Donation.STATE_NEW or force:
-        if donation.payee.user.service == Service.SERVICE_WEPAY:
-            success = wepay.donation_update(donation)
-            if success:
-                donation.save()
-                return_message = "Donation Complete"
-            else:
-                return_message = "Unable to update donation"
+        success = payment.registry[donation.payee.userservice.service].donation_update(donation)
+        if success:
+            donation.save()
+            return_message = "Donation Complete"
         else:
-            return_message = "Donation Service Not Implemented"
+            return_message = "Unable to update donation"
     else:
         if donation.state in [Donation.STATE_AUTHORIZED, Donation.STATE_RESERVED,
                               Donation.STATE_CAPTURED, Donation.STATE_SETTLED]:

@@ -5,9 +5,9 @@
 {% block account_body %}
     <h2 class="title">{{ payee.title }}</h2>
     <a href="{% url account-payee-edit payee.slug %}" class="btn btn-mini"><i class="icon-edit"></i> Settings</a>
-    <span class="label label-info">{{ payee.user.service_label }}</span><br/>
+    <span class="label label-info">{{ payee.userservice.service_label }}</span><br/>
     <br/>
-    {% if payee.user.service == 1 %}
+    {% if payee.userservice.service == 1 %}
         {% if not payee.account_id %}
             <div class="alert alert-error">
                 <strong>No account selected</strong> - Please choose one in payee settings.
@@ -15,10 +15,10 @@
         {% endif %}
     {% endif %}
     <strong>User: </strong>
-    {% if payee.user.username %}
-        {{ payee.user.username }} ({{ payee.user.service_id }})
-    {% elif payee.user %}
-        {{ payee.user.service_id }}
+    {% if payee.userservice.username %}
+        {{ payee.userservice.username }} ({{ payee.userservice.service_id }})
+    {% elif payee.userservice %}
+        {{ payee.userservice.service_id }}
     {% else %}
         None
     {% endif %}

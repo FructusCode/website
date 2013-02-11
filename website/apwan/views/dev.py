@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from website.apwan.core import payment
 from website.apwan.forms.dev import WePayCreateCheckoutForm, WePayFindAccountForm
 from website.apwan.core.payment import wepay
 from website.apwan.models.payee import Payee
+from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
 
@@ -47,12 +49,12 @@ def wepay_account_find(request):
         form = WePayFindAccountForm(request.POST)
         if form.is_valid():
             payee = Payee.objects.get(pk=form.cleaned_data['payee_id'])
-            results = wepay.wepay.call(
+            results = payment.registry[Service.SERVICE_WEPAY].wepay.call(
                 '/account/find', {
                     'name':         form.cleaned_data['name'],
                     'reference_id': form.cleaned_data['reference_id'],
                 },
-                token=str(payee.token)
+                token=str(payee.userservice.data['access_token'])
             )
     else:
         form = WePayFindAccountForm()
@@ -71,7 +73,7 @@ def wepay_checkout_create(request):
         form = WePayCreateCheckoutForm(request.POST)
         if form.is_valid():
             payee = Payee.objects.get(pk=form.cleaned_data['payee_id'])
-            result = wepay.wepay.call(
+            result = payment.registry[Service.SERVICE_WEPAY].wepay.call(
                 '/checkout/create', {
                     'account_id':           str(form.cleaned_data['account_id']),
                     'short_description':    form.cleaned_data['short_description'],
@@ -86,7 +88,7 @@ def wepay_checkout_create(request):
                     'app_fee':              str(form.cleaned_data['app_fee']),
                     'fee_payer':            form.cleaned_data['fee_payer'],
                 },
-                token=str(payee.token)
+                token=str(payee.userservice.data['access_token'])
             )
     else:
         form = WePayCreateCheckoutForm()

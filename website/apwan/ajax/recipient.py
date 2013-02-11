@@ -43,7 +43,10 @@ def claim(request, recipient_id):
             recipients[0].save()
             return simplejson.dumps({
                 'success': True,
-                'recipient_id': recipient_id
+                'recipient': {
+                    'id': recipients[0].id,
+                    'slug': recipients[0].slug
+                }
             })
         else:
             return build_error(API_ERROR.RECIPIENT.ALREADY_CLAIMED)

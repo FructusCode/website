@@ -64,14 +64,14 @@ function claim(recipient_id)
 
 function claim_callback(result)
 {
-    var claim_element = $('.claim_item[recipient_id="' + result.recipient_id + '"]');
+    var claim_element = $('.claim_item[recipient_id="' + result.recipient.id + '"]');
     if(claim_element != null)
     {
         if(result.success)
         {
             console.log(result);
             $('.claim-actions', claim_element)
-                .html('<a href="/account/recipient/' + result.recipient_id + '" class="btn btn-mini btn-success">View</a>');
+                .html('<a href="/account/recipient/' + result.recipient.slug + '" class="btn btn-mini btn-success">View</a>');
         } else {
             $('.claim-error', claim_element)
                 .text("Failed")

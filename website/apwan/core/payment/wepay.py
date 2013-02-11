@@ -1,100 +1,66 @@
 # pylint: disable=E0611
 # pylint: disable=F0401
-from django.db import IntegrityError
+from __future__ import absolute_import
+# noinspection PyUnresolvedReferences
 from wepay import WePay
 from website.apwan.core import string_length_limit
-from website.apwan.models.donation import Donation
-from website.apwan.models.payee import Payee
+from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH
 from website.apwan.models.service import Service
 from website.keys import (
     WEPAY_PRODUCTION,
     WEPAY_CLIENT_ID,
     WEPAY_CLIENT_SECRET
-)
+    )
 # pylint: enable=E0611
 # pylint: enable=F0401
 
 __author__ = 'Dean Gardiner'
 
 
-class PaymentPlatform(object):
-    DESC_FRUCTUS_TIP = " + Fruct.us Tip"
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def db_payee_create(account, name="My Payee"):
-        try:
-            Payee.objects.create(
-                owner=account.owner,
-                account=account,
-                name=name
-            )
-        except IntegrityError:
-            return False
-        return True
-
-    @staticmethod
-    def db_donation_create(entity, recipient, payee,
-                           amount, currency=Donation.CURRENCY_USD, tip=0.0,
-                           payer_name="Anonymous"):
-        try:
-            return Donation.objects.create(
-                entity=entity,
-                recipient=recipient,
-                payee=payee,
-
-                amount=amount,
-                currency=currency,
-                tip=tip,
-
-                payer_name=payer_name,
-                state=Donation.STATE_NEW
-            )
-        except IntegrityError:
-            return None
-
-    @staticmethod
-    def db_service_create(owner, service, service_id, link_type, data):
-        try:
-            return Service.objects.create(
-                owner=owner,
-
-                service=service,
-                service_id=service_id,
-                service_type=Service.TYPE_PAYEE_USER,
-
-                link_type=link_type,
-                data=data
-            )
-        except IntegrityError:
-            return None
-
-
 class WePayPaymentPlatform(PaymentPlatform):
+    __platform_key__ = Service.SERVICE_WEPAY
+    __platform_title__ = "WePay"
+    __platform_thumbnail__ = "/img/media/wepay.png"
+    __platform_description__ = """
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Vivamus placerat venenatis libero vel pellentesque.
+    """
+
+    __platform_country__ = "United States"
+    __platform_country_class__ = 'label-info'
+
     DEFAULT_AUTH_SCOPE = "manage_accounts,collect_payments,view_user"
 
     def __init__(self):
         super(WePayPaymentPlatform, self).__init__()
+        self.type = AUTHORIZATION_OAUTH
         self.wepay = WePay(
             production=WEPAY_PRODUCTION,
             store_token=False
         )
 
-    def get_authorization_url(self, redirect_uri, scope=DEFAULT_AUTH_SCOPE):
+    def get_oauth_url(self, redirect_uri, **kwargs):
+        _scope = self.DEFAULT_AUTH_SCOPE
+        if 'scope' in kwargs:
+            _scope = kwargs['scope']
+
         return self.wepay.get_authorization_url(
-            redirect_uri, WEPAY_CLIENT_ID, scope=scope
+            redirect_uri, WEPAY_CLIENT_ID, scope=_scope
         )
 
-    def service_create(self, owner, redirect_uri, code):
+    def service_create(self, owner, **kwargs):
+        if 'code' not in kwargs:
+            raise TypeError()
+        if 'redirect_uri' not in kwargs:
+            raise TypeError()
+
         # Get the OAuth token
         token_result = self.wepay.get_token(
-            redirect_uri, WEPAY_CLIENT_ID,
-            WEPAY_CLIENT_SECRET, code
+            kwargs['redirect_uri'], WEPAY_CLIENT_ID,
+            WEPAY_CLIENT_SECRET, kwargs['code']
         )
         if 'error' in token_result:
-            return None
+            return False, None
 
         # Get User Info
         user_result = self.wepay.call(
@@ -102,9 +68,9 @@ class WePayPaymentPlatform(PaymentPlatform):
             token=token_result['access_token']
         )
         if 'error' in user_result:
-            return None
+            return False, None
         if user_result['state'] != 'registered':
-            return None
+            return False, None
 
         # Store details in database
         return self.db_service_create(
@@ -119,27 +85,26 @@ class WePayPaymentPlatform(PaymentPlatform):
             }
         )
 
-    def account_find(self, payee, name=None, reference_id=None):
+    def account_find(self, payee, **kwargs):
         if not payee or not payee.user or not payee.user.valid():
             return None
 
         params = {}
-        if name:
-            params['name'] = name
-        if reference_id:
-            params['reference_id'] = reference_id
+        if 'name' in kwargs:
+            params['name'] = kwargs['name']
+        if 'reference_id' in kwargs:
+            params['reference_id'] = kwargs['reference_id']
 
         return self.wepay.call(
             '/account/find', params,
-            token=payee.user.data['access_token']
+            token=payee.userservice.data['access_token']
         )
 
     def donation_create(self, entity, recipient, payee,
-                        amount, tip=0,
-                        redirect_uri=None, callback_uri=None):
+                        amount, tip=0.0, **kwargs):
         amount = float(amount)
         tip = float(tip)
-        if payee is None or payee.user is None:
+        if payee is None or payee.userservice is None:
             return None, None
 
         donation = self.db_donation_create(entity, recipient, payee,
@@ -179,15 +144,15 @@ class WePayPaymentPlatform(PaymentPlatform):
             'fee_payer': 'Payee'
         }
 
-        if redirect_uri:
-            params['redirect_uri'] = redirect_uri
+        if 'redirect_uri' in kwargs:
+            params['redirect_uri'] = kwargs['redirect_uri']
 
-        if callback_uri:
-            params['callback_uri'] = callback_uri
+        if 'callback_uri' in kwargs:
+            params['callback_uri'] = kwargs['callback_uri']
 
         create_result = self.wepay.call(
             '/checkout/create', params,
-            token=payee.user.data['access_token']
+            token=payee.userservice.data['access_token']
         )
 
         if 'checkout_id' in create_result:
@@ -204,7 +169,7 @@ class WePayPaymentPlatform(PaymentPlatform):
             '/checkout', {
                 'checkout_id': donation.checkout_id
             },
-            token=donation.payee.user.data['access_token']
+            token=donation.payee.userservice.data['access_token']
         )
 
         if 'error' in result:
@@ -214,4 +179,4 @@ class WePayPaymentPlatform(PaymentPlatform):
 
         return True
 
-wepay = WePayPaymentPlatform()
+registry.register(WePayPaymentPlatform())

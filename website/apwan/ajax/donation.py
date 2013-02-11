@@ -6,6 +6,7 @@ from website.apwan.ajax.utils import (
     validate_int, validate_float,
     build_error, API_ERROR
 )
+from website.apwan.core import payment
 from website.apwan.core.payment import wepay
 from website.apwan.models.entity import Entity
 from website.apwan.models.service import Service
@@ -51,25 +52,23 @@ def create(request, recipient_id, entity_id, amount):
     recipient = recipient[0]
 
     payee = recipient.payee
-    if payee is None or payee.user is None:
+    if payee is None or payee.userservice is None:
         return cors_response(
             build_error(API_ERROR.DONATION.NO_PAYEE))
 
-    if payee.user.service == Service.SERVICE_WEPAY:
-        _, checkout_url = wepay.donation_create(
-            entity, recipient, payee, amount,
-            redirect_uri=build_url(request,
-                                   reverse('donate-complete',
-                                           args=[payee.user.service])),
-            callback_uri=build_url(request,
-                                   reverse('callback-wepay-checkout'))
-        )
+    # Create donation
+    _, checkout_url = payment.registry[payee.userservice.service].donation_create(
+        entity, recipient, payee, amount,
+        redirect_uri=build_url(
+            request,
+            reverse('donate-complete', args=[payee.userservice.service])
+        ),
+        callback_uri=build_url(request, reverse('callback-wepay-checkout'))
+    )
 
-        if checkout_url:
-            return cors_response(simplejson.dumps({
-                'checkout_url': checkout_url,
-                'success': True
-            }))
-        return cors_response(build_error(API_ERROR.DONATION.SERVICE_FAILED))
-
-    return cors_response(build_error(API_ERROR.NOT_IMPLEMENTED))
+    if checkout_url:
+        return cors_response(simplejson.dumps({
+            'checkout_url': checkout_url,
+            'success': True
+        }))
+    return cors_response(build_error(API_ERROR.DONATION.SERVICE_FAILED))

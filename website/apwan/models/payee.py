@@ -12,7 +12,7 @@ class Payee(models.Model):
 
     owner = models.ForeignKey(User)
 
-    user = models.ForeignKey(Service, null=True)
+    userservice = models.ForeignKey(Service, null=True)
 
     account_name = models.CharField(max_length=64, null=True, blank=True)
     account_id = models.IntegerField(null=True, blank=True)
@@ -38,11 +38,11 @@ class Payee(models.Model):
             'account_name': self.account_name
         }
 
-        if self.user:
+        if self.userservice:
             # pylint: disable=E1101
-            item['user'] = self.user.dict()
+            item['userservice'] = self.userservice.dict()
             # pylint: enable=E1101
         else:
-            item['user'] = None
+            item['userservice'] = None
 
         return item
