@@ -35,11 +35,14 @@ class PayeeSettingsForm(forms.Form):
         })
 
         if payee:
+            payment_platform = payment.registry[payee.userservice.service]
+
             if not data or data['account_id'] != payee.account_id:
                 account_choices = []
-                for account in payment.registry[payee.userservice.service].account_find(payee):
+                for account in payment_platform.account_find(payee):
                     account_choices.append(
                         (account['account_id'], account['name']))
+
                 self.fields['account_id'].choices = tuple(account_choices)
 
     def clean(self):

@@ -28,8 +28,10 @@ def complete(request, service):
     if return_message is not None:
         return HttpResponse(return_message)
 
+    payment_platform = payment.registry[donation.payee.userservice.service]
+
     if donation.state == Donation.STATE_NEW or force:
-        success = payment.registry[donation.payee.userservice.service].donation_update(donation)
+        success = payment_platform.donation_update(donation)
         if success:
             donation.save()
             return_message = "Donation Complete"
