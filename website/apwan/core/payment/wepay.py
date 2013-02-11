@@ -32,7 +32,7 @@ class WePayPaymentPlatform(PaymentPlatform):
     DEFAULT_AUTH_SCOPE = "manage_accounts,collect_payments,view_user"
 
     def __init__(self):
-        super(WePayPaymentPlatform, self).__init__()
+        PaymentPlatform.__init__(self)
         self.type = AUTHORIZATION_OAUTH
         self.wepay = WePay(
             production=WEPAY_PRODUCTION,

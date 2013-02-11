@@ -5,7 +5,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Fieldset, Layout, HTML
 from django import forms
 from website.apwan.core import payment
-from website.apwan.core.payment import wepay
 
 __author__ = 'Dean Gardiner'
 

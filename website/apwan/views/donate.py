@@ -2,7 +2,6 @@ from django.http import HttpResponse
 from website import settings
 from website.apwan.core import payment
 from website.apwan.models.donation import Donation
-from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
 

@@ -6,7 +6,6 @@ from django.template import RequestContext
 from wepay.exceptions import WePayError
 from website.apwan.core import payment
 from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
-from website.apwan.core.payment import wepay, PaymentPlatform
 from website.apwan.models.payee import Payee
 from website.apwan.models.recipient import Recipient
 from website.apwan.models.service import Service
@@ -106,7 +105,7 @@ def payee_add(request):
             if len(userservice) == 1:
                 userservice = userservice[0]
 
-                PaymentPlatform.db_payee_create(userservice)
+                payment.PaymentPlatform.db_payee_create(userservice)
                 return redirect(reverse('account-profile'))
             else:
                 error = "Invalid User Service ID"

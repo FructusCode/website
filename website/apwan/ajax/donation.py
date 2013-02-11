@@ -7,9 +7,7 @@ from website.apwan.ajax.utils import (
     build_error, API_ERROR
 )
 from website.apwan.core import payment
-from website.apwan.core.payment import wepay
 from website.apwan.models.entity import Entity
-from website.apwan.models.service import Service
 from website.settings import build_url
 
 __author__ = 'Dean Gardiner'

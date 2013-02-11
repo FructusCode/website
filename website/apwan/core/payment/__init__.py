@@ -16,7 +16,7 @@ AUTHORIZATION_OAUTH = 'oauth'
 AUTHORIZATION_ACCOUNT_ID = 'account_id'
 
 
-class PaymentPlatform(object):
+class PaymentPlatform:
     DESC_FRUCTUS_TIP = " + Fruct.us Tip"
 
     def __init__(self):
@@ -103,29 +103,29 @@ class PaymentPlatformRegistry:
 
     def build_info_dict(self, request=None):
         platforms = {}
-        for pk, pv in self.platforms.items():
-            p = {
-                'title': pv.__platform_title__,
-                'type': pv.type,
-                'thumbnail': pv.__platform_thumbnail__,
-                'description': pv.__platform_description__,
+        for key, platform in self.platforms.items():
+            platform_info = {
+                'title': platform.__platform_title__,
+                'type': platform.type,
+                'thumbnail': platform.__platform_thumbnail__,
+                'description': platform.__platform_description__,
             }
             # Country
-            if hasattr(pv, '__platform_country__'):
-                p['country'] = pv.__platform_country__
+            if hasattr(platform, '__platform_country__'):
+                platform_info['country'] = platform.__platform_country__
 
-            if hasattr(pv, '__platform_country_class__'):
-                p['country_class'] = pv.__platform_country_class__
+            if hasattr(platform, '__platform_country_class__'):
+                platform_info['country_class'] = platform.__platform_country_class__
 
             # OAuth
-            if pv.type == AUTHORIZATION_OAUTH:
+            if platform.type == AUTHORIZATION_OAUTH:
                 if request is None:
                     raise TypeError()
-                p['oauth_url'] = pv.get_oauth_url(
-                    build_url(request, reverse('account-payee-add-' + pk))
+                platform_info['oauth_url'] = platform.get_oauth_url(
+                    build_url(request, reverse('account-payee-add-' + key))
                 )
 
-            platforms[pk] = p
+            platforms[key] = platform_info
         return platforms
 
     def register(self, platform):
@@ -143,7 +143,13 @@ class PaymentPlatformRegistry:
     def __setitem__(self, key, value):
         raise Exception()
 
+    def __delitem__(self, key):
+        raise Exception()
+
     def __contains__(self, key):
         return key in self.platforms
+
+    def __len__(self):
+        return len(self.platforms)
 
 registry = PaymentPlatformRegistry()

@@ -3,7 +3,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from website.apwan.core import payment
 from website.apwan.forms.dev import WePayCreateCheckoutForm, WePayFindAccountForm
-from website.apwan.core.payment import wepay
 from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service
 
