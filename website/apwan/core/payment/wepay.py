@@ -6,11 +6,14 @@ from wepay import WePay
 from website.apwan.core import string_length_limit
 from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH
 from website.apwan.models.service import Service
-from website.keys import (
-    WEPAY_PRODUCTION,
-    WEPAY_CLIENT_ID,
-    WEPAY_CLIENT_SECRET
-    )
+try:
+    from website.keys import (
+        WEPAY_PRODUCTION,
+        WEPAY_CLIENT_ID,
+        WEPAY_CLIENT_SECRET
+        )
+except ImportError:
+    pass
 # pylint: enable=E0611
 # pylint: enable=F0401
 
