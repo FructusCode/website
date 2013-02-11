@@ -6,14 +6,15 @@ from wepay import WePay
 from website.apwan.core import string_length_limit
 from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH
 from website.apwan.models.service import Service
+keys = True
 try:
     from website.keys import (
         WEPAY_PRODUCTION,
         WEPAY_CLIENT_ID,
         WEPAY_CLIENT_SECRET
-        )
+    )
 except ImportError:
-    pass
+    keys = False
 # pylint: enable=E0611
 # pylint: enable=F0401
 
@@ -182,4 +183,5 @@ class WePayPaymentPlatform(PaymentPlatform):
 
         return True
 
-registry.register(WePayPaymentPlatform())
+if keys:  # Only register if website.keys is available.
+    registry.register(WePayPaymentPlatform())
