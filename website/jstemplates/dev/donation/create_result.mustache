@@ -1,28 +1,32 @@
-<div class="well well-small">
-    {{#success}}
-        <span class="label label-success">Success</span><br/>
-        <dl>
-            <dt>Checkout URL</dt>
-            <dd><a href="{{ checkout_url }}">{{ checkout_url }}</a></dd>
-        </dl>
-    {{/success}}
+{% load helper_tags %}
 
-    {{^success}}
-        <span class="label label-important">Failed</span>
-
-        {{#error}}
+{% mustachewrap %}
+    <div class="well well-small">
+        [[#success]]
+            <span class="label label-success">Success</span><br/>
             <dl>
-                {{#error.key}}
-                    <dt>Key</dt>
-                    <dd>{{ error.key }}</dd>
-                    <dt>Message</dt>
-                    <dd>{{ error.message }}</dd>
-                {{/error.key}}
-                {{#error.parameter}}
-                    <dt>Parameter</dt>
-                    <dd>{{ error.parameter }}</dd>
-                {{/error.parameter}}
+                <dt>Checkout URL</dt>
+                <dd><a href="[[ checkout_url ]]">[[ checkout_url ]]</a></dd>
             </dl>
-        {{/error}}
-    {{/success}}
-</div>
+        [[/success]]
+
+        [[^success]]
+            <span class="label label-important">Failed</span>
+
+            [[#error]]
+                <dl>
+                    [[#error.key]]
+                        <dt>Key</dt>
+                        <dd>[[ error.key ]]</dd>
+                        <dt>Message</dt>
+                        <dd>[[ error.message ]]</dd>
+                    [[/error.key]]
+                    [[#error.parameter]]
+                        <dt>Parameter</dt>
+                        <dd>[[ error.parameter ]]</dd>
+                    [[/error.parameter]]
+                </dl>
+            [[/error]]
+        [[/success]]
+    </div>
+{% endmustachewrap %}

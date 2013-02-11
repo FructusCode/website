@@ -6,7 +6,7 @@
 
 {% block base_menu_container %}
     {% addtoblock "css" %}
-        <link rel="stylesheet" href="{{ STATIC_URL }}apwan/templates/home/login.css"/>
+        <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}apwan/templates/account/login.less"/>
     {% endaddtoblock %}
 
     {% if not user.is_authenticated %}

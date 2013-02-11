@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 
 {% load helper_tags %}
+{% load sekizai_tags %}
 
 {% block base_body %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}apwan/templates/base_menu.less"/>
+    {% endaddtoblock %}
+
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">

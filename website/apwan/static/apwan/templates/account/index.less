@@ -1,0 +1,86 @@
+@import "../../less/lib/elements";
+
+.username-header
+{
+  float: right;
+  color: #d7d7d7;
+  text-align: right;
+
+  h2
+  {
+    margin:  0;
+  }
+
+  span
+  {
+    color: #d7d7d7;
+    font-weight: bold;
+    padding: 2px 4px;
+  }
+}
+
+.account-body
+{
+  .title
+  {
+    margin-top: 0;
+  }
+
+  .page-header
+  {
+    margin-top: 0;
+    margin-bottom: 20px;
+
+    h1, h2
+    {
+      margin-top: 0;
+    }
+  }
+
+  .form-actions .btn
+  {
+    margin-right: 10px;
+  }
+}
+
+.account-menu-span
+{
+  padding:  8px 0;
+
+  .nav-header
+  {
+    border-bottom: 1px solid #e3e3e3;
+
+    .add-link
+    {
+      float: right;
+      display: inline;
+      margin-top: -3px;
+      padding-left: 7px;
+      padding-right: 1px;
+
+      .border-radius(0, 0, 10px, 10px);
+
+      i
+      {
+        margin-top: -1px;
+      }
+    }
+
+    .add-link.active,
+    .add-link.active:hover
+    {
+      background: #0088d6;
+
+      i
+      {
+        background: url("/static/apwan/lib/bootstrap/img/glyphicons-halflings-white.png") -408px -96px;
+      }
+    }
+
+    .add-link:hover
+    {
+      background-color: #eee;
+    }
+  }
+}
