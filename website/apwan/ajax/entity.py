@@ -2,7 +2,7 @@ import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
 from website.apwan.core.api_utils import cors_response, build_error, API_ERROR
-from website.apwan.core.deployauth import deployauth_token_validate, deployauth_required
+from website.apwan.core.deployauth import deployauth_required
 from website.apwan.core.entitygen import search_like
 from website.apwan.core.entitygen.movie import MovieEntityGenerator
 from website.apwan.core.entitygen.music import MusicEntityGenerator

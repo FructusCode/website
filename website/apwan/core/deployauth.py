@@ -35,7 +35,9 @@ def deployauth_token_validate(token):
 
 
 def deployauth_token_update(profile):
-    m = hashlib.md5()
-    m.update(profile.user.username)
-    m.update(profile.user.password)
-    profile.deployauth_token = m.hexdigest()
+    md5_hash = hashlib.md5()
+    # pylint: disable=E1101
+    md5_hash.update(profile.user.username)
+    md5_hash.update(profile.user.password)
+    profile.deployauth_token = md5_hash.hexdigest()
+    # pylint: enable=E1101

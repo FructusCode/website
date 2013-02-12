@@ -1,4 +1,3 @@
-import hashlib
 from django.contrib.auth.models import User
 from django.db import models
 from website.apwan.core.deployauth import deployauth_token_update
