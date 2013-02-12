@@ -17,5 +17,11 @@ class UserProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
     inlines = (UserProfileInline, )
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        profile = obj.get_profile()
+        profile.save()
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

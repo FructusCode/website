@@ -1,5 +1,6 @@
 # Django settings for website project.
 import os
+from website import keys
 
 rootPath = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + os.sep + ".." + os.sep)
@@ -12,6 +13,8 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+AUTH_PROFILE_MODULE = 'apwan.UserProfile'
 
 DATABASES = {
     'default': {
@@ -152,11 +155,11 @@ JENKINS_TASKS = (
     'django_jenkins.tasks.django_tests',
 )
 
-PROJECT_APPS = (
+PROJECT_APPS = [
     'website.apwan',
-)
+]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -177,9 +180,7 @@ INSTALLED_APPS = (
 
     'django_like',
     'south',
-
-    'website.apwan',
-)
+] + PROJECT_APPS
 
 LOGGING = {
     'version': 1,
@@ -204,3 +205,13 @@ LOGGING = {
         },
     }
 }
+
+#
+# Fruct.us Settings
+#
+
+# Current deployment environment
+#   INTERNAL - Internal Deployment (API requires auth with staff accounts)
+#   INVITE   - Invite / Private Deployment (API requires auth with any account)
+#   OPEN     - Open Deployment (API requires no auth + registration is open)
+FRUCTUS_DEPLOYMENT = 'INTERNAL'

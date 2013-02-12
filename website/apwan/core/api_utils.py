@@ -47,6 +47,7 @@ class API_ERROR(ErrorObject):
     UNKNOWN = "An unknown error occurred"
 
     class AUTHENTICATION(ErrorObject):
+        DEPLOYAUTH_FAILED = "API auth failed or not provided"
         NOT_LOGGED_IN = "You aren't logged in"
 
     class DONATION(ErrorObject):

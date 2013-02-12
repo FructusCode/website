@@ -1,12 +1,13 @@
 from dajaxice.decorators import dajaxice_register
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
-from website.apwan.ajax.utils import (
+from website.apwan.core.api_utils import (
     cors_response,
     validate_int, validate_float,
     build_error, API_ERROR
 )
 from website.apwan.core import payment
+from website.apwan.core.deployauth import deployauth_required
 from website.apwan.models.entity import Entity
 from website.settings import build_url
 
@@ -14,6 +15,7 @@ __author__ = 'Dean Gardiner'
 
 
 @dajaxice_register(method='GET', name='donation.create')
+@deployauth_required
 def create(request, recipient_id, entity_id, amount):
     # Check Parameter Value Types
     recipient_id, success = validate_int(recipient_id)
