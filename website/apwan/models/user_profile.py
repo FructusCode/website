@@ -21,7 +21,8 @@ class UserProfile(models.Model):
     preferred_contact_method = models.IntegerField(
         choices=CONTACT_METHODS, default=CONTACT_METHOD_EMAIL)
 
-    deployauth_token = models.CharField(max_length=128, blank=True, verbose_name="DeployAuth Token")
+    deployauth_token = models.CharField(max_length=128, blank=True,
+                                        verbose_name="DeployAuth Token")
 
     def save(self, **kwargs):
         deployauth_token_update(self)
