@@ -138,7 +138,7 @@ LOGIN_REDIRECT_URL = '/home'
 WSGI_APPLICATION = 'website.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.abspath(rootPath + 'website/templates/')
+    os.path.abspath(rootPath + '/website/templates/')
 )
 
 JSTEMPLATE_DIRS = [
