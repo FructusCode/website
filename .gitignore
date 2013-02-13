@@ -4,4 +4,5 @@
 /.idea
 /database.db
 /website/keys.py
+/website/settings_deploy.py
 /reports
