@@ -1,5 +1,6 @@
 # Django settings for website project.
 import os
+import sys
 
 rootPath = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + os.sep + ".." + os.sep)
@@ -52,7 +53,7 @@ USE_TZ = True
 COMPRESS_ENABLED = False
 
 COMPRESS_PRECOMPILERS = (
-    ('text/less', 'lessc {infile} {outfile}'),
+    ('text/less', 'lessc "{infile}" "{outfile}"'),
 )
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
@@ -137,7 +138,7 @@ LOGIN_REDIRECT_URL = '/home'
 WSGI_APPLICATION = 'website.wsgi.application'
 
 TEMPLATE_DIRS = (
-    'website/templates/'
+    os.path.abspath(rootPath + 'website/templates/')
 )
 
 JSTEMPLATE_DIRS = [
@@ -214,3 +215,13 @@ LOGGING = {
 #   INVITE   - Invite / Private Deployment (API requires auth with any account)
 #   OPEN     - Open Deployment (API requires no auth + registration is open)
 FRUCTUS_DEPLOYMENT = 'INTERNAL'
+
+
+# Import deployment settings
+try:
+    import settings_deploy
+    for key, value in settings_deploy.__dict__.items():
+        if not key.startswith('__') and not key.endswith('__'):
+            setattr(sys.modules[__name__], key, value)
+except ImportError:
+    pass
