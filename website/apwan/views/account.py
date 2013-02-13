@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from wepay.exceptions import WePayError
+from website import settings
 from website.apwan.core import payment
 from website.apwan.forms.account import PayeeSettingsForm, RecipientSettingsForm
 from website.apwan.models.payee import Payee
@@ -46,13 +47,16 @@ def render_with_account_menu(template_name, request, dictionary=None):
 
 @login_required
 def index(request):
+    dictionary = {
+        'FRUCTUS_DEPLOYMENT': settings.FRUCTUS_DEPLOYMENT,
+    }
+
     if 'error' in request.GET:
         if request.GET['error'] in ERRORS:
-            return render_with_account_menu('account/index.html', request, {
-                'error_key': request.GET['error'],
-                'error_message': ERRORS[request.GET['error']]
-            })
-    return render_with_account_menu('account/index.html', request)
+            dictionary['error_key'] = request.GET['error']
+            dictionary['error_message'] = ERRORS[request.GET['error']]
+
+    return render_with_account_menu('account/index.html', request, dictionary)
 
 #
 # Payee

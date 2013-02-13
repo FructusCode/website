@@ -1,6 +1,6 @@
 @import "../../less/lib/elements";
 
-.username-header
+.account-header
 {
   float: right;
   color: #d7d7d7;
@@ -8,14 +8,21 @@
 
   h2
   {
-    margin:  0;
+    margin: 0;
+    padding: 0;
   }
 
   span
   {
-    color: #d7d7d7;
     font-weight: bold;
     padding: 2px 4px;
+  }
+
+  span.info
+  {
+    font-size: 9px;;
+    font-weight: bold;
+    padding: 0 4px;
   }
 }
 
@@ -43,9 +50,11 @@
   }
 }
 
-.account-menu-span
+.account-menu
 {
   padding:  8px 0;
+
+  .user-select(none);
 
   .nav-header
   {

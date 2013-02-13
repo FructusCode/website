@@ -18,7 +18,7 @@
     {% endif %}
 
     <div class="row-fluid">
-        <div class="span3 well account-menu-span">
+        <div class="span3 well account-menu">
             <ul class="nav nav-list">
                 <li class="nav-header">Account</li>
                 <li class="{% active request 'account-profile' %}"><a href="{% url account-profile %}">Profile</a></li>
@@ -49,8 +49,12 @@
         </div>
         <div class="account-body span9 well">
             {% block account_body %}
-                <div class="username-header">
+                <div class="account-header">
                     <h2>{{ user.username }}</h2>
+                    {% if FRUCTUS_DEPLOYMENT != 'OPEN' %}
+                        <span class="info">{{ user.get_profile.deployauth_token }}</span>
+                        <br/>
+                    {% endif %}
                     {% if user.is_staff %}
                         <span>Staff</span>
                     {% endif %}
