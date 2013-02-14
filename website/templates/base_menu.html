@@ -58,34 +58,9 @@
                 <div id="bm_footer-left" class="span6"></div>
                 <div id="bm_footer-right" class="span6">
                     {# BUILD INFO #}
-                    {% if settings.BUILD_NUMBER or settings.GIT_COMMIT or settings.GIT_BRANCH or settings.BUILD_ID %}
+                    {% if settings.BUILD_INFO_EXISTS %}
                         <span id="bm_build-info" style="display: none;">
-                            {# ============ BUILD_NUMBER ============ #}
-                            {% if settings.BUILD_NUMBER %}
-                                <a href="http://buildbot.skipthe.net/job/Fruct.us%20Website%20-%20Deploy/{{ settings.BUILD_NUMBER }}/">
-                                    deploy-{{ settings.BUILD_NUMBER }}
-                                </a>
-                                {% if settings.GIT_COMMIT or settings.GIT_BRANCH or settings.BUILD_ID %}-{% endif  %}
-                            {% endif %}
-
-                            {# =============== GIT_* ================ #}
-                            {% if settings.GIT_COMMIT or settings.GIT_BRANCH %}
-                                <a href="https://github.com/FructusCode/website/commit/{{ settings.GIT_COMMIT }}">
-                                    {% if settings.GIT_BRANCH and settings.GIT_COMMIT %}
-                                        {{ settings.GIT_BRANCH }}/{{ settings.GIT_COMMIT|truncate:7 }}
-                                    {% elif settings.GIT_BRANCH %}
-                                        {{ settings.GIT_BRANCH }}
-                                    {% elif settings.GIT_COMMIT %}
-                                        {{ settings.GIT_COMMIT|truncate:7 }}
-                                    {% endif %}
-                                </a>
-                                {% if settings.BUILD_ID %}-{% endif  %}
-                            {% endif %}
-
-                            {# ============== BUILD_ID ============== #}
-                            {% if settings.BUILD_ID %}
-                                {{ settings.BUILD_ID }}
-                            {% endif %}
+                            {{ settings.BUILD_INFO_HTML|safe }}
                         </span>
                         <i id="bm_show-build-info" class="icon-info-sign"></i>
                     {% endif %}

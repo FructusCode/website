@@ -2,6 +2,7 @@
 import os
 import sys
 from django.utils import simplejson
+from website.utils import build_info
 
 rootPath = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + os.sep + ".." + os.sep)
@@ -119,10 +120,14 @@ TEMPLATE_SETTINGS = [
     'FRUCTUS_DEPLOYMENT',
 
     # Build Info
+    'BUILD_INFO_EXISTS',
+    'BUILD_INFO_HTML',
     'BUILD_ID',
     'BUILD_NUMBER',
     'GIT_BRANCH',
-    'GIT_COMMIT'
+    'GIT_COMMIT',
+    'UPSTREAM_BUILD_NUMBER',
+    'UPSTREAM_JOB_NAME'
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -243,25 +248,29 @@ try:
 except ImportError:
     pass
 
+#
 # Load build information (build.json)
-BUILD_ID = None
-BUILD_NUMBER = None
-GIT_BRANCH = None
-GIT_COMMIT = None
+#
 
-if os.path.exists(rootPath + "/build.json"):
-    _file = open(rootPath + "/build.json")
-    _json = simplejson.load(_file)
-    _file.close()
+BUILD_INFO = build_info.load(rootPath + "/build.json")
+BUILD_INFO_EXISTS = len(BUILD_INFO) != 0
+BUILD_INFO_HTML = build_info.to_html(BUILD_INFO)
 
-    BUILD_ID = _json.get('BUILD_ID')
-    BUILD_NUMBER = _json.get('BUILD_NUMBER')
-    GIT_BRANCH = _json.get('GIT_BRANCH')
-    GIT_COMMIT = _json.get('GIT_COMMIT')
+BUILD_ID = BUILD_INFO.get('BUILD_ID')
+BUILD_NUMBER = BUILD_INFO.get('BUILD_NUMBER')
+GIT_BRANCH = BUILD_INFO.get('GIT_BRANCH')
+GIT_COMMIT = BUILD_INFO.get('GIT_COMMIT')
+GIT_COMMIT_SHORT = BUILD_INFO.get('GIT_COMMIT_SHORT')
+UPSTREAM_BUILD_NUMBER = BUILD_INFO.get('UPSTREAM_BUILD_NUMBER')
+UPSTREAM_JOB_NAME = BUILD_INFO.get('UPSTREAM_JOB_NAME')
 
+if BUILD_INFO_EXISTS:
     print "------------------------- BUILD INFO -------------------------"
-    print "BUILD_ID\t", BUILD_ID
-    print "BUILD_NUMBER\t", BUILD_NUMBER
-    print "GIT_BRANCH\t", GIT_BRANCH
-    print "GIT_COMMIT\t", GIT_COMMIT
+    print "BUILD_INFO_EXISTS\t", BUILD_INFO_EXISTS
+    print "BUILD_ID\t\t", BUILD_ID
+    print "BUILD_NUMBER\t\t", BUILD_NUMBER
+    print "GIT_BRANCH\t\t", GIT_BRANCH
+    print "GIT_COMMIT\t\t", GIT_COMMIT
+    print "UPSTREAM_BUILD_NUMBER\t", UPSTREAM_BUILD_NUMBER
+    print "UPSTREAM_JOB_NAME\t", UPSTREAM_JOB_NAME
     print "--------------------------------------------------------------"
