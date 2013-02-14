@@ -8,8 +8,6 @@ from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service
 from website.settings import build_url
 
-__author__ = 'Dean Gardiner'
-
 
 AUTHORIZATION_AUTH = 'auth'
 AUTHORIZATION_OAUTH = 'oauth'

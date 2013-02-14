@@ -1,6 +1,7 @@
 # Django settings for website project.
 import os
 import sys
+from django.utils import simplejson
 
 rootPath = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + os.sep + ".." + os.sep)
@@ -106,8 +107,23 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'sekizai.context_processors.sekizai'
+    'sekizai.context_processors.sekizai',
+
+    'website.utils.context_processors.template_settings'
 )
+
+# Settings to add to template contexts
+# (website.utils.context_processors.template_settings)
+TEMPLATE_SETTINGS = [
+    # Fruct.us settings
+    'FRUCTUS_DEPLOYMENT',
+
+    # Build Info
+    'BUILD_ID',
+    'BUILD_NUMBER',
+    'GIT_BRANCH',
+    'GIT_COMMIT'
+]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -157,6 +173,7 @@ JENKINS_TASKS = (
 
 PROJECT_APPS = [
     'website.apwan',
+    'website.utils',
 ]
 
 INSTALLED_APPS = [
@@ -225,3 +242,26 @@ try:
             setattr(sys.modules[__name__], key, value)
 except ImportError:
     pass
+
+# Load build information (build.json)
+BUILD_ID = None
+BUILD_NUMBER = None
+GIT_BRANCH = None
+GIT_COMMIT = None
+
+if os.path.exists(rootPath + "/build.json"):
+    _file = open(rootPath + "/build.json")
+    _json = simplejson.load(_file)
+    _file.close()
+
+    BUILD_ID = _json.get('BUILD_ID')
+    BUILD_NUMBER = _json.get('BUILD_NUMBER')
+    GIT_BRANCH = _json.get('GIT_BRANCH')
+    GIT_COMMIT = _json.get('GIT_COMMIT')
+
+    print "------------------------- BUILD INFO -------------------------"
+    print "BUILD_ID\t", BUILD_ID
+    print "BUILD_NUMBER\t", BUILD_NUMBER
+    print "GIT_BRANCH\t", GIT_BRANCH
+    print "GIT_COMMIT\t", GIT_COMMIT
+    print "--------------------------------------------------------------"

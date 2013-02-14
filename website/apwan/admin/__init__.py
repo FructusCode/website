@@ -10,5 +10,3 @@ import user_profile
 
 assert (donation, entity, payee,
         recipient, service, user_profile) != ()
-
-__author__ = 'Dean Gardiner'

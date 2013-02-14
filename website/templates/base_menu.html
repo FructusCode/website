@@ -2,44 +2,96 @@
 
 {% load helper_tags %}
 {% load sekizai_tags %}
+{% load string_filters %}
 
 {% block base_body %}
     {% addtoblock "css" %}
         <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}apwan/templates/base_menu.less"/>
     {% endaddtoblock %}
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand {% active request '/home' %} navbar-inverse" href="/home">Fruct.us</a>
+    {% addtoblock "js" %}
+        <script src="{{ STATIC_URL }}apwan/templates/base_menu.js"></script>
+    {% endaddtoblock %}
 
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        {% if user.is_superuser %}
-                            <li class="{% active request '/dev' %}"><a href="/dev">Dev</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
+    <div id="bm_wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand {% active request '/home' %} navbar-inverse" href="/home">Fruct.us</a>
 
-                <div class="nav-collapse collapse pull-right">
-                    <ul class="nav menu-right">
-                        {% if user.is_authenticated %}
-                            <li class="{% active request '/account' %}"><a href="/account">{{ user.username }}</a></li>
-                        {% else %}
-                            <li class="{% active request '/account/login' %}"><a href="/account/login">Login</a></li>
-                        {% endif %}
-                    </ul>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            {% if user.is_superuser %}
+                                <li class="{% active request '/dev' %}"><a href="/dev">Dev</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="nav-collapse collapse pull-right">
+                        <ul class="nav menu-right">
+                            {% if user.is_authenticated %}
+                                <li class="{% active request '/account' %}"><a href="/account">{{ user.username }}</a></li>
+                            {% else %}
+                                <li class="{% active request '/account/login' %}"><a href="/account/login">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div id="bm_container" class="{% block base_menu_ctype %}container{% endblock %}">
+            {% block base_menu_container %}{% endblock %}
+        </div>
+
+        <div id="bm_push"></div>
     </div>
 
-    <div class="{% block base_menu_ctype %}container{% endblock %}">
-        {% block base_menu_container %}{% endblock %}
+    <div id="bm_footer">
+        <div class="container">
+            <div class="row">
+                <div id="bm_footer-left" class="span6"></div>
+                <div id="bm_footer-right" class="span6">
+                    {# BUILD INFO #}
+                    {% if settings.BUILD_NUMBER or settings.GIT_COMMIT or settings.GIT_BRANCH or settings.BUILD_ID %}
+                        <span id="bm_build-info" style="display: none;">
+                            {# ============ BUILD_NUMBER ============ #}
+                            {% if settings.BUILD_NUMBER %}
+                                <a href="http://buildbot.skipthe.net/job/Fruct.us%20Website%20-%20Deploy/{{ settings.BUILD_NUMBER }}/">
+                                    deploy-{{ settings.BUILD_NUMBER }}
+                                </a>
+                                {% if settings.GIT_COMMIT or settings.GIT_BRANCH or settings.BUILD_ID %}-{% endif  %}
+                            {% endif %}
+
+                            {# =============== GIT_* ================ #}
+                            {% if settings.GIT_COMMIT or settings.GIT_BRANCH %}
+                                <a href="https://github.com/FructusCode/website/commit/{{ settings.GIT_COMMIT }}">
+                                    {% if settings.GIT_BRANCH and settings.GIT_COMMIT %}
+                                        {{ settings.GIT_BRANCH }}/{{ settings.GIT_COMMIT|truncate:7 }}
+                                    {% elif settings.GIT_BRANCH %}
+                                        {{ settings.GIT_BRANCH }}
+                                    {% elif settings.GIT_COMMIT %}
+                                        {{ settings.GIT_COMMIT|truncate:7 }}
+                                    {% endif %}
+                                </a>
+                                {% if settings.BUILD_ID %}-{% endif  %}
+                            {% endif %}
+
+                            {# ============== BUILD_ID ============== #}
+                            {% if settings.BUILD_ID %}
+                                {{ settings.BUILD_ID }}
+                            {% endif %}
+                        </span>
+                        <i id="bm_show-build-info" class="icon-info-sign"></i>
+                    {% endif %}
+                    {# /BUILD INFO #}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

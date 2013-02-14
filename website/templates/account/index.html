@@ -51,7 +51,7 @@
             {% block account_body %}
                 <div class="account-header">
                     <h2>{{ user.username }}</h2>
-                    {% if FRUCTUS_DEPLOYMENT != 'OPEN' %}
+                    {% if settings.FRUCTUS_DEPLOYMENT != 'OPEN' %}
                         <span class="info">{{ user.get_profile.deployauth_token }}</span>
                         <br/>
                     {% endif %}

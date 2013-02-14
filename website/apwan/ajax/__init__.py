@@ -6,5 +6,3 @@ import entity
 import recipient
 
 assert (donation, entity, recipient) != ()
-
-__author__ = 'Dean Gardiner'

@@ -1,6 +1,3 @@
-__author__ = 'Dean Gardiner'
-
-
 def string_length_limit(text, max_length, limited_suffix="..."):
     text = unicode(text)
     if max_length == -1 or len(text) <= max_length:

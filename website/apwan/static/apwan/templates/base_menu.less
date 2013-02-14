@@ -1,3 +1,8 @@
+//
+// Menu
+//
+@menu-height: 60px;
+
 .navbar .navbar-fixed-top
 {
   .brand.active
@@ -8,5 +13,130 @@
   .menu-right li:last-child a
   {
     margin-right: -15px;
+  }
+}
+
+//
+// Footer
+//
+@footer-height: 20px;
+
+html, body
+{
+  height: 100%;
+}
+
+#bm_wrapper
+{
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+
+  margin: 0 auto -@footer-height;
+
+  #bm_container
+  {
+    padding-top: @menu-height;
+  }
+}
+
+#bm_push, #bm_footer
+{
+  height: @footer-height;
+}
+
+#bm_footer
+{
+  line-height: @footer-height;
+  overflow: hidden;
+
+  font-size: 10px;
+
+  p
+  {
+    margin: 0;
+  }
+
+  #bm_show-build-info
+  {
+    margin-top: 0px;
+    margin-left: 4px;
+    opacity: .1;
+  }
+
+  #bm_build-info
+  {
+  }
+
+  .span6
+  {
+    width: 460px !important;
+  }
+
+  @media (min-width: 1200px)
+  {
+    .span6
+    {
+      width: 570px !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 979px)
+  {
+    .span6
+    {
+      width: 352px !important;
+    }
+  }
+
+  @media (max-width: 768px)
+  {
+    #bm_footer-left.span6
+    {
+      float: left !important;
+      width: 50% !important;
+    }
+    #bm_footer-right.span6
+    {
+      float: right !important;
+      width: 50% !important;
+    }
+  }
+
+  #bm_footer-left
+  {
+    overflow: hidden;
+  }
+
+  #bm_footer-right
+  {
+    overflow: hidden;
+    text-align: right;
+  }
+}
+
+//
+// Responsive Styles
+//
+
+@media (max-width: 767px)
+{
+  #bm_footer
+  {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (max-width: 979px)
+{
+  #bm_wrapper
+  {
+    #bm_container
+    {
+      padding-top: 0px;
+    }
   }
 }

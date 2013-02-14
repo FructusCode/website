@@ -4,8 +4,6 @@ from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
 from website.apwan.models.recipient_reference import RecipientReference
 
-__author__ = 'Dean Gardiner'
-
 SPECIAL_PHRASES = [
     '~', '`', '!', '@', '#', '$', '%', '^',
     '&', '*', '(', ')', '_', '-', '+', '=',

@@ -1,8 +1,10 @@
 *.pyc
 
-/static
 /.idea
 /database.db
+/build.json
+
+/reports
+/static
 /website/keys.py
 /website/settings_deploy.py
-/reports
