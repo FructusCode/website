@@ -1,3 +1,5 @@
+# pylint: disable=C0103
+
 import os
 from django.utils import simplejson
 
@@ -26,11 +28,6 @@ def load(path):
         UPSTREAM_JOB_NAME = _json.get('UPSTREAM_JOB_NAME')
         if UPSTREAM_JOB_NAME == '':
             UPSTREAM_JOB_NAME = None
-
-        if (BUILD_ID or BUILD_NUMBER or
-                GIT_BRANCH or GIT_COMMIT or
-                UPSTREAM_BUILD_NUMBER or UPSTREAM_JOB_NAME):
-            BUILD_INFO_EXISTS = True
 
         return {
             'BUILD_ID': BUILD_ID,
