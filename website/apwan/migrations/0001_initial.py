@@ -8,97 +8,229 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'Entity'
+        db.create_table('apwan_entity', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Entity'], null=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('year', self.gf('django.db.models.fields.IntegerField')(max_length=4, null=True)),
+            ('artist', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('album', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('track', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('s_title', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('s_artist', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('s_album', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('s_track', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('image', self.gf('django.db.models.fields.CharField')(max_length=64, null=True)),
+            ('type', self.gf('django.db.models.fields.IntegerField')()),
+            ('suggested_amount', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=8, decimal_places=2)),
+        ))
+        db.send_create_signal('apwan', ['Entity'])
+
+        # Adding M2M table for field recipient on 'Entity'
+        db.create_table('apwan_entity_recipient', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('entity', models.ForeignKey(orm['apwan.entity'], null=False)),
+            ('recipient', models.ForeignKey(orm['apwan.recipient'], null=False))
+        ))
+        db.create_unique('apwan_entity_recipient', ['entity_id', 'recipient_id'])
+
+        # Adding model 'Donation'
+        db.create_table('apwan_donation', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Entity'])),
+            ('recipient', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Recipient'], null=True)),
+            ('payee', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Payee'], null=True)),
+            ('state', self.gf('django.db.models.fields.CharField')(default='new', max_length=12)),
+            ('payer_name', self.gf('django.db.models.fields.CharField')(default='Anonymous', max_length=64)),
+            ('amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=8, decimal_places=2)),
+            ('tip', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=8, decimal_places=2)),
+            ('currency', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('checkout_id', self.gf('django.db.models.fields.CharField')(max_length=18, null=True, blank=True)),
+        ))
+        db.send_create_signal('apwan', ['Donation'])
+
+        # Adding model 'EntityReference'
+        db.create_table('apwan_entityreference', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Entity'])),
+            ('type', self.gf('django.db.models.fields.IntegerField')()),
+            ('key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=64)),
+        ))
+        db.send_create_signal('apwan', ['EntityReference'])
+
+        # Adding model 'Service'
+        db.create_table('apwan_service', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True)),
+            ('service', self.gf('django.db.models.fields.CharField')(default='', max_length=10)),
+            ('service_type', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('service_id', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('link_type', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('data', self.gf('json_field.fields.JSONField')(default='null')),
+        ))
+        db.send_create_signal('apwan', ['Service'])
+
+        # Adding unique constraint on 'Service', fields ['service', 'service_id']
+        db.create_unique('apwan_service', ['service', 'service_id'])
+
         # Adding model 'Payee'
         db.create_table('apwan_payee', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('type', self.gf('django.db.models.fields.IntegerField')()),
-            ('account_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('userservice', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Service'], null=True)),
+            ('account_name', self.gf('django.db.models.fields.CharField')(max_length=64, null=True, blank=True)),
+            ('account_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=32)),
         ))
         db.send_create_signal('apwan', ['Payee'])
 
         # Adding model 'Recipient'
         db.create_table('apwan_recipient', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('payee', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Payee'])),
+            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
+            ('payee', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Payee'], null=True, blank=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('s_title', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=64, blank=True)),
             ('type', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('apwan', ['Recipient'])
 
-        # Adding model 'Entity'
-        db.create_table('apwan_entity', (
+        # Adding model 'RecipientReference'
+        db.create_table('apwan_recipientreference', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('recipient', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Recipient'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('image', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('type', self.gf('django.db.models.fields.IntegerField')()),
+            ('key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=64)),
         ))
-        db.send_create_signal('apwan', ['Entity'])
+        db.send_create_signal('apwan', ['RecipientReference'])
 
-        # Adding model 'Donation'
-        db.create_table('apwan_donation', (
+        # Adding model 'UserProfile'
+        db.create_table('apwan_userprofile', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['apwan.Entity'])),
-            ('state', self.gf('django.db.models.fields.CharField')(max_length=12)),
-            ('payer_name', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('amount', self.gf('django.db.models.fields.DecimalField')(max_digits=8, decimal_places=2)),
-            ('tip', self.gf('django.db.models.fields.DecimalField')(max_digits=8, decimal_places=2)),
-            ('currency', self.gf('django.db.models.fields.CharField')(max_length=3)),
-            ('account_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('preferred_contact_method', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('deployauth_token', self.gf('django.db.models.fields.CharField')(max_length=128, blank=True)),
         ))
-        db.send_create_signal('apwan', ['Donation'])
+        db.send_create_signal('apwan', ['UserProfile'])
 
 
     def backwards(self, orm):
+        # Removing unique constraint on 'Service', fields ['service', 'service_id']
+        db.delete_unique('apwan_service', ['service', 'service_id'])
+
+        # Deleting model 'Entity'
+        db.delete_table('apwan_entity')
+
+        # Removing M2M table for field recipient on 'Entity'
+        db.delete_table('apwan_entity_recipient')
+
+        # Deleting model 'Donation'
+        db.delete_table('apwan_donation')
+
+        # Deleting model 'EntityReference'
+        db.delete_table('apwan_entityreference')
+
+        # Deleting model 'Service'
+        db.delete_table('apwan_service')
+
         # Deleting model 'Payee'
         db.delete_table('apwan_payee')
 
         # Deleting model 'Recipient'
         db.delete_table('apwan_recipient')
 
-        # Deleting model 'Entity'
-        db.delete_table('apwan_entity')
+        # Deleting model 'RecipientReference'
+        db.delete_table('apwan_recipientreference')
 
-        # Deleting model 'Donation'
-        db.delete_table('apwan_donation')
+        # Deleting model 'UserProfile'
+        db.delete_table('apwan_userprofile')
 
 
     models = {
         'apwan.donation': {
             'Meta': {'object_name': 'Donation'},
-            'account_id': ('django.db.models.fields.IntegerField', [], {}),
-            'amount': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '2'}),
-            'currency': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
+            'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '8', 'decimal_places': '2'}),
+            'checkout_id': ('django.db.models.fields.CharField', [], {'max_length': '18', 'null': 'True', 'blank': 'True'}),
+            'currency': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Entity']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'payer_name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '12'}),
-            'tip': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '2'})
+            'payee': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Payee']", 'null': 'True'}),
+            'payer_name': ('django.db.models.fields.CharField', [], {'default': "'Anonymous'", 'max_length': '64'}),
+            'recipient': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Recipient']", 'null': 'True'}),
+            'state': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '12'}),
+            'tip': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '8', 'decimal_places': '2'})
         },
         'apwan.entity': {
             'Meta': {'object_name': 'Entity'},
+            'album': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'artist': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'recipient': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Recipient']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'image': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Entity']", 'null': 'True'}),
+            'recipient': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['apwan.Recipient']", 'symmetrical': 'False'}),
+            's_album': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            's_artist': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            's_title': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            's_track': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'suggested_amount': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '8', 'decimal_places': '2'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'track': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'type': ('django.db.models.fields.IntegerField', [], {}),
+            'year': ('django.db.models.fields.IntegerField', [], {'max_length': '4', 'null': 'True'})
+        },
+        'apwan.entityreference': {
+            'Meta': {'object_name': 'EntityReference'},
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Entity']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
             'type': ('django.db.models.fields.IntegerField', [], {})
         },
         'apwan.payee': {
             'Meta': {'object_name': 'Payee'},
-            'account_id': ('django.db.models.fields.IntegerField', [], {}),
+            'account_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'account_name': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'type': ('django.db.models.fields.IntegerField', [], {})
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '32'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'userservice': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Service']", 'null': 'True'})
         },
         'apwan.recipient': {
             'Meta': {'object_name': 'Recipient'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'payee': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Payee']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'payee': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Payee']", 'null': 'True', 'blank': 'True'}),
+            's_title': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '64', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'type': ('django.db.models.fields.IntegerField', [], {})
+        },
+        'apwan.recipientreference': {
+            'Meta': {'object_name': 'RecipientReference'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
+            'recipient': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apwan.Recipient']"}),
+            'type': ('django.db.models.fields.IntegerField', [], {})
+        },
+        'apwan.service': {
+            'Meta': {'unique_together': "(('service', 'service_id'),)", 'object_name': 'Service'},
+            'data': ('json_field.fields.JSONField', [], {'default': "'null'"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'link_type': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'}),
+            'service': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10'}),
+            'service_id': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'service_type': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+        },
+        'apwan.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'deployauth_token': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'preferred_contact_method': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
