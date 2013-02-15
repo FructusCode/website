@@ -90,6 +90,14 @@ function claim_callback(result)
             console.log(result);
             $('.claim-actions', claim_element)
                 .html('<a href="/account/recipient/' + result.recipient.slug + '" class="btn btn-mini btn-success">View</a>');
+
+            menu_insert('a', 'recipient',
+                '<li class="li-recipient">' +
+                    '<a href="/account/recipient/' + result.recipient.slug + '">' +
+                        $('.recipient-title', claim_element).text() +
+                    '</a>' +
+                '</li>'
+            );
         } else {
             $('.claim-error', claim_element)
                 .text("Failed")
@@ -103,5 +111,32 @@ function claim_callback(result)
         }
     } else {
         console.error("Bad 'claim_callback' result");
+    }
+}
+
+function menu_insert(sort_selector, type, item)
+{
+    if(type != 'account' && type != 'payee' &&
+        type != 'recipient' && type != 'report')
+    {
+        console.error("menu_insert: invalid 'type'");
+        return;
+    }
+
+    var item_sort = $(sort_selector, item).text().toLowerCase();
+
+    var closest = null;
+    $('.account-menu .nav-list li.li-' + type).each(function() {
+       if($(sort_selector, this).text().toLowerCase() < item_sort)
+       {
+           closest = $(this);
+       }
+    });
+
+    if(closest != null)
+    {
+        closest.after(item);
+    } else {
+        $('.account-menu .nav-list li.nav-header-' + type).after(item);
     }
 }
