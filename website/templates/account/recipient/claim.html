@@ -12,6 +12,7 @@
 
     {% addtoblock "js" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/js/lib/jquery.isotope.min.js"></script>
         {% dajaxice_js_import %}
         <script type="text/javascript" src="{{ STATIC_URL }}apwan/lib/mustache.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}libs/django.mustache.js"></script>
@@ -23,8 +24,8 @@
     <button id="search_submit" class="btn">Search</button>
     <br/>
     <br/>
-    <ul id="search_results" class="thumbnails">
-    </ul>
+    <div id="search_results">
+    </div>
     <div id="claimedDialog" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="claimedDialogLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

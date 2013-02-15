@@ -1,7 +1,7 @@
 {% load helper_tags %}
 
 {% mustachewrap %}
-    <li class="claim_item span4" recipient_id="[[ recipient.id ]]">
+    <div class="claim_item span4" recipient_id="[[ recipient.id ]]">
         <div class="thumbnail">
             <div class="caption">
                 <h4>[[ recipient.title ]]</h4>
@@ -39,5 +39,5 @@
                 </div>
             </div>
         </div>
-    </li>
+    </div>
 {% endmustachewrap %}

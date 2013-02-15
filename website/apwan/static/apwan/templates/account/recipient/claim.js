@@ -6,6 +6,20 @@ var item_template = Mustache.template('account/recipient/claim_result_item');
 
 search_submit.click(search);
 
+var columnMargin = 0;
+
+search_results.isotope({
+    itemSelector: '.claim_item',
+    resizable: false,
+    masonry: { columnWidth: search_results.width() / 3 }
+});
+
+$(window).smartresize(function(){
+    search_results.isotope({
+        masonry: { columnWidth: search_results.width() / 3 }
+    });
+});
+
 $(document).ready(function() {
     if(search_title.val() != '') search();
 });
@@ -23,9 +37,10 @@ function search_callback(result)
 {
     if(result.success)
     {
-        search_results.empty();
+        search_results.empty().isotope('reLayout');
         if(result.items.length > 0)
         {
+            var items = "";
             for(var i = 0; i < result.items.length; i++)
             {
                 var recipient = result.items[i];
@@ -45,8 +60,11 @@ function search_callback(result)
                     }
                 }
 
-                search_results.append(item_template.render({'recipient': recipient}));
+                items += item_template.render({'recipient': recipient});
             }
+            var $items = $(items);
+            search_results.append($items).isotope('appended', $items);
+
         } else {
             // TODO: Allow a recipient lookup here
         }
