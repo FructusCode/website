@@ -133,7 +133,6 @@ class PaymentPlatformRegistry:
             print "platform already registered"
             return
         self.platforms[platform.__platform_key__] = platform
-        print "'" + platform.__platform_key__ + "'", "payment platform registered"
 
     def __getitem__(self, key):
         return self.platforms[key]

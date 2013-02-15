@@ -181,6 +181,10 @@ PROJECT_APPS = [
     'website.utils',
 ]
 
+# Add 'secrets' (Website Secrets) project if it exists
+if os.path.exists(os.path.abspath(rootPath + '/secrets/')):
+    PROJECT_APPS.append('secrets')
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',

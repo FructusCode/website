@@ -5,6 +5,7 @@
 /build.json
 
 /reports
+/secrets
 /static
 /website/keys.py
 /website/settings_deploy.py
