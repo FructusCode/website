@@ -2,19 +2,11 @@
 # pylint: disable=F0401
 from __future__ import absolute_import
 # noinspection PyUnresolvedReferences
+from django.conf import settings
 from wepay import WePay
 from website.apwan.core import string_length_limit
 from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH
 from website.apwan.models.service import Service
-keys = True
-try:
-    from website.keys import (
-        WEPAY_PRODUCTION,
-        WEPAY_CLIENT_ID,
-        WEPAY_CLIENT_SECRET
-    )
-except ImportError:
-    keys = False
 # pylint: enable=E0611
 # pylint: enable=F0401
 
@@ -39,7 +31,7 @@ class WePayPaymentPlatform(PaymentPlatform):
         PaymentPlatform.__init__(self)
         self.type = AUTHORIZATION_OAUTH
         self.wepay = WePay(
-            production=WEPAY_PRODUCTION,
+            production=settings.FRUCTUS_KEYS.WEPAY_PRODUCTION,
             store_token=False
         )
 
@@ -49,7 +41,7 @@ class WePayPaymentPlatform(PaymentPlatform):
             _scope = kwargs['scope']
 
         return self.wepay.get_authorization_url(
-            redirect_uri, WEPAY_CLIENT_ID, scope=_scope
+            redirect_uri, settings.FRUCTUS_KEYS.WEPAY_CLIENT_ID, scope=_scope
         )
 
     def service_create(self, owner, **kwargs):
@@ -60,8 +52,8 @@ class WePayPaymentPlatform(PaymentPlatform):
 
         # Get the OAuth token
         token_result = self.wepay.get_token(
-            kwargs['redirect_uri'], WEPAY_CLIENT_ID,
-            WEPAY_CLIENT_SECRET, kwargs['code']
+            kwargs['redirect_uri'], settings.FRUCTUS_KEYS.WEPAY_CLIENT_ID,
+            settings.FRUCTUS_KEYS.WEPAY_CLIENT_SECRET, kwargs['code']
         )
         if 'error' in token_result:
             return False, None
@@ -90,7 +82,7 @@ class WePayPaymentPlatform(PaymentPlatform):
         )
 
     def account_find(self, payee, **kwargs):
-        if not payee or not payee.user or not payee.user.valid():
+        if not payee or not payee.userservice or not payee.userservice.valid():
             return None
 
         params = {}
@@ -183,5 +175,5 @@ class WePayPaymentPlatform(PaymentPlatform):
 
         return True
 
-if keys:  # Only register if website.keys is available.
+if settings.FRUCTUS_KEYS:  # Only register if website.keys is available.
     registry.register(WePayPaymentPlatform())

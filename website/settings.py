@@ -1,7 +1,6 @@
 # Django settings for website project.
 import os
 import sys
-from django.utils import simplejson
 from website.utils import build_info
 
 rootPath = os.path.abspath(
@@ -241,6 +240,17 @@ LOGGING = {
 #   INVITE   - Invite / Private Deployment (API requires auth with any account)
 #   OPEN     - Open Deployment (API requires no auth + registration is open)
 FRUCTUS_DEPLOYMENT = 'INTERNAL'
+
+FRUCTUS_KEYS = None
+# try import 'secrets.keys'
+try:
+    import secrets.keys as FRUCTUS_KEYS
+except ImportError:
+    # try fallback to importing 'website.keys'
+    try:
+        import website.keys as FRUCTUS_KEYS
+    except ImportError:
+        print "ERROR: No keys available!"
 
 
 # Import deployment settings
