@@ -12,7 +12,6 @@ django-jstemplate==1.1.1
 django-json-field==0.4.2
 django_compressor==dev
 
-MySQL-python==1.2.4
 django-like==0.0.3
 South==0.7.6
 
