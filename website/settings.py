@@ -255,12 +255,14 @@ except ImportError:
 
 # Import deployment settings
 try:
-    import settings_deploy
-    for key, value in settings_deploy.__dict__.items():
-        if not key.startswith('__') and not key.endswith('__'):
-            setattr(sys.modules[__name__], key, value)
+    import secrets.settings_deploy as FRUCTUS_DEPLOYMENT_SETTINGS
+    load_deployment_settings()
 except ImportError:
-    pass
+    try:
+        import settings_deploy as FRUCTUS_DEPLOYMENT_SETTINGS
+        load_deployment_settings()
+    except ImportError:
+        pass
 
 #
 # Load build information (build.json)
