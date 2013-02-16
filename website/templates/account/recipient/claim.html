@@ -12,7 +12,7 @@
 
     {% addtoblock "js" %}
         <script type="text/javascript" src="{{ STATIC_URL }}dajax/jquery.dajax.core.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}apwan/js/lib/jquery.isotope.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}apwan/js/lib/jquery.isotope.js"></script>
         {% dajaxice_js_import %}
         <script type="text/javascript" src="{{ STATIC_URL }}apwan/js/lib/mustache.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}libs/django.mustache.js"></script>
@@ -21,9 +21,23 @@
     {% endaddtoblock %}
 
     <input id="search_title" type="text" placeholder="Title"/>
-    <button id="search_submit" class="btn">Search</button>
+    <br/>
+    <select id="search_type" class="span4">
+        <option selected>All</option>
+        <option>Label</option>
+        <option>Artist</option>
+        <option>Production Company</option>
+    </select>
+
+    <div id="actions" class="btn-group">
+        <button id="search_submit" class="btn btn-primary">Search</button>
+        <button id="lookup_submit" class="btn">Lookup</button>
+    </div>
+    <br/>
+
     <br/>
     <br/>
+
     <div id="search_results">
     </div>
     <div id="claimedDialog" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="claimedDialogLabel" aria-hidden="true">

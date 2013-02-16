@@ -1,12 +1,20 @@
 var search_results = $('#search_results');
 var search_submit = $('#search_submit');
 var search_title = $('#search_title');
+var lookup_submit = $('#lookup_submit');
 
 var item_template = Mustache.template('account/recipient/claim_result_item');
 
 search_submit.click(search);
 
-var columnMargin = 0;
+lookup_submit.click(lookup);
+
+search_title.keydown(function(event) {
+    if(event.keyCode == 13)
+    {
+        search();
+    }
+});
 
 search_results.isotope({
     itemSelector: '.claim_item',
@@ -37,7 +45,7 @@ function search_callback(result)
 {
     if(result.success)
     {
-        search_results.empty().isotope('reLayout');
+        search_results.isotope('remove', search_results.data('isotope').$allAtoms);
         if(result.items.length > 0)
         {
             var items = "";
@@ -69,6 +77,18 @@ function search_callback(result)
             // TODO: Allow a recipient lookup here
         }
     }
+}
+
+function lookup()
+{
+    Dajaxice.recipient.search(search_callback, {
+        'title': search_title.val(),
+        'entities_include': true,
+        'limit': 9,
+
+        'lookup_include': true,
+        'lookup_type': ''
+    });
 }
 
 function claim(recipient_id)
