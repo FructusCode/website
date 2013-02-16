@@ -1,13 +1,26 @@
 var search_results = $('#search_results');
-var search_submit = $('#search_submit');
+
 var search_title = $('#search_title');
+var search_type = $('#search_type');
+
+var search_submit = $('#search_submit');
 var lookup_submit = $('#lookup_submit');
 
 var item_template = Mustache.template('account/recipient/claim_result_item');
 
-search_submit.click(search);
+//
+// Actions
+//
 
-lookup_submit.click(lookup);
+$('button[data-toggle="tooltip"]').tooltip();
+
+search_submit.click(search);
+lookup_submit.click(function(){
+    if(!$(this).hasClass('disabled'))
+    {
+        lookup();
+    }
+});
 
 search_title.keydown(function(event) {
     if(event.keyCode == 13)
@@ -15,6 +28,28 @@ search_title.keydown(function(event) {
         search();
     }
 });
+
+search_type.change(lookup_submit_update_state);
+function lookup_submit_update_state()
+{
+    if(search_type.val() != '')
+    {
+        lookup_submit.removeClass('disabled');
+        lookup_submit.tooltip('destroy');
+    } else {
+        lookup_submit.tooltip();
+        lookup_submit.addClass('disabled');
+    }
+}
+
+$(document).ready(function() {
+    if(search_title.val() != '') search();
+    lookup_submit_update_state();
+});
+
+//
+// Isotope
+//
 
 search_results.isotope({
     itemSelector: '.claim_item',
@@ -28,9 +63,9 @@ $(window).smartresize(function(){
     });
 });
 
-$(document).ready(function() {
-    if(search_title.val() != '') search();
-});
+//
+// Search
+//
 
 function search()
 {
@@ -79,6 +114,10 @@ function search_callback(result)
     }
 }
 
+//
+// Lookup
+//
+
 function lookup()
 {
     Dajaxice.recipient.search(search_callback, {
@@ -90,6 +129,10 @@ function lookup()
         'lookup_type': ''
     });
 }
+
+//
+// Claim
+//
 
 function claim(recipient_id)
 {
@@ -133,6 +176,10 @@ function claim_callback(result)
         console.error("Bad 'claim_callback' result");
     }
 }
+
+//
+// Insert item into account-menu
+//
 
 function menu_insert(sort_selector, type, item)
 {

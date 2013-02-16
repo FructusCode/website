@@ -23,15 +23,20 @@
     <input id="search_title" type="text" placeholder="Title"/>
     <br/>
     <select id="search_type">
-        <option selected>All</option>
-        <option>Label</option>
-        <option>Artist</option>
-        <option>Production Company</option>
+        <option value="" selected>All</option>
+
+        <option value="0">Label</option>
+        <option value="1">Artist</option>
+
+        <option value="2">Production Company</option>
     </select>
 
     <div id="actions" class="btn-group">
         <button id="search_submit" class="btn btn-primary">Search</button>
-        <button id="lookup_submit" class="btn">Lookup</button>
+        <button id="lookup_submit" class="btn disabled" data-toggle="tooltip"
+                data-placement="right" title="Lookup requires a specific recipient type">
+            Lookup
+        </button>
     </div>
     <br/>
 
