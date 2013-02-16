@@ -253,14 +253,21 @@ except ImportError:
         print "ERROR: No keys available!"
 
 
-# Import deployment settings
-try:
-    import settings_deploy
-    for key, value in settings_deploy.__dict__.items():
+def load_deployment_settings():
+    for key, value in FRUCTUS_DEPLOYMENT_SETTINGS.__dict__.items():
         if not key.startswith('__') and not key.endswith('__'):
             setattr(sys.modules[__name__], key, value)
+
+# Import deployment settings
+try:
+    import secrets.settings_deploy as FRUCTUS_DEPLOYMENT_SETTINGS
+    load_deployment_settings()
 except ImportError:
-    pass
+    try:
+        import settings_deploy as FRUCTUS_DEPLOYMENT_SETTINGS
+        load_deployment_settings()
+    except ImportError:
+        pass
 
 #
 # Load build information (build.json)
