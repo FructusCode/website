@@ -253,6 +253,11 @@ except ImportError:
         print "ERROR: No keys available!"
 
 
+def load_deployment_settings():
+    for key, value in FRUCTUS_DEPLOYMENT_SETTINGS.__dict__.items():
+        if not key.startswith('__') and not key.endswith('__'):
+            setattr(sys.modules[__name__], key, value)
+
 # Import deployment settings
 try:
     import secrets.settings_deploy as FRUCTUS_DEPLOYMENT_SETTINGS
