@@ -69,7 +69,7 @@ class MusicEntityGenerator(EntityGenerator):
         #
         # Create Artist Recipient
         #
-        _, recipient, _ = EntityGenerator.create_recipient(
+        _, recipient, _ = EntityGenerator.db_create_recipient(
             l_artist['id'], l_artist['name'],
             RecipientReference.TYPE_MUSICBRAINZ,
             Recipient.TYPE_MUSIC_ARTIST
@@ -79,7 +79,7 @@ class MusicEntityGenerator(EntityGenerator):
         # Create Artist Entity
         #
         _, e_artist, e_artist_created = \
-            EntityGenerator.create_entity(
+            EntityGenerator.db_create_entity(
                 l_artist['id'],
                 EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
                 artist=l_artist['name']
@@ -94,7 +94,7 @@ class MusicEntityGenerator(EntityGenerator):
         e_album = None
         if l_releases:
             _, e_album, e_album_created = \
-                EntityGenerator.create_entity(
+                EntityGenerator.db_create_entity(
                     l_releases[0][0]['id'],
                     EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
                     artist=l_artist['name'],
@@ -111,7 +111,7 @@ class MusicEntityGenerator(EntityGenerator):
         e_track = None
         if l_recording:
             _, e_track, e_track_created = \
-                EntityGenerator.create_entity(
+                EntityGenerator.db_create_entity(
                     l_recording['id'],
                     EntityReference.TYPE_MUSICBRAINZ, Entity.TYPE_MUSIC,
                     artist=l_artist['name'],

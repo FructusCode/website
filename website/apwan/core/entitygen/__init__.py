@@ -54,7 +54,7 @@ class EntityGenerator():
         pass
 
     @staticmethod
-    def create_recipient(key, title, ref_type, type):
+    def db_create_recipient(key, title, ref_type, type):
         # Search for id in recipient references
         reference_filter = RecipientReference.objects.filter(
             type=ref_type,
@@ -81,8 +81,8 @@ class EntityGenerator():
         return reference, recipient, True
 
     @staticmethod
-    def create_entity(id, ref_type, type, title=None, year=None,
-                      artist=None, album=None, track=None, parent=None):
+    def db_create_entity(id, ref_type, type, title=None, year=None,
+                         artist=None, album=None, track=None, parent=None):
 
         reference_filter = EntityReference.objects.filter(
             type=ref_type,
