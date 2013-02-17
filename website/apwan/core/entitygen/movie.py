@@ -1,5 +1,8 @@
+from __future__ import absolute_import
+
+from django.conf import settings
 import pythemoviedb.api.methods
-from website.apwan.core.entitygen import EntityGenerator
+from website.apwan.core.entitygen import EntityGenerator, registry
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
@@ -9,6 +12,10 @@ __author__ = 'Dean Gardiner'
 
 
 class MovieEntityGenerator(EntityGenerator):
+    class Meta:
+        key = 'movie'
+        recipient_types = [Recipient.TYPE_MOVIE_PRODUCTION_COMPANY]
+
     @staticmethod
     def lookup(title, year):
         results = pythemoviedb.api.methods.search_movie(title, year=year)
@@ -59,3 +66,6 @@ class MovieEntityGenerator(EntityGenerator):
                 e_movie.recipient.add(e_company)
 
         return e_movie
+
+if settings.FRUCTUS_KEYS:
+    registry.register(MovieEntityGenerator())

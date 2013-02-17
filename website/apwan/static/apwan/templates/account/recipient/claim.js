@@ -117,20 +117,20 @@ function search_callback(result)
 
                 items += item_template.render({'recipient': recipient});
             }
-
-            // Update our UI
-            var $items = $(items);
-            search_results.append($items).isotope('appended', $items);
-
-            // Store our lookup_token in-case the user requests a lookup
-            if('lookup_token' in result)
-            {
-                lookup_token = result.lookup_token;
-            } else {
-                lookup_token = null;
-            }
-            lookup_submit_update_state();
         }
+
+        // Update our UI
+        var $items = $(items);
+        search_results.append($items).isotope('appended', $items);
+
+        // Store our lookup_token in-case the user requests a lookup
+        if('lookup_token' in result)
+        {
+            lookup_token = result.lookup_token;
+        } else {
+            lookup_token = null;
+        }
+        lookup_submit_update_state();
     }
 }
 

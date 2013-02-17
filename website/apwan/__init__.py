@@ -8,4 +8,11 @@ USERAGENT_CONTACT = "team@fruct.us"
 # Initialize Payment Platforms
 import core.payment
 import core.payment.wepay
+
+# Initialize Entity Generators
+import core.entitygen
+import core.entitygen.movie
+import core.entitygen.music
+
+
 assert core

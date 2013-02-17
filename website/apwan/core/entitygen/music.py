@@ -1,8 +1,10 @@
 # pylint: disable=R0911
 
+from __future__ import absolute_import
 import re
+from django.conf import settings
 import musicbrainzngs
-from website.apwan.core.entitygen import EntityGenerator
+from website.apwan.core.entitygen import EntityGenerator, registry
 from website.apwan.models.entity import Entity
 from website.apwan.models.entity_reference import EntityReference
 from website.apwan.models.recipient import Recipient
@@ -21,6 +23,10 @@ ALLOWED_RELEASE_TYPES = ['Album', 'Single', 'EP']
 
 
 class MusicEntityGenerator(EntityGenerator):
+    class Meta:
+        key = 'music'
+        recipient_types = [Recipient.TYPE_MUSIC_ARTIST, Recipient.TYPE_MUSIC_LABEL]
+
     @staticmethod
     def lookup(artist, album=None, track=None):
         query = MusicEntityGenerator._build_query(artist, album, track)
@@ -243,3 +249,6 @@ class MusicEntityGenerator(EntityGenerator):
             _release['artist-credit'][0]['artist']['id']
         )['artist']
         return _artist, _results
+
+if settings.FRUCTUS_KEYS:
+    registry.register(MusicEntityGenerator())

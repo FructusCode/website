@@ -46,6 +46,10 @@ def search_like(text):
 
 
 class EntityGenerator():
+    class Meta:
+        key = None
+        recipient_types = None
+
     def __init__(self):
         pass
 
@@ -116,3 +120,40 @@ class EntityGenerator():
         )
 
         return reference, entity, True
+
+
+class EntityGeneratorRegistry:
+    def __init__(self):
+        self.entity_generators = {}  # [__generator_key__] -> [EntityGenerator]
+        self.recipient_type_map = {}  # [Recipient.type] -> [EntityGenerator]
+
+    def register(self, entity_generator):
+        if not isinstance(entity_generator, EntityGenerator):
+            raise TypeError()
+        if entity_generator.Meta.key in self.entity_generators:
+            print "entity_generator already registered"
+            return
+        self.entity_generators[entity_generator.Meta.key] = entity_generator
+
+        for recipient_type in entity_generator.Meta.recipient_types:
+            self.recipient_type_map[recipient_type] = entity_generator.Meta.key
+
+        print self.entity_generators
+        print self.recipient_type_map
+
+    def __getitem__(self, key):
+        return self.entity_generators[key]
+
+    def __setitem__(self, key, value):
+        raise Exception()
+
+    def __delitem__(self, key):
+        raise Exception()
+
+    def __contains__(self, key):
+        return key in self.entity_generators
+
+    def __len__(self):
+        return len(self.entity_generators)
+
+registry = EntityGeneratorRegistry()
