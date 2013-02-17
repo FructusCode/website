@@ -1,5 +1,4 @@
 import re
-from django.db.backends import mysql, sqlite3
 from django.template.defaultfilters import slugify
 
 __author__ = 'Dean Gardiner'

@@ -25,9 +25,9 @@ class MovieEntityGenerator(EntityGenerator):
 
         if results_len > 0:
             end_range = limit if limit < results_len else results_len
-            for x in range(end_range):
+            for index in range(end_range):
                 movies.append(pythemoviedb.api.methods.get_movie(
-                    result['results'][x]['id']
+                    result['results'][index]['id']
                 ))
 
         return movies
@@ -41,9 +41,9 @@ class MovieEntityGenerator(EntityGenerator):
 
         if results_len > 0:
             end_range = limit if limit < results_len else results_len
-            for x in range(end_range):
+            for index in range(end_range):
                 companies.append(pythemoviedb.api.methods.get_company(
-                    result['results'][x]['id']
+                    result['results'][index]['id']
                 ))
 
         return companies
