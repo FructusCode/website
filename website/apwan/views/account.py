@@ -157,7 +157,9 @@ def payee_add_wepay(request):
 
 @login_required
 def recipient_claim(request):
-    return render_with_account_menu('account/recipient/claim.html', request)
+    return render_with_account_menu('account/recipient/claim.html', request, {
+        'recipient_types': Recipient.TYPES
+    })
 
 
 @login_required

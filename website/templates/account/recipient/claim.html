@@ -25,10 +25,9 @@
     <select id="search_type">
         <option value="" selected>All</option>
 
-        <option value="0">Label</option>
-        <option value="1">Artist</option>
-
-        <option value="2">Production Company</option>
+        {% for type in recipient_types %}
+            <option value="{{ type.0 }}">{{ type.1 }}</option>
+        {% endfor %}
     </select>
 
     <div id="actions" class="btn-group">
