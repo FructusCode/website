@@ -94,7 +94,13 @@ def _slug_strip(value, separator='-'):
 def sql_auto_increment(model):
     from django.db import connection
     cursor = connection.cursor()
-    if type(cursor.cursor) == sqlite3.base.SQLiteCursorWrapper:
+
+    # This is ugly, deal with it.
+    # We are unable to do an actual type check..
+    cursor_name = str(type(cursor.cursor))
+
+    if cursor_name == "<class 'django.db.backends.sqlite3.base.SQLiteCursorWrapper'>":
+        print str(type(cursor.cursor))
         cursor.execute("SELECT MAX(id) AS max_id FROM %s" % model._meta.db_table)
         row = cursor.fetchone()
         cursor.close()
@@ -103,7 +109,7 @@ def sql_auto_increment(model):
             raise IndexError()
         return row[0] + 1
 
-    elif type(cursor.cursor) == mysql.base.CursorWrapper:
+    elif cursor_name == "<class 'django.db.backends.mysql.base.CursorWrapper'>":
         cursor.execute("SELECT Auto_increment FROM information_schema.tables "
                        "WHERE table_name='%s';" % model._meta.db_table)
         row = cursor.fetchone()
