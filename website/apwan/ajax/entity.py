@@ -1,11 +1,10 @@
 import traceback
 from dajaxice.decorators import dajaxice_register
 from django.utils import simplejson
+from website.apwan.core import entitygen
 from website.apwan.core.api_utils import cors_response, build_error, API_ERROR
 from website.apwan.core.deployauth import deployauth_required
 from website.apwan.core.entitygen import search_like
-from website.apwan.core.entitygen.movie import MovieEntityGenerator
-from website.apwan.core.entitygen.music import MusicEntityGenerator
 from website.apwan.models.entity import Entity
 
 __author__ = 'Dean Gardiner'
@@ -48,7 +47,7 @@ def search_music(title, year, artist, album, track):
     if entities is None:
         # Lookup Details
         print "looking up"
-        entity = MusicEntityGenerator.create(artist, album, track)
+        entity = entitygen.registry['music'].create(artist, album, track)
         if entity is None:
             return cors_response(build_error(API_ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
@@ -75,7 +74,7 @@ def search_movie(title, year, artist, album, track):
     if entities is None:
         # Lookup Details
         print "looking up"
-        entity = MovieEntityGenerator.create(title, year)
+        entity = entitygen.registry['movie'].create(title, year)
         if entity is None:
             return cors_response(build_error(API_ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
