@@ -50,6 +50,7 @@ class MovieEntityGenerator(EntityGenerator):
 
     @staticmethod
     def entity_create(title, year):
+        # TODO: Support creating multiple movies
         l_movie = MovieEntityGenerator.entity_lookup(title, year)
         if len(l_movie) == 1:
             l_movie = l_movie[0]
@@ -82,15 +83,30 @@ class MovieEntityGenerator(EntityGenerator):
             print "Movie Created"
 
             for company in l_movie['production_companies']:
-                (_, e_company, _) =\
-                    MovieEntityGenerator.db_create_recipient(
-                        company['id'], company['name'],
-                        RecipientReference.TYPE_THEMOVIEDB,
-                        Recipient.TYPE_MOVIE_PRODUCTION_COMPANY
-                    )
+                e_company = MovieEntityGenerator._create_company_recipient(company)
                 e_movie.recipient.add(e_company)
 
         return e_movie
+
+    @staticmethod
+    def recipient_create(title, limit=1):
+        l_companies = MovieEntityGenerator.recipient_lookup(title, limit=limit)
+        e_companies = []
+
+        for company in l_companies:
+            e_companies.append(MovieEntityGenerator._create_company_recipient(company))
+
+        return e_companies
+
+    @staticmethod
+    def _create_company_recipient(company):
+        (_, e_company, _) = \
+            MovieEntityGenerator.db_create_recipient(
+                company['id'], company['name'],
+                RecipientReference.TYPE_THEMOVIEDB,
+                Recipient.TYPE_MOVIE_PRODUCTION_COMPANY
+            )
+        return e_company
 
 if settings.FRUCTUS_KEYS:
     registry.register(MovieEntityGenerator())

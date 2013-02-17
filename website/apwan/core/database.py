@@ -100,7 +100,6 @@ def sql_auto_increment(model):
     cursor_name = str(type(cursor.cursor))
 
     if cursor_name == "<class 'django.db.backends.sqlite3.base.SQLiteCursorWrapper'>":
-        print str(type(cursor.cursor))
         cursor.execute("SELECT MAX(id) AS max_id FROM %s" % model._meta.db_table)
         row = cursor.fetchone()
         cursor.close()

@@ -2,6 +2,7 @@ from dajaxice.decorators import dajaxice_register
 import datetime
 from django.utils import simplejson
 import pytz
+from website.apwan.core import entitygen
 from website.apwan.core.api_utils import cors_response, build_error, API_ERROR
 from website.apwan.core.deployauth import deployauth_required
 from website.apwan.core.entitygen import search_like
@@ -26,6 +27,24 @@ def search(request, title, limit=10,
         # -------------------------------
         search_type = 'lookup'
 
+        # Check lookup_type is valid
+        lookup_type_valid = False
+        try:
+            for type_id, type_title in Recipient.TYPES:
+                if int(lookup_type) == int(type_id):
+                    lookup_type_valid = True
+                    lookup_type = int(lookup_type)
+                    break
+        except ValueError:
+            pass
+
+        if not lookup_type_valid:
+            print "error"
+            return cors_response(build_error(
+                API_ERROR.INVALID_PARAMETER,
+                parameter='lookup_type'
+            ))
+
         # Find the token in our database
         token = None
         try:
@@ -45,9 +64,9 @@ def search(request, title, limit=10,
             token.delete()  # Token has been used, let's remove it.
 
             if 'title' in token.data and token.data['title'] == title:
-                print "TODO: Do the actual lookup"
-
-                # TODO: Do the actual lookup
+                results = entitygen.registry[lookup_type].recipient_create(
+                    token.data['title'], limit=9
+                )
             else:
                 return cors_response(
                     build_error(API_ERROR.RECIPIENT.LOOKUP_TOKEN_INVALID))
@@ -63,8 +82,6 @@ def search(request, title, limit=10,
         results = Recipient.objects.all().filter(
             s_title__ilike='%' + search_like(title) + '%'
         )[:limit]
-
-    print "search_type", search_type
 
     # Append dicts of recipient results
     items = []

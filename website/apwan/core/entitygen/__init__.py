@@ -142,7 +142,10 @@ class EntityGeneratorRegistry:
         print self.recipient_type_map
 
     def __getitem__(self, key):
-        return self.entity_generators[key]
+        if type(key) == str:
+            return self.entity_generators[key]
+        elif type(key) == int:
+            return self.entity_generators[self.recipient_type_map[key]]
 
     def __setitem__(self, key, value):
         raise Exception()
