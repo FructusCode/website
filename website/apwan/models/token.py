@@ -1,9 +1,12 @@
+import hashlib
 import uuid
 import datetime
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from json_field import JSONField
 import pytz
+from website.apwan.core.database import sql_auto_increment
 
 __author__ = 'Dean Gardiner'
 
@@ -35,9 +38,14 @@ class Token(models.Model):
         return False
 
     def save(self, *args, **kwargs):
-        # Create a token if one hasn't already been set
         if self.token == '':
-            self.token = uuid.uuid4().hex
+            next_id = sql_auto_increment(Token)
+            h = hashlib.md5()
+
+            h.update(settings.SECRET_SALT)
+            h.update(str(next_id))
+
+            self.token = h.hexdigest()
 
         super(Token, self).save(*args, **kwargs)
 

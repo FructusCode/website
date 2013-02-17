@@ -1,4 +1,5 @@
 import re
+from django.db.backends import mysql, sqlite3
 from django.template.defaultfilters import slugify
 
 __author__ = 'Dean Gardiner'
@@ -79,3 +80,38 @@ def _slug_strip(value, separator='-'):
             re_sep = re.escape(separator)
         value = re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
     return value
+
+#
+# sql_auto_increment
+#
+# http://djangosnippets.org/snippets/1415/
+# http://djangosnippets.org/users/bernie2004/
+#
+# Added SQLite support ~ fuzeman
+#
+
+
+def sql_auto_increment(model):
+    from django.db import connection
+    cursor = connection.cursor()
+    if type(cursor.cursor) == sqlite3.base.SQLiteCursorWrapper:
+        cursor.execute("SELECT MAX(id) AS max_id FROM %s" % model._meta.db_table)
+        row = cursor.fetchone()
+        cursor.close()
+
+        if len(row) != 1:
+            raise IndexError()
+        return row[0] + 1
+
+    elif type(cursor.cursor) == mysql.base.CursorWrapper:
+        cursor.execute("SELECT Auto_increment FROM information_schema.tables "
+                       "WHERE table_name='%s';" % model._meta.db_table)
+        row = cursor.fetchone()
+        cursor.close()
+
+        if len(row) != 1:
+            raise ValueError()
+        return row[0]
+
+    else:
+        raise NotImplementedError()
