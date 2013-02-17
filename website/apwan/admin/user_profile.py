@@ -3,7 +3,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from django.db import models
 from website.apwan.models.user_profile import UserProfile
 
 __author__ = 'Dean Gardiner'

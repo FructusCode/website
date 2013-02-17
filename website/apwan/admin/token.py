@@ -1,3 +1,5 @@
+# pylint: disable=R0904
+
 import datetime
 from django.contrib import admin
 import pytz
@@ -20,19 +22,21 @@ class TokenAdmin(admin.ModelAdmin):
         expire_minutes = round(expire_seconds / 60, 0)
         expire_hours = round(expire_minutes / 60, 0)
 
+        result = "EXPIRED"
+
         if expire_hours > 1:
-            return "%d hours" % expire_hours
+            result = "%d hours" % expire_hours
         elif expire_hours == 1:
-            return "1 hour"
+            result = "1 hour"
         elif expire_minutes > 1:
-            return "%d minutes" % expire_minutes
+            result = "%d minutes" % expire_minutes
         elif (expire_seconds / 60) == 1:
-            return "1 minute"
+            result = "1 minute"
         elif expire_seconds > 1:
-            return "%d seconds" % expire_seconds
+            result = "%d seconds" % expire_seconds
         elif expire_seconds == 1:
-            return "1 second"
-        else:
-            return "EXPIRED"
+            result = "1 second"
+
+        return result
 
 admin.site.register(Token, TokenAdmin)
