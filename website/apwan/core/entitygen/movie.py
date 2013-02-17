@@ -17,20 +17,45 @@ class MovieEntityGenerator(EntityGenerator):
         recipient_types = [Recipient.TYPE_MOVIE_PRODUCTION_COMPANY]
 
     @staticmethod
-    def entity_lookup(title, year):
-        results = pythemoviedb.api.methods.search_movie(title, year=year)
+    def entity_lookup(title, year, limit=1):
+        result = pythemoviedb.api.methods.search_movie(title, year=year)
+        results_len = len(result['results'])
 
-        if len(results['results']) > 0:
-            return pythemoviedb.api.methods.get_movie(
-                results['results'][0]['id']
-            )
-        return None
+        movies = []
+
+        if results_len > 0:
+            end_range = limit if limit < results_len else results_len
+            for x in range(end_range):
+                movies.append(pythemoviedb.api.methods.get_movie(
+                    result['results'][x]['id']
+                ))
+
+        return movies
+
+    @staticmethod
+    def recipient_lookup(title, limit=1):
+        result = pythemoviedb.api.methods.search_company(title)
+        results_len = len(result['results'])
+
+        companies = []
+
+        if results_len > 0:
+            end_range = limit if limit < results_len else results_len
+            for x in range(end_range):
+                companies.append(pythemoviedb.api.methods.get_company(
+                    result['results'][x]['id']
+                ))
+
+        return companies
 
     @staticmethod
     def entity_create(title, year):
         l_movie = MovieEntityGenerator.entity_lookup(title, year)
-        if l_movie is None:
+        if len(l_movie) == 1:
+            l_movie = l_movie[0]
+        else:
             return None
+
         if 'release_date' not in l_movie:
             print "'release'_date not found"
             return None
