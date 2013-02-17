@@ -92,6 +92,7 @@ STATICFILES_FINDERS = (
 )
 
 SECRET_KEY = 'dmwawhazvr_7b01q7v92k&amp;bo9w%+$wqqgyszk##a_5^reykd2_'
+SECRET_SALT = 'xo(_)^r&tc)i@6!--nbto0f41mw&=fl_g39*wm8md86%mt=7=g'
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
