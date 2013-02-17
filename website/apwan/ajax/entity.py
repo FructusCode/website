@@ -47,7 +47,7 @@ def search_music(title, year, artist, album, track):
     if entities is None:
         # Lookup Details
         print "looking up"
-        entity = entitygen.registry['music'].create(artist, album, track)
+        entity = entitygen.registry['music'].entity_create(artist, album, track)
         if entity is None:
             return cors_response(build_error(API_ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]
@@ -74,7 +74,7 @@ def search_movie(title, year, artist, album, track):
     if entities is None:
         # Lookup Details
         print "looking up"
-        entity = entitygen.registry['movie'].create(title, year)
+        entity = entitygen.registry['movie'].entity_create(title, year)
         if entity is None:
             return cors_response(build_error(API_ERROR.ENTITY.NOT_FOUND))
         entities = [entity.dict(full=True)]

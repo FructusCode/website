@@ -17,7 +17,7 @@ class MovieEntityGenerator(EntityGenerator):
         recipient_types = [Recipient.TYPE_MOVIE_PRODUCTION_COMPANY]
 
     @staticmethod
-    def lookup(title, year):
+    def entity_lookup(title, year):
         results = pythemoviedb.api.methods.search_movie(title, year=year)
 
         if len(results['results']) > 0:
@@ -27,8 +27,8 @@ class MovieEntityGenerator(EntityGenerator):
         return None
 
     @staticmethod
-    def create(title, year):
-        l_movie = MovieEntityGenerator.lookup(title, year)
+    def entity_create(title, year):
+        l_movie = MovieEntityGenerator.entity_lookup(title, year)
         if l_movie is None:
             return None
         if 'release_date' not in l_movie:

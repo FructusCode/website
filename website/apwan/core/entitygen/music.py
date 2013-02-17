@@ -28,7 +28,7 @@ class MusicEntityGenerator(EntityGenerator):
         recipient_types = [Recipient.TYPE_MUSIC_ARTIST, Recipient.TYPE_MUSIC_LABEL]
 
     @staticmethod
-    def lookup(artist, album=None, track=None):
+    def entity_lookup(artist, album=None, track=None):
         query = MusicEntityGenerator._build_query(artist, album, track)
         results = MusicEntityGenerator._request(query, artist, album, track)
 
@@ -62,9 +62,9 @@ class MusicEntityGenerator(EntityGenerator):
         return None
 
     @staticmethod
-    def create(artist, album=None, track=None):
+    def entity_create(artist, album=None, track=None):
         l_artist, l_releases, l_recording = \
-            MusicEntityGenerator.lookup(artist, album, track)
+            MusicEntityGenerator.entity_lookup(artist, album, track)
 
         #
         # Create Artist Recipient
