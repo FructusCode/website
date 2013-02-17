@@ -35,11 +35,11 @@ class Recipient(models.Model):
     def path(self):
         return '/account/recipient/' + self.slug
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         unique_slugify(
             self, self.title
         )
-        super(Recipient, self).save(kwargs)
+        super(Recipient, self).save(*args, **kwargs)
 
     def dict(self,
              entities_include=False, entities_filter=None, entities_limit=None,

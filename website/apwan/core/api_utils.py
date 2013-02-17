@@ -59,6 +59,7 @@ class API_ERROR(ErrorObject):
 
     class RECIPIENT(ErrorObject):
         ALREADY_CLAIMED = "Recipient has already been claimed"
+        LOOKUP_TOKEN_INVALID = "Invalid or expired token supplied"
 
 
 # Initialize API_ERROR messages

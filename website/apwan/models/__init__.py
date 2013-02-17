@@ -13,8 +13,10 @@ import recipient_reference
 
 import service
 
+import token
+
 import user_profile
 
 assert (donation, entity, entity_reference,
         payee, recipient, recipient_reference,
-        service, user_profile) != ()
+        service, token, user_profile) != ()

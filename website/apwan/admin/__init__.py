@@ -6,7 +6,8 @@ import entity
 import payee
 import recipient
 import service
+import token
 import user_profile
 
 assert (donation, entity, payee,
-        recipient, service, user_profile) != ()
+        recipient, service, token, user_profile) != ()

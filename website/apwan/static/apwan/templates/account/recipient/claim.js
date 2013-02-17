@@ -12,8 +12,6 @@ var item_template = Mustache.template('account/recipient/claim_result_item');
 // Actions
 //
 
-$('button[data-toggle="tooltip"]').tooltip();
-
 search_submit.click(search);
 lookup_submit.click(function(){
     if(!$(this).hasClass('disabled'))
@@ -27,17 +25,29 @@ search_title.keydown(function(event) {
     {
         search();
     }
+
+    // Remove old token if lookup title/query changes
+    lookup_token = null;
+    lookup_submit_update_state();
 });
 
 search_type.change(lookup_submit_update_state);
+
 function lookup_submit_update_state()
 {
-    if(search_type.val() != '')
+    if(search_type.val() != '' && lookup_token != null)
     {
         lookup_submit.removeClass('disabled');
         lookup_submit.tooltip('destroy');
+    } else if(search_type.val() == '')
+    {
+        lookup_submit.tooltip({title: "Lookup requires a specific recipient type"});
+        lookup_submit.addClass('disabled');
+    } else if(lookup_token == null) {
+        lookup_submit.tooltip({title: "You are required to try searching first"});
+        lookup_submit.addClass('disabled');
     } else {
-        lookup_submit.tooltip();
+        lookup_submit.tooltip({title: "Unknown Error"});
         lookup_submit.addClass('disabled');
     }
 }
@@ -66,6 +76,7 @@ $(window).smartresize(function(){
 //
 // Search
 //
+var lookup_token = null;
 
 function search()
 {
@@ -83,6 +94,7 @@ function search_callback(result)
         search_results.isotope('remove', search_results.data('isotope').$allAtoms);
         if(result.items.length > 0)
         {
+            // Render our recipients
             var items = "";
             for(var i = 0; i < result.items.length; i++)
             {
@@ -105,11 +117,19 @@ function search_callback(result)
 
                 items += item_template.render({'recipient': recipient});
             }
+
+            // Update our UI
             var $items = $(items);
             search_results.append($items).isotope('appended', $items);
 
-        } else {
-            // TODO: Allow a recipient lookup here
+            // Store our lookup_token in-case the user requests a lookup
+            if('lookup_token' in result)
+            {
+                lookup_token = result.lookup_token;
+            } else {
+                lookup_token = null;
+            }
+            lookup_submit_update_state();
         }
     }
 }
@@ -120,14 +140,17 @@ function search_callback(result)
 
 function lookup()
 {
-    Dajaxice.recipient.search(search_callback, {
-        'title': search_title.val(),
-        'entities_include': true,
-        'limit': 9,
+    if(lookup_token != null && search_type.val() != '')
+    {
+        Dajaxice.recipient.search(search_callback, {
+            'title': search_title.val(),
+            'entities_include': true,
+            'limit': 9,
 
-        'lookup_include': true,
-        'lookup_type': ''
-    });
+            'lookup_type': search_type.val(),
+            'lookup_token': lookup_token
+        });
+    }
 }
 
 //
