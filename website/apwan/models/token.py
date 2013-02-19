@@ -39,12 +39,14 @@ class Token(models.Model):
     def save(self, *args, **kwargs):
         if self.token == '':
             next_id = sql_auto_increment(Token)
-            h = hashlib.md5()
+            md5 = hashlib.md5()
 
-            h.update(settings.SECRET_SALT)
-            h.update(str(next_id))
+            # pylint: disable=E1101
+            md5.update(settings.SECRET_SALT)
+            md5.update(str(next_id))
+            # pylint: enable=E1101
 
-            self.token = h.hexdigest()
+            self.token = md5.hexdigest()
 
         super(Token, self).save(*args, **kwargs)
 

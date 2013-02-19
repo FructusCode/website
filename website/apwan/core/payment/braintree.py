@@ -1,3 +1,5 @@
+# pylint: disable=R0924
+
 from __future__ import absolute_import
 import braintree
 from braintree.exceptions import AuthenticationError, NotFoundError

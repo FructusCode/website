@@ -30,7 +30,7 @@ def search(request, title, limit=10,
         # Check lookup_type is valid
         lookup_type_valid = False
         try:
-            for type_id, type_title in Recipient.TYPES:
+            for type_id, _ in Recipient.TYPES:
                 if int(lookup_type) == int(type_id):
                     lookup_type_valid = True
                     lookup_type = int(lookup_type)

@@ -25,8 +25,8 @@ def search_strip(text):
     if type(text) is unicode:
         text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
 
-    for ch in SPECIAL_PHRASES:
-        text = text.replace(ch, '')
+    for char in SPECIAL_PHRASES:
+        text = text.replace(char, '')
 
     return text.strip()
 
@@ -38,8 +38,8 @@ def search_like(text):
     if type(text) is unicode:
         text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
 
-    for ch in SPECIAL_PHRASES:
-        text = text.replace(ch, '%')
+    for char in SPECIAL_PHRASES:
+        text = text.replace(char, '%')
 
     text = text.replace(' ', '%')
     return text.strip('%')
@@ -54,7 +54,7 @@ class EntityGenerator():
         pass
 
     @staticmethod
-    def db_create_recipient(key, title, ref_type, type):
+    def db_create_recipient(key, title, ref_type, recipient_type):
         # Search for id in recipient references
         reference_filter = RecipientReference.objects.filter(
             type=ref_type,
@@ -68,7 +68,7 @@ class EntityGenerator():
         recipient = Recipient.objects.create(
             title=title,
             s_title=search_strip(title),
-            type=type
+            type=recipient_type
         )
 
         # Create Reference
@@ -81,16 +81,16 @@ class EntityGenerator():
         return reference, recipient, True
 
     @staticmethod
-    def db_create_entity(id, ref_type, type, title=None, year=None,
+    def db_create_entity(entity_id, ref_type, entity_type, title=None, year=None,
                          artist=None, album=None, track=None, parent=None):
 
         reference_filter = EntityReference.objects.filter(
             type=ref_type,
-            key=id
+            key=entity_id
         )
         reference_exists = len(reference_filter) == 1
         if reference_exists:
-            print "reference exists", id
+            print "reference exists", entity_id
             return reference_filter[0], reference_filter[0].entity, False
 
         # Create Entity
@@ -109,14 +109,14 @@ class EntityGenerator():
             s_artist=search_strip(artist),
             s_album=search_strip(album),
             s_track=search_strip(track),
-            type=type
+            type=entity_type
         )
 
         # Create Reference
         reference = EntityReference.objects.create(
             entity=entity,
             type=ref_type,
-            key=id
+            key=entity_id
         )
 
         return reference, entity, True
