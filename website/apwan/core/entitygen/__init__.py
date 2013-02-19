@@ -138,9 +138,6 @@ class EntityGeneratorRegistry:
         for recipient_type in entity_generator.Meta.recipient_types:
             self.recipient_type_map[recipient_type] = entity_generator.Meta.key
 
-        print self.entity_generators
-        print self.recipient_type_map
-
     def __getitem__(self, key):
         if type(key) == str:
             return self.entity_generators[key]
