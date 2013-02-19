@@ -40,10 +40,14 @@ class PayeeSettingsForm(forms.Form):
             if not data or data['account_id'] != payee.account_id:
                 account_choices = []
                 for account in payment_platform.account_find(payee):
-                    account_choices.append(
-                        (account['account_id'], account['name']))
+                    account_choices.append((account['account_id'], account['name']))
 
                 self.fields['account_id'].choices = tuple(account_choices)
+
+            elif data['account_id'] == payee.account_id:
+                self.fields['account_id'].choices = (
+                    (payee.account_id, payee.account_name),
+                )
 
     def clean(self):
         cleaned_data = super(PayeeSettingsForm, self).clean()

@@ -15,7 +15,7 @@ class Payee(models.Model):
     userservice = models.ForeignKey(Service, null=True)
 
     account_name = models.CharField(max_length=64, null=True, blank=True)
-    account_id = models.IntegerField(null=True, blank=True)
+    account_id = models.CharField(max_length=20, null=True, blank=True)
 
     title = models.CharField(max_length=32)
     slug = models.SlugField(max_length=32)
