@@ -78,6 +78,15 @@ class BraintreePaymentPlatform(PaymentPlatform):
             }
         )
 
+    def account_find(self, payee, **kwargs):
+        # Braintree authorizations only have access to a single account
+        return [
+            {
+                'account_id': payee.userservice.service_id,
+                'name': payee.userservice.name()
+            }
+        ]
+
 
 class BraintreeAuthorizationForm(forms.Form):
     name = forms.CharField(label='Name', required=False,
