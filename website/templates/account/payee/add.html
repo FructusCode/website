@@ -4,9 +4,14 @@
 {% load helper_tags %}
 
 {% block account_body %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}apwan/templates/account/payee/add.less"/>
+    {% endaddtoblock %}
+
     {% addtoblock "js" %}
         <script src="{{ STATIC_URL }}apwan/js/lib/holder.js"></script>
     {% endaddtoblock %}
+
     <div class="page-header">
         <h2>Add Payee</h2>
     </div>
@@ -21,8 +26,8 @@
             <tr>
                 <th style="width: 30px;"></th>
                 <th style="width: 80px;">Service</th>
-                <th style="width: 120px;">Account ID</th>
-                <th style="width: 180px;">Username</th>
+                <th style="width: 200px;">Name</th>
+                <th style="width: 180px;">Account ID</th>
                 <th>Email</th>
             </tr>
         </thead>
@@ -30,16 +35,16 @@
             {% for account in accounts %}
                 <tr>
                     <td style="padding: 8px 0;">
-                        <form method="post">
+                        <form class="account-form" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="account_id" value="{{ account.id }}"/>
                             <button type="submit" class="btn btn-mini">Use</button>
                         </form>
                     </td>
                     <td><span class="label label-info">{{ account.get_service_display }}</span></td>
+                    <td>{% if account.name %}{{ account.name }}{% endif %}</td>
                     <td>{{ account.service_id }}</td>
-                    <td>{{ account.username }}</td>
-                    <td>{{ account.email }}</td>
+                    <td>{% if account.email %}{{ account.email }}{% endif %}</td>
                 </tr>
             {% endfor %}
         </tbody>

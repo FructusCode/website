@@ -15,8 +15,8 @@
         {% endif %}
     {% endif %}
     <strong>User: </strong>
-    {% if payee.userservice.username %}
-        {{ payee.userservice.username }} ({{ payee.userservice.service_id }})
+    {% if payee.userservice.name %}
+        {{ payee.userservice.name }} ({{ payee.userservice.service_id }})
     {% elif payee.userservice %}
         {{ payee.userservice.service_id }}
     {% else %}
