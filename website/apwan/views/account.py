@@ -136,7 +136,17 @@ def payee_add_form(request, platform_key):
                     service_data.pop('csrfmiddlewaretoken', None)
                     service_data.pop('submit', None)
 
-                    platform.service_create(request.user, **service_data)
+                    created, service = platform.service_create(
+                        request.user, **service_data
+                    )
+                    if service:
+                        if created:
+                            return redirect(reverse('account-payee-add'))
+                        else:
+                            return error_redirect('ALREADY_AUTHORIZED')
+                    else:
+                        return error_redirect('UNKNOWN_AUTHORIZATION_ERROR')
+
             else:
                 form = platform.form()
 

@@ -25,9 +25,11 @@ class Service(models.Model):
     )
 
     LINK_TYPE_OAUTH = 1
+    LINK_TYPE_KEY = 2
     LINK_TYPES = (
         (0, "Invalid"),
         (LINK_TYPE_OAUTH, "OAuth"),
+        (LINK_TYPE_KEY, "Key"),
     )
 
     owner = models.ForeignKey(User, null=True)
@@ -39,10 +41,8 @@ class Service(models.Model):
     link_type = models.IntegerField(choices=LINK_TYPES, default=0)
     data = JSONField()
 
-    def username(self):
-        if self.service == Service.SERVICE_WEPAY:
-            return self.data['user_name']
-        return None
+    def name(self):
+        return self.data.get('name', '')
 
     def email(self):
         if self.service == Service.SERVICE_WEPAY:
@@ -68,7 +68,7 @@ class Service(models.Model):
             'link_type': self.link_type,
             'link_type_label': self.get_link_type_display(),
 
-            'username': self.username(),
+            'name': self.name(),
             'email': self.email(),
         }
         # pylint: enable=E1101

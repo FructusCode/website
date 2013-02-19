@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+import braintree
+from braintree.exceptions import AuthenticationError, NotFoundError
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
@@ -26,6 +29,20 @@ class BraintreePaymentPlatform(PaymentPlatform):
         self.type = AUTHORIZATION_FORM
         self.form = BraintreeAuthorizationForm
 
+        self.configure(None, None, None)  # Initial blank configuration
+
+    @staticmethod
+    def configure(merchant_id, public_key, private_key):
+        environment = braintree.Environment.Production
+        if not settings.FRUCTUS_KEYS.BRAINTREE_PRODUCTION:
+            environment = braintree.Environment.Sandbox
+
+        braintree.Configuration.configure(
+            environment, merchant_id,
+            public_key, private_key,
+            use_once=True
+        )
+
     def service_create(self, owner, **kwargs):
         if 'public_key' not in kwargs:
             raise TypeError()
@@ -34,10 +51,37 @@ class BraintreePaymentPlatform(PaymentPlatform):
         if 'merchant_id' not in kwargs:
             raise TypeError()
 
-        print 'service_create'
+        self.configure(kwargs['merchant_id'],
+                       kwargs['public_key'],
+                       kwargs['private_key'])
+
+        # Check if details are correct
+        # TODO: Surely there is a better way to do this?
+        try:
+            braintree.Transaction.find('fructus-account-validation-check')
+            account_valid = True
+        except AuthenticationError:
+            account_valid = False
+        except NotFoundError:
+            account_valid = True
+
+        if not account_valid:
+            return False, None  # (created, service)
+
+       # Store details in database
+        return self.db_service_create(
+            owner, Service.SERVICE_BRAINTREE, kwargs['merchant_id'],
+            link_type=Service.LINK_TYPE_KEY, data={
+                'public_key': kwargs['public_key'],
+                'private_key': kwargs['private_key'],
+                'name': kwargs.get('name', '')
+            }
+        )
 
 
 class BraintreeAuthorizationForm(forms.Form):
+    name = forms.CharField(label='Name', required=False,
+                           help_text='To help you find the account later')
     merchant_id = forms.CharField(label="Merchant ID")
     public_key = forms.CharField(label="Public Key")
     private_key = forms.CharField(label="Private Key")
@@ -49,6 +93,7 @@ class BraintreeAuthorizationForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 'Link Braintree Account',
+                'name',
                 'merchant_id',
                 'public_key',
                 'private_key'

@@ -75,7 +75,7 @@ class WePayPaymentPlatform(PaymentPlatform):
                 'access_token': token_result['access_token'],
                 'token_type': token_result['token_type'],
                 'email': user_result['email'],
-                'user_name': user_result['user_name'],
+                'name': user_result['user_name'],
                 'first_name': user_result['first_name'],
                 'last_name': user_result['last_name']
             }
