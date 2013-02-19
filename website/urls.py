@@ -23,8 +23,12 @@ urlpatterns = patterns(
     # /account/(payee, add_payee)
     url(r'^account/add_payee/$', 'website.apwan.views.account.payee_add',
         name='account-payee-add'),
+
+    url(r'^account/add_payee/braintree/$', 'website.apwan.views.account.payee_add_form',
+        {'platform_key': 'braintree'}, name='account-payee-add-braintree'),
     url(r'^account/add_payee/wepay/$', 'website.apwan.views.account.payee_add_wepay',
         name='account-payee-add-wepay'),
+
     url(r'^account/payee/(?P<slug>.*)/settings/$','website.apwan.views.account.payee_settings',
         name='account-payee-edit'),
     url(r'^account/payee/(?P<slug>.*)/$','website.apwan.views.account.payee_view',

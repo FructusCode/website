@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from wepay.exceptions import WePayError
@@ -124,6 +124,29 @@ def payee_add(request):
 
 
 @login_required
+def payee_add_form(request, platform_key):
+    if platform_key in payment.registry:
+        platform = payment.registry[platform_key]
+
+        if hasattr(platform, 'form'):
+            if request.method == 'POST':
+                form = platform.form(request.POST)
+                if form.is_valid():
+                    service_data = form.cleaned_data
+                    service_data.pop('csrfmiddlewaretoken', None)
+                    service_data.pop('submit', None)
+
+                    platform.service_create(request.user, **service_data)
+            else:
+                form = platform.form()
+
+            return render_with_account_menu('account/form.html', request, {
+                'form': form
+            })
+    return HttpResponseBadRequest('Invalid Request')
+
+
+@login_required
 def payee_add_wepay(request):
     if not 'code' in request.GET:
         return redirect(reverse('account-payee-add'))
@@ -136,7 +159,7 @@ def payee_add_wepay(request):
         )
         if service:
             if created:
-                return redirect(reverse('account-profile'))
+                return redirect(reverse('account-payee-add'))
             else:
                 return error_redirect('ALREADY_AUTHORIZED')
         else:

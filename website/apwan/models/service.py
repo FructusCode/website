@@ -11,9 +11,11 @@ class Service(models.Model):
         unique_together = ('service', 'service_id')
 
     SERVICE_WEPAY = 'wepay'
+    SERVICE_BRAINTREE = 'braintree'
     SERVICES = (
         ('', "Invalid"),
         (SERVICE_WEPAY, "WePay"),
+        (SERVICE_BRAINTREE, "Braintree"),
     )
 
     TYPE_PAYEE_USER = 1

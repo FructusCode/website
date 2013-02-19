@@ -11,7 +11,7 @@ from website.settings import build_url
 
 AUTHORIZATION_AUTH = 'auth'
 AUTHORIZATION_OAUTH = 'oauth'
-AUTHORIZATION_ACCOUNT_ID = 'account_id'
+AUTHORIZATION_FORM = 'form'
 
 
 class PaymentPlatform:
@@ -103,6 +103,7 @@ class PaymentPlatformRegistry:
         platforms = {}
         for key, platform in self.platforms.items():
             platform_info = {
+                'key': platform.__platform_key__,
                 'title': platform.__platform_title__,
                 'type': platform.type,
                 'thumbnail': platform.__platform_thumbnail__,

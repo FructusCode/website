@@ -45,7 +45,7 @@
         </tbody>
     </table>
     <br/>
-    <h3>Link Account</h3>
+    <h3>Available Platforms</h3>
     <ul class="thumbnails">
         {% for pk, pv in platforms.items %}
             <li class="span4" style="background-color: white;">
@@ -65,6 +65,8 @@
                         <p>
                             {% if pv.type == 'oauth' %}
                                 <a href="{{ pv.oauth_url }}" class="btn">Link</a>
+                            {% elif pv.type == 'form' %}
+                                <a href="/account/add_payee/{{ pv.key }}" class="btn">Link</a>
                             {% endif %}
                         </p>
                     </div>
