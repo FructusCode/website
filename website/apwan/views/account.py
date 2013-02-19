@@ -214,7 +214,7 @@ def recipient_settings(request, slug):
         return error_redirect('INVALID_RECIPIENT')
     recipient = recipient[0]
 
-    payee_choices = Payee.objects.filter(owner=request.user)
+    payee_choices = Payee.objects.filter(owner=request.user).order_by('title')
 
     if request.method == 'POST':
         form = RecipientSettingsForm(data=request.POST, recipient=recipient,
