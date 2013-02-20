@@ -47,11 +47,11 @@ urlpatterns = patterns(
         name='account-report-donations'),
 
     # /donation
-    url(r'^donation/checkout/(?P<donation_id>\d+)/$',
+    url(r'^donation/checkout/(?P<donation_token>.*)/$',
         'website.apwan.views.donation.checkout', name='donation-checkout'),
-    url(r'^donation/confirm/(?P<donation_id>\d+)/$',
+    url(r'^donation/confirm/(?P<donation_token>.*)/$',
         'website.apwan.views.donation.confirm', name='donation-confirm'),
-    url(r'^donation/complete/(?P<donation_id>\d+)/$',
+    url(r'^donation/complete/(?P<donation_token>.*)/$',
         'website.apwan.views.donation.complete', name='donation-complete'),
 
     # /callback

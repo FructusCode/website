@@ -14,9 +14,8 @@ def index(request):
     pass
 
 
-def checkout(request, donation_id):
-    # TODO: Replace donation_id with a random token
-    donation = Donation.objects.filter(id=donation_id)
+def checkout(request, donation_token):
+    donation = Donation.objects.filter(token=donation_token)
 
     if len(donation) == 1:
         donation = donation[0]
@@ -31,7 +30,7 @@ def checkout(request, donation_id):
                                                   request,
                                                   reverse(
                                                       'donation-confirm',
-                                                      args=[donation_id]
+                                                      args=[donation_token]
                                                   )
                                               )
                                           )
@@ -40,9 +39,8 @@ def checkout(request, donation_id):
     return HttpResponse("Invalid Donation Checkout")
 
 
-def confirm(request, donation_id):
-    # TODO: Replace donation_id with a random token
-    donation = Donation.objects.filter(id=donation_id)
+def confirm(request, donation_token):
+    donation = Donation.objects.filter(token=donation_token)
 
     if len(donation) == 1:
         donation = donation[0]
@@ -50,20 +48,18 @@ def confirm(request, donation_id):
 
         platform.donation_confirm(donation, request=request)
 
-        return redirect('donation-complete', donation_id=donation.id)
+        return redirect('donation-complete', donation_token=donation_token)
 
     return HttpResponse('Invalid')
 
 
-def complete(request, donation_id):
-    # TODO: Replace donation_id with a random token
-
+def complete(request, donation_token):
     force = False
     if settings.DEBUG and 'force' in request.GET:
         force = True
-    return_message = None
+    return_message = ""
 
-    donation = Donation.objects.filter(id=donation_id)
+    donation = Donation.objects.filter(token=donation_token)
 
     if len(donation) == 1:
         donation = donation[0]
@@ -72,17 +68,21 @@ def complete(request, donation_id):
         if donation.state == Donation.STATE_NEW or force:
             success = platform.donation_update(donation)
             if success:
-                donation.save()
-                return_message = "Donation Complete"
+                return_message = "Donation Updated<br/>"
             else:
-                return_message = "Unable to update donation"
+                return_message = "Unable to update donation<br/>"
+
+        if donation.state == Donation.STATE_AUTHORIZED:
+            return_message += "Donation Authorized"
+        elif donation.state == Donation.STATE_RESERVED:
+            return_message += "Donation Reserved"
+        elif donation.state == Donation.STATE_CAPTURED:
+            return_message += "Donation Captured"
+        elif donation.state == Donation.STATE_SETTLED:
+            return_message += "Donation Settled"
         else:
-            if donation.state in [Donation.STATE_AUTHORIZED, Donation.STATE_RESERVED,
-                                  Donation.STATE_CAPTURED, Donation.STATE_SETTLED]:
-                return_message = "Donation Complete"
-            else:
-                return_message = "Donation Service Failure: " + \
-                                 donation.get_state_display()
+            return_message += "Donation Service Failure: " + \
+                             donation.get_state_display()
 
         return HttpResponse(return_message)
 

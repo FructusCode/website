@@ -1,6 +1,7 @@
 # pylint: disable=R0924
 
 from __future__ import absolute_import
+from pprint import pprint
 import braintree
 from braintree.exceptions import AuthenticationError, NotFoundError
 from crispy_forms.bootstrap import FormActions
@@ -10,6 +11,7 @@ from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from website.apwan.core.payment import PaymentPlatform, AUTHORIZATION_FORM, registry, DONATION_INTERNAL
+from website.apwan.models.donation import Donation
 from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
@@ -26,6 +28,18 @@ class BraintreePaymentPlatform(PaymentPlatform):
 
     __platform_country__ = "Australia, Europe, Canada"
     __platform_country_class__ = "label-info"
+
+    BRAINTREE_STATE_MAP = {
+        'authorized': Donation.STATE_AUTHORIZED,
+        'processor_declined': Donation.STATE_FAILED,
+        'gateway_rejected': Donation.STATE_FAILED,
+        'failed': Donation.STATE_FAILED,
+        'voided': Donation.STATE_CANCELLED,
+        'submitted_for_settlement': Donation.STATE_CAPTURED,
+        'settled': Donation.STATE_SETTLED,
+        'settling': Donation.STATE_CAPTURED,
+        'authorization_expired': Donation.STATE_EXPIRED
+    }
 
     def __init__(self):
         PaymentPlatform.__init__(self)
@@ -60,6 +74,16 @@ class BraintreePaymentPlatform(PaymentPlatform):
         else:
             raise ValueError()
 
+    @staticmethod
+    def from_transaction_status(status):
+        return BraintreePaymentPlatform.BRAINTREE_STATE_MAP.get(status)
+
+    @staticmethod
+    def to_transaction_status(state):
+        for key, value in BraintreePaymentPlatform.BRAINTREE_STATE_MAP.items():
+            if value == state:
+                return key
+        raise KeyError()
 
     def service_create(self, owner, **kwargs):
         if 'public_key' not in kwargs:
@@ -120,7 +144,7 @@ class BraintreePaymentPlatform(PaymentPlatform):
                                            amount, tip=0.0)
 
         # Passing onto our donation checkout page
-        return donation, reverse('donation-checkout', args=[donation.id])
+        return donation, reverse('donation-checkout', args=[donation.token])
 
     def donation_confirm(self, donation, **kwargs):
         if not 'request' in kwargs:
@@ -132,7 +156,20 @@ class BraintreePaymentPlatform(PaymentPlatform):
             kwargs['request'].META['QUERY_STRING']
         )
 
-        print result
+        if 'id' in kwargs['request'].GET:
+            donation.checkout_id = result.transaction.id
+
+        donation.state = self.from_transaction_status(result.transaction.status)
+        donation.save()
+
+    def donation_update(self, donation):
+        self.configure_payee(donation.payee)
+        result = braintree.Transaction.find(donation.checkout_id)
+
+        donation.state = self.from_transaction_status(result.status)
+        donation.save()
+
+        return True
 
 
 class BraintreeAuthorizationForm(forms.Form):
@@ -204,7 +241,10 @@ class BraintreeDonationForm(forms.Form):
             {
                 'transaction': {
                     'amount': str(donation.amount),
-                    'order_id': str(donation.id)  # TODO: This could be a token instead.
+                    'order_id': str(donation.token),
+                    'options': {
+                        'submit_for_settlement': True
+                    }
                 }
             }, redirect_url
         )

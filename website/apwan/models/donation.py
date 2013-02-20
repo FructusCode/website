@@ -1,5 +1,7 @@
 from django.db import models
+from website.apwan.core.database import sql_auto_increment
 from website.apwan.models.entity import Entity
+from website.apwan.models.token import Token
 
 __author__ = 'Dean Gardiner'
 
@@ -42,6 +44,8 @@ class Donation(models.Model):
     recipient = models.ForeignKey('Recipient', null=True)
     payee = models.ForeignKey('Payee', null=True)
 
+    token = models.CharField(unique=True, blank=True, max_length=32)
+
     state = models.CharField(max_length=12, choices=STATES, default=STATE_NEW)
 
     # TODO: "payer_name" can be replaced with user accounts
@@ -52,4 +56,11 @@ class Donation(models.Model):
     currency = models.IntegerField(choices=CURRENCIES, default=CURRENCY_USD)
 
     # Following fields use dependant on payee payment platform
-    checkout_id = models.CharField(max_length=18, null=True, blank=True)
+    checkout_id = models.CharField(max_length=18, null=True, blank=True)  # TODO: Rename to 'service_id'
+
+    def save(self, *args, **kwargs):
+        if self.token == '':
+            next_id = sql_auto_increment(Donation)
+            self.token = Token.create_token(next_id)
+
+        super(Donation, self).save(*args, **kwargs)

@@ -1,5 +1,6 @@
 import hashlib
 import datetime
+import time
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -21,7 +22,7 @@ class Token(models.Model):
 
     owner = models.ForeignKey(User, null=True, blank=True)
 
-    token = models.CharField(unique=True, max_length=32)
+    token = models.CharField(unique=True, blank=True, max_length=32)
     token_type = models.IntegerField(choices=TOKENS, default=0)
 
     data = JSONField(null=True, blank=True)
@@ -36,17 +37,25 @@ class Token(models.Model):
             self.delete()
         return False
 
+    @staticmethod
+    def create_token(value):
+        if value is None or value == '':
+            raise ValueError()
+
+        md5 = hashlib.md5()
+
+        # pylint: disable=E1101
+        md5.update(settings.SECRET_SALT)
+        md5.update(str(time.time()))
+        md5.update(str(value))
+        # pylint: enable=E1101
+
+        return md5.hexdigest()
+
     def save(self, *args, **kwargs):
         if self.token == '':
             next_id = sql_auto_increment(Token)
-            md5 = hashlib.md5()
-
-            # pylint: disable=E1101
-            md5.update(settings.SECRET_SALT)
-            md5.update(str(next_id))
-            # pylint: enable=E1101
-
-            self.token = md5.hexdigest()
+            self.token = self.create_token(next_id)
 
         super(Token, self).save(*args, **kwargs)
 

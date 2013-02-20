@@ -130,7 +130,7 @@ class WePayPaymentPlatform(PaymentPlatform):
             if 'redirect_name' in kwargs:
                 params['redirect_uri'] = kwargs['base_url'] + reverse(
                     kwargs['redirect_name'],
-                    args=[donation.id]
+                    args=[donation.token]
                 )
 
             if 'callback_name' in kwargs:
@@ -167,6 +167,7 @@ class WePayPaymentPlatform(PaymentPlatform):
             return False
 
         donation.state = result['state']
+        donation.save()
 
         return True
 

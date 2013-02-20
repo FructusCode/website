@@ -105,6 +105,8 @@ def sql_auto_increment(model):
 
         if len(row) != 1:
             raise IndexError()
+        if row[0] is None:
+            return 1
         return row[0] + 1
 
     elif cursor_name == "<class 'django.db.backends.mysql.base.CursorWrapper'>":
