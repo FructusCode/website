@@ -3,9 +3,10 @@
 from __future__ import absolute_import
 # noinspection PyUnresolvedReferences
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from wepay import WePay
 from website.apwan.core import string_length_limit
-from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH
+from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH, DONATION_EXTERNAL
 from website.apwan.models.service import Service
 # pylint: enable=E0611
 # pylint: enable=F0401
@@ -30,6 +31,9 @@ class WePayPaymentPlatform(PaymentPlatform):
     def __init__(self):
         PaymentPlatform.__init__(self)
         self.type = AUTHORIZATION_OAUTH
+
+        self.donation_type = DONATION_EXTERNAL
+
         self.wepay = WePay(
             production=settings.FRUCTUS_KEYS.WEPAY_PRODUCTION,
             store_token=False
@@ -106,28 +110,9 @@ class WePayPaymentPlatform(PaymentPlatform):
         donation = self.db_donation_create(entity, recipient, payee,
                                            amount, tip=tip)
 
-        # Create Transaction Short Description
-        short_description = ""
-        if tip > 0:
-            short_description = string_length_limit(
-                recipient.title, 127 - len(PaymentPlatform.DESC_FRUCTUS_TIP)
-            ) + PaymentPlatform.DESC_FRUCTUS_TIP
-        else:
-            short_description = string_length_limit(recipient.title, 127)
-
-        # Create Transaction Long Description
-        long_description = ""
-        if tip > 0:
-            long_description = ", ".join([
-                "%s Donation: $%.2f" % (recipient.title, amount),
-                "Fruct.us Tip (Included in \"Fee\"): $%.2f" % tip,
-                "Total Paid (Donation + Fruct.us Tip): $%.2f" % (amount + tip)
-            ])
-        else:
-            long_description = ", ".join([
-                "%s Donation: $%.2f" % (recipient.title, amount),
-                "Total Paid: $%.2f" % amount
-            ])
+        # Create donation descriptions
+        short_description = self.short_description(recipient, tip)
+        long_description = self.long_description(recipient, amount, tip)
 
         params = {
             'account_id': payee.account_id,
@@ -140,11 +125,18 @@ class WePayPaymentPlatform(PaymentPlatform):
             'fee_payer': 'Payee'
         }
 
-        if 'redirect_uri' in kwargs:
-            params['redirect_uri'] = kwargs['redirect_uri']
+        # TODO: this could do with a cleanup
+        if 'base_url' in kwargs:
+            if 'redirect_name' in kwargs:
+                params['redirect_uri'] = kwargs['base_url'] + reverse(
+                    kwargs['redirect_name'],
+                    args=[donation.id]
+                )
 
-        if 'callback_uri' in kwargs:
-            params['callback_uri'] = kwargs['callback_uri']
+            if 'callback_name' in kwargs:
+                params['callback_uri'] = kwargs['base_url'] + reverse(
+                    kwargs['callback_name']
+                )
 
         create_result = self.wepay.call(
             '/checkout/create', params,
@@ -159,6 +151,9 @@ class WePayPaymentPlatform(PaymentPlatform):
             return donation, create_result['checkout_uri']
         else:
             return donation, None
+
+    def donation_confirm(self, donation, **kwargs):
+        pass
 
     def donation_update(self, donation):
         result = self.wepay.call(

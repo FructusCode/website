@@ -46,9 +46,13 @@ urlpatterns = patterns(
     url(r'^account/report/donations/$', 'website.apwan.views.account.report_donations',
         name='account-report-donations'),
 
-    # /donate
-    url(r'^donate/complete/(?P<service>.*)/$', 'website.apwan.views.donate.complete',
-        name='donate-complete'),
+    # /donation
+    url(r'^donation/checkout/(?P<donation_id>\d+)/$',
+        'website.apwan.views.donation.checkout', name='donation-checkout'),
+    url(r'^donation/confirm/(?P<donation_id>\d+)/$',
+        'website.apwan.views.donation.confirm', name='donation-confirm'),
+    url(r'^donation/complete/(?P<donation_id>\d+)/$',
+        'website.apwan.views.donation.complete', name='donation-complete'),
 
     # /callback
     url(r'^callback/wepay/checkout/$', 'website.apwan.views.callback.wepay_checkout',

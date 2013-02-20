@@ -4,7 +4,7 @@
 import account
 import callback
 import dev
-import donate
+import donation
 import home
 
-assert (account, callback, dev, donate, home) != ()
+assert (account, callback, dev, donation, home) != ()

@@ -1,3 +1,4 @@
+import urlparse
 from dajaxice.decorators import dajaxice_register
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
@@ -59,12 +60,13 @@ def create(request, recipient_id, entity_id, amount):
     # Create donation
     _, checkout_url = payment.registry[payee.userservice.service].donation_create(
         entity, recipient, payee, amount,
-        redirect_uri=build_url(
-            request,
-            reverse('donate-complete', args=[payee.userservice.service])
-        ),
-        callback_uri=build_url(request, reverse('callback-wepay-checkout'))
+        base_url=build_url(request),
+        redirect_name='donation-confirm',
+        callback_name='callback-wepay-checkout'
     )
+
+    # Make the checkout_url absolute
+    checkout_url = urlparse.urljoin(build_url(request), checkout_url)
 
     if checkout_url:
         return cors_response(simplejson.dumps({

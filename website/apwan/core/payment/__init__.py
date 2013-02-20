@@ -3,6 +3,7 @@
 from django.core.urlresolvers import reverse
 
 from django.db import IntegrityError
+from website.apwan.core import string_length_limit
 from website.apwan.models.donation import Donation
 from website.apwan.models.payee import Payee
 from website.apwan.models.service import Service
@@ -12,6 +13,9 @@ from website.settings import build_url
 AUTHORIZATION_AUTH = 'auth'
 AUTHORIZATION_OAUTH = 'oauth'
 AUTHORIZATION_FORM = 'form'
+
+DONATION_INTERNAL = 'internal'
+DONATION_EXTERNAL = 'external'
 
 
 class PaymentPlatform:
@@ -93,6 +97,31 @@ class PaymentPlatform:
             )
             service.update(data=data)
             return False, service
+
+    @staticmethod
+    def short_description(recipient, tip=0.0):
+        if tip > 0:
+            return string_length_limit(
+                recipient.title, 127 - len(PaymentPlatform.DESC_FRUCTUS_TIP)
+            ) + PaymentPlatform.DESC_FRUCTUS_TIP
+        else:
+            return string_length_limit(recipient.title, 127)
+
+    @staticmethod
+    def long_description(recipient, amount, tip=0.0):
+        if tip > 0:
+            return ", ".join([
+                "%s Donation: $%.2f" % (recipient.title, amount),
+                "Fruct.us Tip (Included in \"Fee\"): $%.2f" % tip,
+                "Total Paid (Donation%s): $%.2f" % (
+                    PaymentPlatform.DESC_FRUCTUS_TIP, amount + tip
+                )
+            ])
+        else:
+            return ", ".join([
+                "%s Donation: $%.2f" % (recipient.title, amount),
+                "Total Paid: $%.2f" % amount
+            ])
 
 
 class PaymentPlatformRegistry:

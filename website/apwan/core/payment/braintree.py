@@ -8,7 +8,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from django import forms
 from django.conf import settings
-from website.apwan.core.payment import PaymentPlatform, AUTHORIZATION_FORM, registry
+from django.core.urlresolvers import reverse
+from website.apwan.core.payment import PaymentPlatform, AUTHORIZATION_FORM, registry, DONATION_INTERNAL
 from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
@@ -31,6 +32,9 @@ class BraintreePaymentPlatform(PaymentPlatform):
         self.type = AUTHORIZATION_FORM
         self.form = BraintreeAuthorizationForm
 
+        self.donation_type = DONATION_INTERNAL
+        self.donation_form = BraintreeDonationForm
+
         self.configure(None, None, None)  # Initial blank configuration
 
     @staticmethod
@@ -44,6 +48,18 @@ class BraintreePaymentPlatform(PaymentPlatform):
             public_key, private_key,
             use_once=True
         )
+
+    @staticmethod
+    def configure_payee(payee):
+        if payee.userservice.service == Service.SERVICE_BRAINTREE:
+            BraintreePaymentPlatform.configure(
+                payee.userservice.service_id,
+                payee.userservice.data['public_key'],
+                payee.userservice.data['private_key']
+            )
+        else:
+            raise ValueError()
+
 
     def service_create(self, owner, **kwargs):
         if 'public_key' not in kwargs:
@@ -89,6 +105,35 @@ class BraintreePaymentPlatform(PaymentPlatform):
             }
         ]
 
+    def donation_create(self, entity, recipient, payee,
+                        amount, tip=0.0, **kwargs):
+        amount = float(amount)
+
+        tip = float(tip)
+        if tip != 0.0:
+            raise ValueError()  # Tips aren't supported with braintree
+
+        if payee is None or payee.userservice is None:
+            return None, None
+
+        donation = self.db_donation_create(entity, recipient, payee,
+                                           amount, tip=0.0)
+
+        # Passing onto our donation checkout page
+        return donation, reverse('donation-checkout', args=[donation.id])
+
+    def donation_confirm(self, donation, **kwargs):
+        if not 'request' in kwargs:
+            raise TypeError()
+
+        self.configure_payee(donation.payee)
+
+        result = braintree.TransparentRedirect.confirm(
+            kwargs['request'].META['QUERY_STRING']
+        )
+
+        print result
+
 
 class BraintreeAuthorizationForm(forms.Form):
     name = forms.CharField(label='Name', required=False,
@@ -116,6 +161,54 @@ class BraintreeAuthorizationForm(forms.Form):
         )
 
         super(BraintreeAuthorizationForm, self).__init__(*args, **kwargs)
+
+
+class BraintreeDonationForm(forms.Form):
+    transaction__credit_card__cardholder_name = forms.CharField()
+    transaction__credit_card__number = forms.CharField()
+    transaction__credit_card__expiration_month = forms.IntegerField()
+    transaction__credit_card__expiration_year = forms.IntegerField()
+    transaction__credit_card__cvv = forms.IntegerField()
+
+    tr_data = forms.CharField()
+
+    def __init__(self, donation, redirect_url, *args, **kwargs):
+        BraintreePaymentPlatform.configure_payee(donation.payee)
+
+        # Crispy Forms Layout
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_action = braintree.TransparentRedirect.url()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Donation Checkout',
+                'transaction__credit_card__cardholder_name',
+                'transaction__credit_card__number',
+                'transaction__credit_card__expiration_month',
+                'transaction__credit_card__expiration_year',
+                'transaction__credit_card__cvv',
+
+                'tr_data'
+            ),
+            FormActions(
+                Submit('submit', 'Donate', css_class='btn-primary'),
+                HTML('<a class="btn" href="/">Cancel</a>')
+            )
+        )
+
+        super(BraintreeDonationForm, self).__init__(*args, **kwargs)
+
+        # Add tr_data to form
+        BraintreePaymentPlatform.configure_payee(donation.payee)
+        self.fields['tr_data'].initial = braintree.Transaction.tr_data_for_sale(
+            {
+                'transaction': {
+                    'amount': str(donation.amount),
+                    'order_id': str(donation.id)  # TODO: This could be a token instead.
+                }
+            }, redirect_url
+        )
+        self.fields['tr_data'].widget = forms.HiddenInput()
 
 
 if settings.FRUCTUS_KEYS:
