@@ -146,7 +146,7 @@ ROOT_URLCONF = 'website.urls'
 BASE_URL = None  # Automatically determine our URL
 
 
-def build_url(request, path):
+def build_url(request, path=''):
     global BASE_URL
     if not BASE_URL:
         BASE_URL = "http://" + request.META['HTTP_HOST']
@@ -206,7 +206,10 @@ INSTALLED_APPS = [
 
     'django_like',
     'south',
-] + PROJECT_APPS
+
+    'website.apwan',
+    'website.utils'
+]
 
 LOGGING = {
     'version': 1,
