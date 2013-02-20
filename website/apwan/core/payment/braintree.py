@@ -9,7 +9,8 @@ from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from website.apwan.core.payment import PaymentPlatform, AUTHORIZATION_FORM, registry, DONATION_INTERNAL
+from website.apwan.core.payment import (PaymentPlatform, registry,
+                                        AUTHORIZATION_FORM, DONATION_INTERNAL)
 from website.apwan.models.donation import Donation
 from website.apwan.models.service import Service
 
@@ -51,6 +52,9 @@ class BraintreePaymentPlatform(PaymentPlatform):
         self.donation_confirm_form = BraintreeDonationConfirmationForm
 
         self.configure(None, None, None)  # Initial blank configuration
+
+    def get_oauth_url(self, redirect_uri, **kwargs):
+        return NotImplementedError()
 
     @staticmethod
     def configure(merchant_id, public_key, private_key):
@@ -167,10 +171,12 @@ class BraintreePaymentPlatform(PaymentPlatform):
         self.configure_payee(donation.payee)
         result = braintree.Transaction.find(donation.checkout_id)
 
-        donation.state = self.from_transaction_status(result.status)
-        donation.save()
+        if 'status' in result:
+            donation.state = self.from_transaction_status(result.status)
+            donation.save()
+            return True
 
-        return True
+        return False
 
 
 class BraintreeAuthorizationForm(forms.Form):

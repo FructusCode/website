@@ -6,7 +6,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from wepay import WePay
 from website.apwan.core import string_length_limit
-from website.apwan.core.payment import PaymentPlatform, registry, AUTHORIZATION_OAUTH, DONATION_EXTERNAL
+from website.apwan.core.payment import (PaymentPlatform, registry,
+                                        AUTHORIZATION_OAUTH, DONATION_EXTERNAL)
 from website.apwan.models.service import Service
 # pylint: enable=E0611
 # pylint: enable=F0401

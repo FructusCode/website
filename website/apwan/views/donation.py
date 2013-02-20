@@ -91,8 +91,7 @@ def complete(request, donation_token):
         elif donation.state == Donation.STATE_SETTLED:
             return_message += "Donation Settled"
         else:
-            return_message += "Donation Service Failure: " + \
-                             donation.get_state_display()
+            return_message += "Donation Service Failure: " + donation.get_state_display()
 
         return HttpResponse(return_message)
 

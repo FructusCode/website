@@ -56,7 +56,8 @@ class Donation(models.Model):
     currency = models.IntegerField(choices=CURRENCIES, default=CURRENCY_USD)
 
     # Following fields use dependant on payee payment platform
-    checkout_id = models.CharField(max_length=18, null=True, blank=True)  # TODO: Rename to 'service_id'
+    # TODO: Rename 'checkout_id' to 'transaction_id'
+    checkout_id = models.CharField(max_length=18, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.token == '':
