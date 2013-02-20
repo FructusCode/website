@@ -46,9 +46,19 @@ def confirm(request, donation_token):
         donation = donation[0]
         platform = payment.registry[donation.payee.userservice.service]
 
-        platform.donation_confirm(donation, request=request)
+        confirmed = request.POST and 'submit' in request.POST
 
-        return redirect('donation-complete', donation_token=donation_token)
+        if platform.donation_confirm_form and not confirmed:
+            return render_to_response('donation/confirm.html',
+                                      context_instance=RequestContext(request, {
+                                          'form': platform.donation_confirm_form(
+                                              donation
+                                          )
+                                      }))
+        else:
+            platform.donation_confirm(donation, request=request)
+
+            return redirect('donation-complete', donation_token=donation_token)
 
     return HttpResponse('Invalid')
 

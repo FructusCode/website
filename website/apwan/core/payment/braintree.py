@@ -1,7 +1,6 @@
 # pylint: disable=R0924
 
 from __future__ import absolute_import
-from pprint import pprint
 import braintree
 from braintree.exceptions import AuthenticationError, NotFoundError
 from crispy_forms.bootstrap import FormActions
@@ -48,6 +47,8 @@ class BraintreePaymentPlatform(PaymentPlatform):
 
         self.donation_type = DONATION_INTERNAL
         self.donation_form = BraintreeDonationForm
+
+        self.donation_confirm_form = BraintreeDonationConfirmationForm
 
         self.configure(None, None, None)  # Initial blank configuration
 
@@ -218,7 +219,9 @@ class BraintreeDonationForm(forms.Form):
         self.helper.form_action = braintree.TransparentRedirect.url()
         self.helper.layout = Layout(
             Fieldset(
-                'Donation Checkout',
+                'Donation for ' + BraintreePaymentPlatform.short_description(
+                    donation.recipient
+                ),
                 'transaction__credit_card__cardholder_name',
                 'transaction__credit_card__number',
                 'transaction__credit_card__expiration_month',
@@ -249,6 +252,26 @@ class BraintreeDonationForm(forms.Form):
             }, redirect_url
         )
         self.fields['tr_data'].widget = forms.HiddenInput()
+
+
+class BraintreeDonationConfirmationForm(forms.Form):
+    def __init__(self, donation, *args, **kwargs):
+        # Crispy Forms Layout
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Confirm Donation for ' + BraintreePaymentPlatform.short_description(
+                    donation.recipient
+                ),
+            ),
+            FormActions(
+                Submit('submit', 'Confirm Donation'),
+                HTML('<a class="btn" href="/">Cancel</a>')
+            )
+        )
+
+        super(BraintreeDonationConfirmationForm, self).__init__(*args, **kwargs)
 
 
 if settings.FRUCTUS_KEYS:

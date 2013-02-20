@@ -23,6 +23,12 @@ class PaymentPlatform:
 
     def __init__(self):
         self.type = AUTHORIZATION_AUTH
+        self.form = None
+
+        self.donation_type = DONATION_EXTERNAL
+        self.donation_form = None
+
+        self.donation_confirm_form = None
 
     def get_oauth_url(self, redirect_uri, **kwargs):
         raise NotImplementedError()

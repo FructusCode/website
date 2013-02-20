@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load sekizai_tags %}
+{% load helper_tags %}
+{% load crispy_forms_tags %}
+
+{% block base_body %}
+    <div id="checkout_container" class="container-fluid">
+        <div class="row-fluid">
+            <div class="offset2 span8" style="background-color: white;">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
