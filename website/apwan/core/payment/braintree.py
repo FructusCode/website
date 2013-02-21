@@ -9,174 +9,13 @@ from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from website.apwan.core.payment import (PaymentPlatform, registry,
-                                        AUTHORIZATION_FORM, DONATION_INTERNAL)
+from website.apwan.core.payment import (PaymentPlatform, registry, PaymentPlatformMeta,
+                                        AUTHORIZATION_FORM, DONATION_FORM,
+                                        CONFIRMATION_FORM)
 from website.apwan.models.donation import Donation
 from website.apwan.models.service import Service
 
 __author__ = 'Dean Gardiner'
-
-
-class BraintreePaymentPlatform(PaymentPlatform):
-    __platform_key__ = Service.SERVICE_BRAINTREE
-    __platform_title__ = "Braintree"
-    __platform_thumbnail__ = "/img/media/braintree.png"
-    __platform_description__ = """
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    Vivamus placerat venenatis libero vel pellentesque.
-    """
-
-    __platform_country__ = "Australia, Europe, Canada"
-    __platform_country_class__ = "label-info"
-
-    BRAINTREE_STATE_MAP = {
-        'authorized': Donation.STATE_AUTHORIZED,
-        'processor_declined': Donation.STATE_FAILED,
-        'gateway_rejected': Donation.STATE_FAILED,
-        'failed': Donation.STATE_FAILED,
-        'voided': Donation.STATE_CANCELLED,
-        'submitted_for_settlement': Donation.STATE_CAPTURED,
-        'settled': Donation.STATE_SETTLED,
-        'settling': Donation.STATE_CAPTURED,
-        'authorization_expired': Donation.STATE_EXPIRED
-    }
-
-    def __init__(self):
-        PaymentPlatform.__init__(self)
-        self.type = AUTHORIZATION_FORM
-        self.form = BraintreeAuthorizationForm
-
-        self.donation_type = DONATION_INTERNAL
-        self.donation_form = BraintreeDonationForm
-
-        self.donation_confirm_form = BraintreeDonationConfirmationForm
-
-        self.configure(None, None, None)  # Initial blank configuration
-
-    def get_oauth_url(self, redirect_uri, **kwargs):
-        return NotImplementedError()
-
-    @staticmethod
-    def configure(merchant_id, public_key, private_key):
-        environment = braintree.Environment.Production
-        if not settings.FRUCTUS_KEYS.BRAINTREE_PRODUCTION:
-            environment = braintree.Environment.Sandbox
-
-        braintree.Configuration.configure(
-            environment, merchant_id,
-            public_key, private_key,
-            use_once=True
-        )
-
-    @staticmethod
-    def configure_payee(payee):
-        if payee.userservice.service == Service.SERVICE_BRAINTREE:
-            BraintreePaymentPlatform.configure(
-                payee.userservice.service_id,
-                payee.userservice.data['public_key'],
-                payee.userservice.data['private_key']
-            )
-        else:
-            raise ValueError()
-
-    @staticmethod
-    def from_transaction_status(status):
-        return BraintreePaymentPlatform.BRAINTREE_STATE_MAP.get(status)
-
-    @staticmethod
-    def to_transaction_status(state):
-        for key, value in BraintreePaymentPlatform.BRAINTREE_STATE_MAP.items():
-            if value == state:
-                return key
-        raise KeyError()
-
-    def service_create(self, owner, **kwargs):
-        if 'public_key' not in kwargs:
-            raise TypeError()
-        if 'private_key' not in kwargs:
-            raise TypeError()
-        if 'merchant_id' not in kwargs:
-            raise TypeError()
-
-        self.configure(kwargs['merchant_id'],
-                       kwargs['public_key'],
-                       kwargs['private_key'])
-
-        # Check if details are correct
-        # TODO: Surely there is a better way to do this?
-        try:
-            braintree.Transaction.find('fructus-account-validation-check')
-            account_valid = True
-        except AuthenticationError:
-            account_valid = False
-        except NotFoundError:
-            account_valid = True
-
-        if not account_valid:
-            return False, None  # (created, service)
-
-       # Store details in database
-        return self.db_service_create(
-            owner, Service.SERVICE_BRAINTREE, kwargs['merchant_id'],
-            link_type=Service.LINK_TYPE_KEY, data={
-                'public_key': kwargs['public_key'],
-                'private_key': kwargs['private_key'],
-                'name': kwargs.get('name', '')
-            }
-        )
-
-    def account_find(self, payee, **kwargs):
-        # Braintree authorizations only have access to a single account
-        return [
-            {
-                'account_id': payee.userservice.service_id,
-                'name': payee.userservice.name()
-            }
-        ]
-
-    def donation_create(self, entity, recipient, payee,
-                        amount, tip=0.0, **kwargs):
-        amount = float(amount)
-
-        tip = float(tip)
-        if tip != 0.0:
-            raise ValueError()  # Tips aren't supported with braintree
-
-        if payee is None or payee.userservice is None:
-            return None, None
-
-        donation = self.db_donation_create(entity, recipient, payee,
-                                           amount, tip=0.0)
-
-        # Passing onto our donation checkout page
-        return donation, reverse('donation-checkout', args=[donation.token])
-
-    def donation_confirm(self, donation, **kwargs):
-        if not 'request' in kwargs:
-            raise TypeError()
-
-        self.configure_payee(donation.payee)
-
-        result = braintree.TransparentRedirect.confirm(
-            kwargs['request'].META['QUERY_STRING']
-        )
-
-        if 'id' in kwargs['request'].GET:
-            donation.checkout_id = result.transaction.id
-
-        donation.state = self.from_transaction_status(result.transaction.status)
-        donation.save()
-
-    def donation_update(self, donation):
-        self.configure_payee(donation.payee)
-        result = braintree.Transaction.find(donation.checkout_id)
-
-        if 'status' in result:
-            donation.state = self.from_transaction_status(result.status)
-            donation.save()
-            return True
-
-        return False
 
 
 class BraintreeAuthorizationForm(forms.Form):
@@ -270,7 +109,7 @@ class BraintreeDonationConfirmationForm(forms.Form):
                 'Confirm Donation for ' + BraintreePaymentPlatform.short_description(
                     donation.recipient
                 ),
-            ),
+                ),
             FormActions(
                 Submit('submit', 'Confirm Donation'),
                 HTML('<a class="btn" href="/">Cancel</a>')
@@ -278,6 +117,169 @@ class BraintreeDonationConfirmationForm(forms.Form):
         )
 
         super(BraintreeDonationConfirmationForm, self).__init__(*args, **kwargs)
+
+
+class BraintreePaymentPlatform(PaymentPlatform):
+    class Meta(PaymentPlatformMeta):
+        key = Service.SERVICE_BRAINTREE
+        title = "Braintree"
+        thumbnail = "/img/media/braintree.png"
+        description = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                         Vivamus placerat venenatis libero vel pellentesque."""
+
+        authorization_type = AUTHORIZATION_FORM
+        authorization_form = BraintreeAuthorizationForm
+
+        donation_type = DONATION_FORM
+        donation_form = BraintreeDonationForm
+
+        confirmation_type = CONFIRMATION_FORM
+        confirmation_form = BraintreeDonationConfirmationForm
+
+        country = "Australia, Europe, Canada"
+        country_class = "label-info"
+
+    STATE_MAP = {
+        'authorized': Donation.STATE_AUTHORIZED,
+        'processor_declined': Donation.STATE_FAILED,
+        'gateway_rejected': Donation.STATE_FAILED,
+        'failed': Donation.STATE_FAILED,
+        'voided': Donation.STATE_CANCELLED,
+        'submitted_for_settlement': Donation.STATE_CAPTURED,
+        'settled': Donation.STATE_SETTLED,
+        'settling': Donation.STATE_CAPTURED,
+        'authorization_expired': Donation.STATE_EXPIRED
+    }
+
+    def __init__(self):
+        PaymentPlatform.__init__(self)
+
+        self.configure(None, None, None)
+
+    def get_oauth_url(self, redirect_uri, **kwargs):
+        return NotImplementedError()
+
+    @staticmethod
+    def configure(merchant_id, public_key, private_key):
+        environment = braintree.Environment.Production
+        if not settings.FRUCTUS_KEYS.BRAINTREE_PRODUCTION:
+            environment = braintree.Environment.Sandbox
+
+        braintree.Configuration.configure(
+            environment, merchant_id,
+            public_key, private_key,
+            use_once=True
+        )
+
+    @staticmethod
+    def configure_payee(payee):
+        if payee.userservice.service == Service.SERVICE_BRAINTREE:
+            BraintreePaymentPlatform.configure(
+                payee.userservice.service_id,
+                payee.userservice.data['public_key'],
+                payee.userservice.data['private_key']
+            )
+        else:
+            raise ValueError()
+
+    @staticmethod
+    def from_transaction_status(status):
+        return BraintreePaymentPlatform.STATE_MAP.get(status)
+
+    @staticmethod
+    def to_transaction_status(state):
+        for key, value in BraintreePaymentPlatform.STATE_MAP.items():
+            if value == state:
+                return key
+        raise KeyError()
+
+    def service_create(self, owner, **kwargs):
+        if 'public_key' not in kwargs:
+            raise TypeError()
+        if 'private_key' not in kwargs:
+            raise TypeError()
+        if 'merchant_id' not in kwargs:
+            raise TypeError()
+
+        self.configure(kwargs['merchant_id'],
+                       kwargs['public_key'],
+                       kwargs['private_key'])
+
+        # Check if details are correct
+        # TODO: Surely there is a better way to do this?
+        try:
+            braintree.Transaction.find('fructus-account-validation-check')
+            account_valid = True
+        except AuthenticationError:
+            account_valid = False
+        except NotFoundError:
+            account_valid = True
+
+        if not account_valid:
+            return False, None  # (created, service)
+
+       # Store details in database
+        return self.db_service_create(
+            owner, Service.SERVICE_BRAINTREE, kwargs['merchant_id'],
+            link_type=Service.LINK_TYPE_KEY, data={
+                'public_key': kwargs['public_key'],
+                'private_key': kwargs['private_key'],
+                'name': kwargs.get('name', '')
+            }
+        )
+
+    def account_find(self, payee, **kwargs):
+        # Braintree authorizations only have access to a single account
+        return [
+            {
+                'account_id': payee.userservice.service_id,
+                'name': payee.userservice.name()
+            }
+        ]
+
+    def donation_create(self, entity, recipient, payee,
+                        amount, tip=0.0, **kwargs):
+        amount = float(amount)
+
+        tip = float(tip)
+        if tip != 0.0:
+            raise ValueError()  # Tips aren't supported with braintree
+
+        if payee is None or payee.userservice is None:
+            return None, None
+
+        donation = self.db_donation_create(entity, recipient, payee,
+                                           amount, tip=0.0)
+
+        # Passing onto our donation checkout page
+        return donation, reverse('donation-checkout', args=[donation.token])
+
+    def donation_confirm(self, donation, **kwargs):
+        if not 'request' in kwargs:
+            raise TypeError()
+
+        self.configure_payee(donation.payee)
+
+        result = braintree.TransparentRedirect.confirm(
+            kwargs['request'].META['QUERY_STRING']
+        )
+
+        if 'id' in kwargs['request'].GET:
+            donation.checkout_id = result.transaction.id
+
+        donation.state = self.from_transaction_status(result.transaction.status)
+        donation.save()
+
+    def donation_update(self, donation):
+        self.configure_payee(donation.payee)
+        result = braintree.Transaction.find(donation.checkout_id)
+
+        if 'status' in result:
+            donation.state = self.from_transaction_status(result.status)
+            donation.save()
+            return True
+
+        return False
 
 
 if settings.FRUCTUS_KEYS:

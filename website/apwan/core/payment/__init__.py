@@ -1,5 +1,6 @@
 # pylint: disable=W0403
 # pylint: disable=C0111
+import inspect
 from django.core.urlresolvers import reverse
 
 from django.db import IntegrityError
@@ -14,21 +15,40 @@ AUTHORIZATION_AUTH = 'auth'
 AUTHORIZATION_OAUTH = 'oauth'
 AUTHORIZATION_FORM = 'form'
 
-DONATION_INTERNAL = 'internal'
-DONATION_EXTERNAL = 'external'
+DONATION_REDIRECT = 'redirect'
+DONATION_FORM = 'form'
+
+CONFIRMATION_NONE = 'none'
+CONFIRMATION_FORM = 'form'
+
+
+class PaymentPlatformMeta:
+    key = None
+    title = ""
+    thumbnail = ""
+    description = ""
+
+    authorization_type = ''
+    authorization_form = None
+
+    donation_type = ''
+    donation_form = None
+
+    confirmation_type = CONFIRMATION_NONE
+    confirmation_form = None
+
+    country = ""
+    country_class = ""
 
 
 class PaymentPlatform:
+    class Meta(PaymentPlatformMeta):
+        pass
+
     DESC_FRUCTUS_TIP = " + Fruct.us Tip"
 
     def __init__(self):
-        self.type = AUTHORIZATION_AUTH
-        self.form = None
-
-        self.donation_type = DONATION_EXTERNAL
-        self.donation_form = None
-
-        self.donation_confirm_form = None
+        pass
 
     def get_oauth_url(self, redirect_uri, **kwargs):
         raise NotImplementedError()
@@ -137,38 +157,32 @@ class PaymentPlatformRegistry:
     def build_info_dict(self, request=None):
         platforms = {}
         for key, platform in self.platforms.items():
-            platform_info = {
-                'key': platform.__platform_key__,
-                'title': platform.__platform_title__,
-                'type': platform.type,
-                'thumbnail': platform.__platform_thumbnail__,
-                'description': platform.__platform_description__,
-            }
-            # Country
-            if hasattr(platform, '__platform_country__'):
-                platform_info['country'] = platform.__platform_country__
+            if isinstance(platform, PaymentPlatform):
+                # Build a dictionary of the platform Meta
+                platform_info = {}
+                for attr_key, attr_value in platform.Meta.__dict__.items():
+                    if not attr_key.startswith('__') and not attr_key.endswith('__'):
+                        platform_info[attr_key] = attr_value
 
-            if hasattr(platform, '__platform_country_class__'):
-                platform_info['country_class'] = platform.__platform_country_class__
+                # Build the OAuth url if the platform uses OAuth
+                if platform.Meta.authorization_type == AUTHORIZATION_OAUTH:
+                    if request is None:
+                        raise TypeError()
+                    platform_info['oauth_url'] = platform.get_oauth_url(
+                        build_url(request, reverse('account-payee-add-' + key))
+                    )
 
-            # OAuth
-            if platform.type == AUTHORIZATION_OAUTH:
-                if request is None:
-                    raise TypeError()
-                platform_info['oauth_url'] = platform.get_oauth_url(
-                    build_url(request, reverse('account-payee-add-' + key))
-                )
-
-            platforms[key] = platform_info
+                platforms[key] = platform_info
         return platforms
 
     def register(self, platform):
-        if not isinstance(platform, PaymentPlatform):
-            raise TypeError()
-        if platform.__platform_key__ in self.platforms:
-            print "platform already registered"
-            return
-        self.platforms[platform.__platform_key__] = platform
+        if isinstance(platform, PaymentPlatform):
+            if platform.Meta.key in self.platforms:
+                print "platform already registered"
+                return
+            self.platforms[platform.Meta.key] = platform
+        else:
+            print platform.Meta.key, "is not a valid payment platform"
 
     def __getitem__(self, key):
         return self.platforms[key]
@@ -184,5 +198,6 @@ class PaymentPlatformRegistry:
 
     def __len__(self):
         return len(self.platforms)
+
 
 registry = PaymentPlatformRegistry()

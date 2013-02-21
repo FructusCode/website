@@ -6,8 +6,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from wepay import WePay
 from website.apwan.core import string_length_limit
-from website.apwan.core.payment import (PaymentPlatform, registry,
-                                        AUTHORIZATION_OAUTH, DONATION_EXTERNAL)
+from website.apwan.core.payment import (PaymentPlatform, registry, PaymentPlatformMeta,
+                                        AUTHORIZATION_OAUTH, DONATION_REDIRECT)
 from website.apwan.models.service import Service
 # pylint: enable=E0611
 # pylint: enable=F0401
@@ -16,24 +16,23 @@ __author__ = 'Dean Gardiner'
 
 
 class WePayPaymentPlatform(PaymentPlatform):
-    __platform_key__ = Service.SERVICE_WEPAY
-    __platform_title__ = "WePay"
-    __platform_thumbnail__ = "/img/media/wepay.png"
-    __platform_description__ = """
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    Vivamus placerat venenatis libero vel pellentesque.
-    """
+    class Meta(PaymentPlatformMeta):
+        key = Service.SERVICE_WEPAY
+        title = "WePay"
+        thumbnail = "/img/media/wepay.png"
+        description = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                         Vivamus placerat venenatis libero vel pellentesque."""
 
-    __platform_country__ = "United States"
-    __platform_country_class__ = 'label-info'
+        authorization_type = AUTHORIZATION_OAUTH
+        donation_type = DONATION_REDIRECT
+
+        country = "United States"
+        country_class = "label-info"
 
     DEFAULT_AUTH_SCOPE = "manage_accounts,collect_payments,view_user"
 
     def __init__(self):
         PaymentPlatform.__init__(self)
-        self.type = AUTHORIZATION_OAUTH
-
-        self.donation_type = DONATION_EXTERNAL
 
         self.wepay = WePay(
             production=settings.FRUCTUS_KEYS.WEPAY_PRODUCTION,

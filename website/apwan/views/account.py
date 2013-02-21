@@ -128,9 +128,9 @@ def payee_add_form(request, platform_key):
     if platform_key in payment.registry:
         platform = payment.registry[platform_key]
 
-        if hasattr(platform, 'form'):
+        if platform.Meta.authorization_form is not None:
             if request.method == 'POST':
-                form = platform.form(request.POST)
+                form = platform.Meta.authorization_form(request.POST)
                 if form.is_valid():
                     service_data = form.cleaned_data
                     service_data.pop('csrfmiddlewaretoken', None)
@@ -148,7 +148,7 @@ def payee_add_form(request, platform_key):
                         return error_redirect('UNKNOWN_AUTHORIZATION_ERROR')
 
             else:
-                form = platform.form()
+                form = platform.Meta.authorization_form()
 
             return render_with_account_menu('account/form.html', request, {
                 'form': form

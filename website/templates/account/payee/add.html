@@ -68,10 +68,10 @@
                         <h2>{{ pv.title }}</h2>
                         <p>{{ pv.description }}</p>
                         <p>
-                            {% if pv.type == 'oauth' %}
+                            {% if pv.authorization_type == 'oauth' %}
                                 <a href="{{ pv.oauth_url }}" class="btn">Link</a>
-                            {% elif pv.type == 'form' %}
-                                <a href="/account/add_payee/{{ pv.key }}" class="btn">Link</a>
+                            {% elif pv.authorization_type == 'form' %}
+                                <a href="/account/add_payee/{{ pk }}" class="btn">Link</a>
                             {% endif %}
                         </p>
                     </div>

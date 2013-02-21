@@ -19,12 +19,21 @@ def checkout(request, donation_token):
 
     if len(donation) == 1:
         donation = donation[0]
+
+        if donation.state == Donation.STATE_EXPIRED:
+            return HttpResponse('Donation has expired')
+        elif donation.state != Donation.STATE_NEW:
+            return HttpResponse('Donation has already been processed')
+
         platform = payment.registry[donation.payee.userservice.service]
 
-        if platform.donation_type == payment.DONATION_INTERNAL:
+        # Only accept platforms with DONATION_FORM as 'donation_type'
+        if (platform.Meta.donation_type == payment.DONATION_FORM and
+                platform.Meta.donation_form is not None):
+
             return render_to_response('donation/checkout.html',
                                       context_instance=RequestContext(request, {
-                                          'form': platform.donation_form(
+                                          'form': platform.Meta.donation_form(
                                               donation,
                                               build_url(
                                                   request,
@@ -35,8 +44,10 @@ def checkout(request, donation_token):
                                               )
                                           )
                                       }))
-
-    return HttpResponse("Invalid Donation Checkout")
+        else:
+            return HttpResponse("Payment Platform doesn't require hosted checkouts")
+    else:
+        return HttpResponse("Unable to find your donation")
 
 
 def confirm(request, donation_token):
@@ -44,23 +55,37 @@ def confirm(request, donation_token):
 
     if len(donation) == 1:
         donation = donation[0]
+
+        if donation.state == Donation.STATE_EXPIRED:
+            return HttpResponse('Donation has expired')
+        elif donation.state != Donation.STATE_AUTHORIZED:
+            return HttpResponse('Donation has already been processed')
+
         platform = payment.registry[donation.payee.userservice.service]
 
+        # Checking if form has been confirmed
         confirmed = request.POST and 'submit' in request.POST
 
-        if platform.donation_confirm_form and not confirmed:
-            return render_to_response('donation/confirm.html',
-                                      context_instance=RequestContext(request, {
-                                          'form': platform.donation_confirm_form(
-                                              donation
-                                          )
-                                      }))
+        # Only accept platforms with DONATION_CONFIRMATION_FORM as 'confirmation_type'
+        if (platform.Meta.confirmation_type == payment.DONATION_CONFIRMATION_FORM and
+                platform.Meta.confirmation_form is not None):
+
+            if confirmed:
+                # User has confirmed the transaction, continue donation process.
+                platform.donation_confirm(donation, request=request)
+                return redirect('donation-complete', donation_token=donation_token)
+            else:
+                # Present the payment platform confirmation form
+                return render_to_response('donation/confirm.html',
+                                          context_instance=RequestContext(request, {
+                                              'form': platform.donation_confirm_form(
+                                                  donation
+                                              )
+                                          }))
         else:
-            platform.donation_confirm(donation, request=request)
-
-            return redirect('donation-complete', donation_token=donation_token)
-
-    return HttpResponse('Invalid')
+            return HttpResponse("Payment Platform doesn't require hosted confirmations")
+    else:
+        return HttpResponse('Unable to find your donation')
 
 
 def complete(request, donation_token):
@@ -73,8 +98,10 @@ def complete(request, donation_token):
 
     if len(donation) == 1:
         donation = donation[0]
+
         platform = payment.registry[donation.payee.userservice.service]
 
+        # Update the donation status (and handle 'force' GET parameter)
         if donation.state == Donation.STATE_NEW or force:
             success = platform.donation_update(donation)
             if success:
